@@ -1,0 +1,164 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  name          String?
+  password      String?   // Hashed password
+  passwordHash  String?   // Alternative field name for seed compatibility
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  activityEntries ActivityEntry[]
+  goals         Goal[]
+  achievements  Achievement[]
+  reminders     Reminder[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model ActivityEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String?
+  description String?
+  date        DateTime @default(now())
+  duration    Int?     // Duration in minutes
+  category    String?
+  tags        String?  // JSON array of tags
+  // Fitness tracking fields
+  steps       Int?
+  distanceKm  Float?
+  calories    Int?
+  heartRateAvg Int?
+  workouts    Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activity_entries")
+}
+
+model Goal {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String?
+  description String?
+  // Legacy fields
+  targetDate  DateTime?
+  targetValue Float?
+  currentValue Float    @default(0)
+  unit        String?   // e.g., "hours", "days", "count"
+  status      String    @default("active") // active, completed, paused, cancelled
+  category    String?
+  // New fields for seed compatibility
+  type        String?   // e.g., "STEPS", "WORKOUTS", "DISTANCE"
+  targetInt   Int?
+  targetDec   Float?
+  period      String?   // e.g., "DAILY", "WEEKLY", "MONTHLY"
+  startDate   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("goals")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  icon        String?
+  unlockedAt  DateTime @default(now())
+  category    String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("achievements")
+}
+
+model Reminder {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  scheduledAt DateTime
+  completed   Boolean  @default(false)
+  recurring   String?  // e.g., "daily", "weekly", "monthly", null for one-time
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reminders")
+}
+
+model Faq {
+  id          String   @id @default(cuid())
+  question    String
+  answer      String
+  category    String?
+  order       Int      @default(0)
+  tags        String?  // JSON array of tags
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("faqs")
+}
