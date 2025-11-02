@@ -25,12 +25,10 @@ export interface DashboardData {
   recommendations: string[];
 }
 
+import { apiGet } from '@/lib/api';
+
 async function fetchDashboard(): Promise<DashboardData> {
-  const response = await fetch('/api/dashboard');
-  if (!response.ok) {
-    throw new Error('Failed to fetch dashboard');
-  }
-  return response.json();
+  return apiGet<DashboardData>('/api/dashboard');
 }
 
 export function useDashboard() {

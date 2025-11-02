@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Snackbar, Alert } from '@mui/material';
 import { ActivityEntry, ActivityResponse, ActivityInput, DateRange } from '@/types/activity';
 import { formatDateISO } from '@/lib/format';
+import { apiGet, apiPost, apiPatch, apiDelete } from '@/lib/api';
 
 async function fetchActivity(
   range: DateRange,
@@ -14,48 +15,23 @@ async function fetchActivity(
     range,
     date: formatDateISO(date),
   });
-  const response = await fetch(`/api/activity?${params}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch activity');
-  }
-  const data: ActivityResponse = await response.json();
+  const data: ActivityResponse = await apiGet(`/api/activity?${params}`);
   return data.entries;
 }
 
 async function createActivity(input: ActivityInput): Promise<ActivityEntry> {
-  const response = await fetch('/api/activity', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to create activity');
-  }
-  return response.json();
+  return apiPost<ActivityEntry>('/api/activity', input);
 }
 
 async function updateActivity(
   id: string,
   input: Partial<ActivityInput>
 ): Promise<ActivityEntry> {
-  const response = await fetch(`/api/activity/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to update activity');
-  }
-  return response.json();
+  return apiPatch<ActivityEntry>(`/api/activity/${id}`, input);
 }
 
 async function deleteActivity(id: string): Promise<void> {
-  const response = await fetch(`/api/activity/${id}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) {
-    throw new Error('Failed to delete activity');
-  }
+  await apiDelete(`/api/activity/${id}`);
 }
 
 export function useActivity(range: DateRange, date: Date) {

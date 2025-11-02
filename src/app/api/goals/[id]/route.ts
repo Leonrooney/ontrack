@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth';
+import { getSessionSafe } from '@/lib/auth';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { toPlain, toNumber } from '@/lib/serialize';
@@ -23,15 +23,25 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSession();
+  const session = await getSessionSafe();
+  const email = session?.user?.email;
 
-  if (!session?.user?.id) {
+  if (!email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { id } = await params;
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
     const validated = updateGoalSchema.parse(body);
 
@@ -44,7 +54,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Goal not found' }, { status: 404 });
     }
 
-    if (existing.userId !== session.user.id) {
+    if (existing.userId !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -99,15 +109,25 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSession();
+  const session = await getSessionSafe();
+  const email = session?.user?.email;
 
-  if (!session?.user?.id) {
+  if (!email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const { id } = await params;
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     // Check ownership
     const existing = await prisma.goal.findUnique({
       where: { id },
@@ -117,7 +137,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Goal not found' }, { status: 404 });
     }
 
-    if (existing.userId !== session.user.id) {
+    if (existing.userId !== user.id) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

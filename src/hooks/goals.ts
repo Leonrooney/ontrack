@@ -4,47 +4,23 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Snackbar, Alert } from '@mui/material';
 import { Goal, GoalsResponse, GoalInput } from '@/types/goals';
+import { apiGet, apiPost, apiPatch, apiDelete } from '@/lib/api';
 
 async function fetchGoals(): Promise<Goal[]> {
-  const response = await fetch('/api/goals');
-  if (!response.ok) {
-    throw new Error('Failed to fetch goals');
-  }
-  const data: GoalsResponse = await response.json();
+  const data: GoalsResponse = await apiGet('/api/goals');
   return data.goals;
 }
 
 async function createGoal(input: GoalInput): Promise<Goal> {
-  const response = await fetch('/api/goals', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to create goal');
-  }
-  return response.json();
+  return apiPost<Goal>('/api/goals', input);
 }
 
 async function updateGoal(id: string, input: Partial<GoalInput>): Promise<Goal> {
-  const response = await fetch(`/api/goals/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to update goal');
-  }
-  return response.json();
+  return apiPatch<Goal>(`/api/goals/${id}`, input);
 }
 
 async function deleteGoal(id: string): Promise<void> {
-  const response = await fetch(`/api/goals/${id}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) {
-    throw new Error('Failed to delete goal');
-  }
+  await apiDelete(`/api/goals/${id}`);
 }
 
 export function useGoals() {

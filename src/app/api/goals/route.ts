@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth';
+import { getSessionSafe } from '@/lib/auth';
 import { z } from 'zod';
 import { getPeriodBounds, listPreviousPeriods } from '@/lib/period';
 import { sumActivityForRange, computeStreak } from '@/lib/aggregate';
@@ -38,16 +38,26 @@ const goalSchema = z.object({
  * Returns all goals with computed progress for current period
  */
 export async function GET(request: NextRequest) {
-  const session = await getSession();
+  const session = await getSessionSafe();
+  const email = session?.user?.email;
 
-  if (!session?.user?.id) {
+  if (!email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const goals = await prisma.goal.findMany({
       where: {
-        userId: session.user.id,
+        userId: user.id,
       },
       orderBy: {
         createdAt: 'desc',
@@ -65,7 +75,7 @@ export async function GET(request: NextRequest) {
         }
 
         const bounds = getPeriodBounds(goal.period as any, new Date());
-        const aggregate = await sumActivityForRange(session.user!.id, bounds);
+        const aggregate = await sumActivityForRange(user.id, bounds);
         
         let target: number;
         let current: number;
@@ -101,7 +111,7 @@ export async function GET(request: NextRequest) {
           {
             type: goal.type,
             period: goal.period,
-            userId: session.user!.id,
+            userId: user.id,
             targetInt: goal.targetInt,
             targetDec: toNumber(goal.targetDec),
           },
@@ -145,9 +155,19 @@ export async function GET(request: NextRequest) {
  * Create a new goal
  */
 export async function POST(request: NextRequest) {
-  const session = await getSession();
+  const session = await getSessionSafe();
+  const email = session?.user?.email;
 
-  if (!session?.user?.id) {
+  if (!email) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+
+  if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -157,7 +177,7 @@ export async function POST(request: NextRequest) {
 
     const goal = await prisma.goal.create({
       data: {
-        userId: session.user.id,
+        userId: user.id,
         type: validated.type,
         period: validated.period,
         targetInt: validated.targetInt,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth';
+import { getSessionSafe } from '@/lib/auth';
 import { z } from 'zod';
 import { activitySchema } from '@/lib/validators';
 import { getRangeBounds } from '@/lib/date';
@@ -12,9 +12,10 @@ export const dynamic = 'force-dynamic';
  * GET /api/activity?range=day|week|month&date=YYYY-MM-DD
  */
 export async function GET(request: NextRequest) {
-  const session = await getSession();
+  const session = await getSessionSafe();
+  const email = session?.user?.email;
 
-  if (!session?.user?.id) {
+  if (!email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -40,10 +41,19 @@ export async function GET(request: NextRequest) {
   const { start, end } = getRangeBounds(range as 'day' | 'week' | 'month', anchorDate);
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     // Fetch entries
     const entries = await prisma.activityEntry.findMany({
       where: {
-        userId: session.user.id,
+        userId: user.id,
         date: {
           gte: start,
           lte: end,
@@ -79,13 +89,23 @@ export async function GET(request: NextRequest) {
  * POST /api/activity
  */
 export async function POST(request: NextRequest) {
-  const session = await getSession();
+  const session = await getSessionSafe();
+  const email = session?.user?.email;
 
-  if (!session?.user?.id) {
+  if (!email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
     
     // Validate input
@@ -94,7 +114,7 @@ export async function POST(request: NextRequest) {
     // Create activity entry
     const entry = await prisma.activityEntry.create({
       data: {
-        userId: session.user.id,
+        userId: user.id,
         date: new Date(validated.date),
         steps: validated.steps,
         distanceKm: validated.distanceKm,

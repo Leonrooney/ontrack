@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth';
+import { getSessionSafe } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { sumActivityForRange } from '@/lib/aggregate';
-import { subDays, format } from 'date-fns';
+import { subDays, format, startOfDay } from 'date-fns';
 import { generateRecommendations } from '@/lib/recommendations';
 import { toPlain, toNumber } from '@/lib/serialize';
 
@@ -13,14 +13,24 @@ export const dynamic = 'force-dynamic';
  * Returns dashboard summary, trends, and recommendations
  */
 export async function GET(request: NextRequest) {
-  const session = await getSession();
+  const session = await getSessionSafe();
+  const email = session?.user?.email;
 
-  if (!session?.user?.id) {
+  if (!email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const userId = session.user.id;
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const userId = user.id;
     const today = new Date();
     const fourteenDaysAgo = subDays(today, 13); // Last 14 days (today + 13 days back)
 
