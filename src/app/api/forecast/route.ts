@@ -37,8 +37,8 @@ export async function GET(req: Request) {
 
   const dates = entries.map((e) => e.date.toISOString().slice(0, 10));
   const series = entries.map((e) => {
-    if (metric === 'steps') return e.steps;
-    if (metric === 'calories') return e.calories;
+    if (metric === 'steps') return e.steps ?? 0;
+    if (metric === 'calories') return e.calories ?? 0;
     return toNumber(e.distanceKm) ?? 0;
   });
 
