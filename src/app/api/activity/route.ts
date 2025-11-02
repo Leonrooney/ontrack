@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { activitySchema } from '@/lib/validators';
 import { getRangeBounds } from '@/lib/date';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 /**
  * GET /api/activity?range=day|week|month&date=YYYY-MM-DD

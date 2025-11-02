@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
-import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
 import { activitySchema } from '@/lib/validators';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 /**
  * PATCH /api/activity/:id

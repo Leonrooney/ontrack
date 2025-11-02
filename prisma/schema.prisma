@@ -113,6 +113,7 @@ model Goal {
   targetDec   Float?
   period      String?   // e.g., "DAILY", "WEEKLY", "MONTHLY"
   startDate   DateTime?
+  isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
