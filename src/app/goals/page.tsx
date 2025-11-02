@@ -374,7 +374,7 @@ export default function GoalsPage() {
                   margin="normal"
                   label={`Target ${formik.values.type === 'DISTANCE' ? 'Distance (km)' : 'Calories'}`}
                   type="number"
-                  step="0.1"
+                  inputProps={{ step: 0.1 }}
                   {...formik.getFieldProps('targetDec')}
                   error={formik.touched.targetDec && Boolean(formik.errors.targetDec)}
                   helperText={(formik.touched.targetDec && formik.errors.targetDec) as string}
