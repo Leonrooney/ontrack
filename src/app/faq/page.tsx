@@ -21,8 +21,6 @@ import { useSearchParams } from 'next/navigation';
 
 /** Force dynamic so the page isn't statically prerendered */
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-export const fetchCache = 'force-no-store';
 
 function FaqInner() {
   const sp = useSearchParams();
