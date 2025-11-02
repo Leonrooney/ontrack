@@ -91,6 +91,7 @@ model ActivityEntry {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId, date])
   @@map("activity_entries")
 }
 
