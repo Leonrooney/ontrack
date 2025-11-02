@@ -4,6 +4,9 @@ import { z } from 'zod';
 import { activitySchema } from '@/lib/validators';
 import { getRangeBounds } from '@/lib/date';
 import { prisma } from '@/lib/prisma';
+import { toNumber } from '@/lib/serialize';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/activity?range=day|week|month&date=YYYY-MM-DD
@@ -56,7 +59,7 @@ export async function GET(request: NextRequest) {
       id: entry.id,
       date: entry.date.toISOString(),
       steps: entry.steps || 0,
-      distanceKm: entry.distanceKm || 0,
+      distanceKm: toNumber(entry.distanceKm) || 0,
       calories: entry.calories || 0,
       heartRateAvg: entry.heartRateAvg || null,
       workouts: entry.workouts || 0,
@@ -106,7 +109,7 @@ export async function POST(request: NextRequest) {
         id: entry.id,
         date: entry.date.toISOString(),
         steps: entry.steps,
-        distanceKm: entry.distanceKm,
+        distanceKm: toNumber(entry.distanceKm) || 0,
         calories: entry.calories,
         heartRateAvg: entry.heartRateAvg,
         workouts: entry.workouts,

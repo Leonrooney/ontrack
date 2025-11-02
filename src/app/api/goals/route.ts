@@ -4,6 +4,9 @@ import { z } from 'zod';
 import { getPeriodBounds, listPreviousPeriods } from '@/lib/period';
 import { sumActivityForRange, computeStreak } from '@/lib/aggregate';
 import { prisma } from '@/lib/prisma';
+import { toPlain, toNumber } from '@/lib/serialize';
+
+export const dynamic = 'force-dynamic';
 
 const goalSchema = z.object({
   type: z.enum(['STEPS', 'CALORIES', 'WORKOUTS', 'DISTANCE']),
@@ -99,18 +102,20 @@ export async function GET(request: NextRequest) {
             type: goal.type,
             period: goal.period,
             userId: session.user!.id,
+            targetInt: goal.targetInt,
+            targetDec: toNumber(goal.targetDec),
           },
           recentPeriods
         );
 
-        return {
+        return toPlain({
           id: goal.id,
           userId: goal.userId,
           type: goal.type,
           period: goal.period,
-          targetInt: goal.targetInt,
-          targetDec: goal.targetDec,
-          startDate: goal.startDate?.toISOString(),
+          targetInt: goal.targetInt ?? null,
+          targetDec: toNumber(goal.targetDec),
+          startDate: goal.startDate?.toISOString() ?? null,
           isActive: goal.isActive,
           createdAt: goal.createdAt.toISOString(),
           updatedAt: goal.updatedAt.toISOString(),
@@ -121,7 +126,7 @@ export async function GET(request: NextRequest) {
             streakCount,
             isMetThisPeriod,
           },
-        };
+        });
       })
     );
 
@@ -163,18 +168,18 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(
-      {
+      toPlain({
         id: goal.id,
         userId: goal.userId,
         type: goal.type,
         period: goal.period,
-        targetInt: goal.targetInt,
-        targetDec: goal.targetDec,
-        startDate: goal.startDate?.toISOString(),
+        targetInt: goal.targetInt ?? null,
+        targetDec: toNumber(goal.targetDec),
+        startDate: goal.startDate?.toISOString() ?? null,
         isActive: goal.isActive,
         createdAt: goal.createdAt.toISOString(),
         updatedAt: goal.updatedAt.toISOString(),
-      },
+      }),
       { status: 201 }
     );
   } catch (error) {

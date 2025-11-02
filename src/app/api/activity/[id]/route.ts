@@ -3,6 +3,9 @@ import { getSession } from '@/lib/auth';
 import { z } from 'zod';
 import { activitySchema } from '@/lib/validators';
 import { prisma } from '@/lib/prisma';
+import { toNumber } from '@/lib/serialize';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * PATCH /api/activity/:id
@@ -56,7 +59,7 @@ export async function PATCH(
       id: entry.id,
       date: entry.date.toISOString(),
       steps: entry.steps,
-      distanceKm: entry.distanceKm,
+      distanceKm: toNumber(entry.distanceKm) || 0,
       calories: entry.calories,
       heartRateAvg: entry.heartRateAvg,
       workouts: entry.workouts,

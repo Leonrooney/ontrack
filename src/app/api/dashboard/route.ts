@@ -4,6 +4,9 @@ import { prisma } from '@/lib/prisma';
 import { sumActivityForRange } from '@/lib/aggregate';
 import { subDays, format } from 'date-fns';
 import { generateRecommendations } from '@/lib/recommendations';
+import { toPlain, toNumber } from '@/lib/serialize';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/dashboard
@@ -51,7 +54,7 @@ export async function GET(request: NextRequest) {
       trends.labels.push(format(date, 'MMM d'));
       trends.steps.push(dayData.steps);
       trends.calories.push(dayData.calories);
-      trends.distanceKm.push(dayData.distanceKm);
+      trends.distanceKm.push(toNumber(dayData.distanceKm) || 0);
     }
 
     // Calculate average heart rate
@@ -108,11 +111,11 @@ export async function GET(request: NextRequest) {
           current = aggregate.workouts;
           break;
         case 'DISTANCE':
-          target = goal.targetDec || 0;
-          current = aggregate.distanceKm;
+          target = toNumber(goal.targetDec) || 0;
+          current = toNumber(aggregate.distanceKm) || 0;
           break;
         case 'CALORIES':
-          target = goal.targetDec || 0;
+          target = toNumber(goal.targetDec) || 0;
           current = aggregate.calories;
           break;
         default:
@@ -138,19 +141,21 @@ export async function GET(request: NextRequest) {
       avgHeartRate
     );
 
-    return NextResponse.json({
-      summary: {
-        totalSteps: last30Days.steps,
-        totalDistanceKm: parseFloat(last30Days.distanceKm.toFixed(2)),
-        totalCalories: last30Days.calories,
-        totalWorkouts: last30Days.workouts,
-        avgHeartRate: avgHeartRate ? Math.round(avgHeartRate) : null,
-        goalCompletionRate: Math.round(goalCompletionRate * 10) / 10,
-        activeGoalsCount,
-      },
-      trends,
-      recommendations,
-    });
+    return NextResponse.json(
+      toPlain({
+        summary: {
+          totalSteps: last30Days.steps,
+          totalDistanceKm: toNumber(last30Days.distanceKm) || 0,
+          totalCalories: last30Days.calories,
+          totalWorkouts: last30Days.workouts,
+          avgHeartRate: avgHeartRate ? Math.round(avgHeartRate) : null,
+          goalCompletionRate: Math.round(goalCompletionRate * 10) / 10,
+          activeGoalsCount,
+        },
+        trends,
+        recommendations,
+      })
+    );
   } catch (error) {
     console.error('Error fetching dashboard:', error);
     return NextResponse.json(

@@ -1,5 +1,6 @@
 import { PeriodBounds } from './period';
 import { prisma } from './prisma';
+import { toNumber } from './serialize';
 
 export interface ActivityAggregate {
   steps: number;
@@ -27,7 +28,7 @@ export async function sumActivityForRange(
 
   return {
     steps: entries.reduce((sum, e) => sum + (e.steps || 0), 0),
-    distanceKm: entries.reduce((sum, e) => sum + (e.distanceKm || 0), 0),
+    distanceKm: entries.reduce((sum, e) => sum + (toNumber(e.distanceKm) || 0), 0),
     calories: entries.reduce((sum, e) => sum + (e.calories || 0), 0),
     workouts: entries.reduce((sum, e) => sum + (e.workouts || 0), 0),
   };
@@ -37,7 +38,7 @@ export async function sumActivityForRange(
  * Compute streak for a goal
  */
 export async function computeStreak(
-  goal: { type: string; period: string; userId: string },
+  goal: { type: string; period: string; userId: string; targetInt?: number | null; targetDec?: number | null },
   recentPeriods: PeriodBounds[]
 ): Promise<number> {
   let streak = 0;

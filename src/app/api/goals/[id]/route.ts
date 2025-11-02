@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { toPlain, toNumber } from '@/lib/serialize';
+
+export const dynamic = 'force-dynamic';
 
 const updateGoalSchema = z.object({
   type: z.enum(['STEPS', 'CALORIES', 'WORKOUTS', 'DISTANCE']).optional(),
@@ -58,18 +61,20 @@ export async function PATCH(
       },
     });
 
-    return NextResponse.json({
-      id: goal.id,
-      userId: goal.userId,
-      type: goal.type,
-      period: goal.period,
-      targetInt: goal.targetInt,
-      targetDec: goal.targetDec,
-      startDate: goal.startDate?.toISOString(),
-      isActive: goal.isActive,
-      createdAt: goal.createdAt.toISOString(),
-      updatedAt: goal.updatedAt.toISOString(),
-    });
+    return NextResponse.json(
+      toPlain({
+        id: goal.id,
+        userId: goal.userId,
+        type: goal.type,
+        period: goal.period,
+        targetInt: goal.targetInt ?? null,
+        targetDec: toNumber(goal.targetDec),
+        startDate: goal.startDate?.toISOString() ?? null,
+        isActive: goal.isActive,
+        createdAt: goal.createdAt.toISOString(),
+        updatedAt: goal.updatedAt.toISOString(),
+      })
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
