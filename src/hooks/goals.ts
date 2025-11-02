@@ -66,7 +66,8 @@ export function useCreateGoal() {
     mutationFn: createGoal,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
-      queryClient.invalidateQueries({ queryKey: ['activity'] }); // Also invalidate activity for progress updates
+      queryClient.invalidateQueries({ queryKey: ['activity'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setSnackbar({ open: true, message: 'Goal created successfully', severity: 'success' });
     },
     onError: () => {
@@ -95,6 +96,7 @@ export function useUpdateGoal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
       queryClient.invalidateQueries({ queryKey: ['activity'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setSnackbar({ open: true, message: 'Goal updated successfully', severity: 'success' });
     },
     onError: () => {
@@ -122,6 +124,7 @@ export function useDeleteGoal() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
       queryClient.invalidateQueries({ queryKey: ['activity'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setSnackbar({ open: true, message: 'Goal deleted successfully', severity: 'success' });
     },
     onError: () => {

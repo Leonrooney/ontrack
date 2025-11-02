@@ -47,16 +47,28 @@ const periodOptions = [
 const goalSchema = yup.object({
   type: yup.string().oneOf(['STEPS', 'CALORIES', 'WORKOUTS', 'DISTANCE']).required('Type is required'),
   period: yup.string().oneOf(['DAILY', 'WEEKLY', 'MONTHLY']).required('Period is required'),
-  targetInt: yup.number().min(0).when('type', {
-    is: (value: string) => ['STEPS', 'WORKOUTS'].includes(value),
-    then: (schema) => schema.required('Target is required'),
-    otherwise: (schema) => schema.nullable(),
-  }),
-  targetDec: yup.number().min(0).when('type', {
-    is: (value: string) => ['DISTANCE', 'CALORIES'].includes(value),
-    then: (schema) => schema.required('Target is required'),
-    otherwise: (schema) => schema.nullable(),
-  }),
+  targetInt: yup
+    .number()
+    .transform((value, originalValue) => {
+      return originalValue === '' ? undefined : value;
+    })
+    .min(0)
+    .when('type', {
+      is: (value: string) => ['STEPS', 'WORKOUTS'].includes(value),
+      then: (schema) => schema.required('Target is required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
+  targetDec: yup
+    .number()
+    .transform((value, originalValue) => {
+      return originalValue === '' ? undefined : value;
+    })
+    .min(0)
+    .when('type', {
+      is: (value: string) => ['DISTANCE', 'CALORIES'].includes(value),
+      then: (schema) => schema.required('Target is required'),
+      otherwise: (schema) => schema.nullable(),
+    }),
   startDate: yup.string(),
   isActive: yup.boolean(),
 });
@@ -74,6 +86,19 @@ export default function GoalsPage() {
   const handleAdd = () => {
     setEditingGoal(null);
     setIsAddDialogOpen(true);
+    // Reset form to initial values
+    setTimeout(() => {
+      formik.resetForm({
+        values: {
+          type: '',
+          period: '',
+          targetInt: '',
+          targetDec: '',
+          startDate: formatDateISO(new Date()),
+          isActive: true,
+        },
+      });
+    }, 0);
   };
 
   const handleEdit = (goal: any) => {
@@ -97,7 +122,19 @@ export default function GoalsPage() {
   const handleCloseDialog = () => {
     setIsAddDialogOpen(false);
     setEditingGoal(null);
-    formik.resetForm();
+    // Reset form when closing
+    setTimeout(() => {
+      formik.resetForm({
+        values: {
+          type: '',
+          period: '',
+          targetInt: '',
+          targetDec: '',
+          startDate: formatDateISO(new Date()),
+          isActive: true,
+        },
+      });
+    }, 0);
   };
 
   const formik = useFormik({
@@ -111,7 +148,9 @@ export default function GoalsPage() {
     },
     validationSchema: goalSchema,
     enableReinitialize: true,
-    onSubmit: async (values) => {
+    validateOnChange: true,
+    validateOnBlur: true,
+    onSubmit: async (values, { setSubmitting }) => {
       try {
         const payload: any = {
           type: values.type,
@@ -121,20 +160,25 @@ export default function GoalsPage() {
         };
 
         if (['STEPS', 'WORKOUTS'].includes(values.type)) {
-          payload.targetInt = values.targetInt;
+          const num = typeof values.targetInt === 'string' ? parseFloat(values.targetInt) : values.targetInt;
+          payload.targetInt = isNaN(num) ? undefined : num;
         } else {
-          payload.targetDec = values.targetDec;
+          const num = typeof values.targetDec === 'string' ? parseFloat(values.targetDec) : values.targetDec;
+          payload.targetDec = isNaN(num) ? undefined : num;
         }
 
         if (editingGoal) {
-          updateMutation.mutate({ id: editingGoal.id, input: payload });
+          await updateMutation.mutateAsync({ id: editingGoal.id, input: payload });
         } else {
-          createMutation.mutate(payload);
+          await createMutation.mutateAsync(payload);
         }
 
         handleCloseDialog();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error saving goal:', error);
+        // Error handling is done via snackbar in the mutations
+      } finally {
+        setSubmitting(false);
       }
     },
   });
@@ -279,7 +323,13 @@ export default function GoalsPage() {
                 margin="normal"
                 select
                 label="Type"
-                {...formik.getFieldProps('type')}
+                value={formik.values.type}
+                onChange={(e) => {
+                  formik.setFieldValue('type', e.target.value);
+                  // Clear target fields when type changes
+                  formik.setFieldValue('targetInt', '');
+                  formik.setFieldValue('targetDec', '');
+                }}
                 error={formik.touched.type && Boolean(formik.errors.type)}
                 helperText={(formik.touched.type && formik.errors.type) as string}
               >
@@ -355,9 +405,13 @@ export default function GoalsPage() {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleCloseDialog}>Cancel</Button>
-              <Button type="submit" variant="contained">
-                {editingGoal ? 'Update' : 'Create'}
+              <Button onClick={handleCloseDialog} disabled={formik.isSubmitting}>Cancel</Button>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={formik.isSubmitting}
+              >
+                {formik.isSubmitting ? 'Saving...' : editingGoal ? 'Update' : 'Create'}
               </Button>
             </DialogActions>
           </form>

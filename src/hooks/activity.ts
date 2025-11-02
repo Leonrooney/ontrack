@@ -101,6 +101,7 @@ export function useCreateActivity() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activity'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setSnackbar({ open: true, message: 'Activity created successfully', severity: 'success' });
     },
   });
@@ -144,6 +145,7 @@ export function useUpdateActivity() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activity'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setSnackbar({ open: true, message: 'Activity updated successfully', severity: 'success' });
     },
   });
@@ -186,6 +188,7 @@ export function useDeleteActivity() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activity'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       setSnackbar({ open: true, message: 'Activity deleted successfully', severity: 'success' });
     },
   });
