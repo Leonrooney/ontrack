@@ -1,5 +1,7 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcrypt';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -14,23 +16,33 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        // TODO: Replace with actual database query
-        // Example: const user = await prisma.user.findUnique({ where: { email: credentials.email } })
-        
-        // Temporary hardcoded user for testing
-        // Remove this in production and use your database
-        if (
-          credentials.email === 'user@example.com' &&
-          credentials.password === 'password123'
-        ) {
-          return {
-            id: '1',
-            email: credentials.email,
-            name: 'Test User',
-          };
-        }
+        try {
+          // Find user by email
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+            select: { id: true, email: true, name: true, passwordHash: true },
+          });
 
-        return null;
+          if (!user || !user.passwordHash) {
+            return null;
+          }
+
+          // Verify password
+          const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
+
+          if (!isValid) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          };
+        } catch (error) {
+          console.error('Auth error:', error);
+          return null;
+        }
       },
     }),
   ],

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { QueryProvider } from '@/providers/QueryProvider';
+import { SessionProvider } from '@/providers/SessionProvider';
 
 export const metadata: Metadata = {
   title: 'OnTrack',
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <QueryProvider>
-          <ThemeProvider>{children}</ThemeProvider>
-        </QueryProvider>
+        <SessionProvider>
+          <QueryProvider>
+            <ThemeProvider>{children}</ThemeProvider>
+          </QueryProvider>
+        </SessionProvider>
       </body>
     </html>
   );
