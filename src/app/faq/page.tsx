@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Box,
@@ -18,7 +19,12 @@ import { useFaq } from '@/hooks/faq';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-export default function FaqPage() {
+/** Force dynamic so the page isn't statically prerendered */
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+export const fetchCache = 'force-no-store';
+
+function FaqInner() {
   const sp = useSearchParams();
   const initialQuery = sp.get('q') ?? '';
   const initialTag = sp.get('tag') ?? undefined;
@@ -109,5 +115,28 @@ export default function FaqPage() {
         </Paper>
       </Box>
     </MainLayout>
+  );
+}
+
+export default function FaqPage() {
+  return (
+    <Suspense
+      fallback={
+        <MainLayout>
+          <Box>
+            <Typography variant="h4" sx={{ mb: 2 }}>
+              FAQ
+            </Typography>
+            <Paper sx={{ p: 2 }}>
+              <Skeleton height={40} />
+              <Skeleton height={80} />
+              <Skeleton height={80} />
+            </Paper>
+          </Box>
+        </MainLayout>
+      }
+    >
+      <FaqInner />
+    </Suspense>
   );
 }
