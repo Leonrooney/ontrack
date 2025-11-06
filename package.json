@@ -10,6 +10,17 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prisma:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts",
+    "seed:exercises": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed-exercises.ts",
+    "seed:exercises:bulk": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed-exercises-bulk.ts",
+    "seed:exercises:api": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed-exercises-api-ninjas.ts",
+    "seed:exercises:ninjas": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed-exercises-api-ninjas.ts",
+    "seed:exercises:exercisedb": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed-exercises-exercisedb.ts",
+    "patch:media:nullify-wiki": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/patch-nullify-wikimedia.ts",
+    "cleanup:exercises": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/cleanup-duplicates.ts",
+    "media:deactivate-legacy": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/deactivate-legacy-with-bad-media.ts",
+    "debug:media:hosts": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/debug-media-hosts.ts",
+    "media:enrich": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/media/enrich-exercises.ts",
+    "media:enrich:custom": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/media/enrich-custom-exercises.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -38,11 +49,13 @@
     "@types/node": "^22.1.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "dotenv": "^17.2.3",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.5",
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   }
 }

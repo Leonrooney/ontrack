@@ -1,0 +1,18 @@
+{
+  "recommendations": [
+    "Prisma.prisma",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "usernamehw.errorlens",
+    "eamodio.gitlens",
+    "rangav.vscode-thunder-client",
+    "ckolkman.vscode-postgres",
+    "christian-kohler.path-intellisense",
+    "formulahendry.auto-rename-tag",
+    "2gua.rainbow-brackets",
+    "pmneo.tsimporter",
+    "dsznajder.es7-react-js-snippets"
+  ]
+}
+
+

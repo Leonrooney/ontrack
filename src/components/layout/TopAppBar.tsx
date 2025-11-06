@@ -18,6 +18,7 @@ import Link from 'next/link';
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/activity', label: 'Activity' },
+  { href: '/workouts', label: 'Workouts' },
   { href: '/goals', label: 'Goals' },
   { href: '/forecast', label: 'Forecast' },
   { href: '/profile', label: 'Profile' },

@@ -27,6 +27,8 @@ model User {
   goals         Goal[]
   achievements  Achievement[]
   reminders     Reminder[]
+  workoutSessions WorkoutSession[]
+  customExercises CustomExercise[]
 
   @@map("users")
 }
@@ -163,4 +165,85 @@ model Faq {
   updatedAt   DateTime @updatedAt
 
   @@map("faqs")
+}
+
+model Exercise {
+  id           String      @id @default(cuid())
+  name         String
+  bodyPart     String?
+  equipment    String?
+  instructions String?
+  mediaUrl     String?     // thumbnail or GIF
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  workoutItems WorkoutItem[]
+
+  @@unique([name])
+  @@map("exercises")
+}
+
+model CustomExercise {
+  id         String     @id @default(cuid())
+  userId     String
+  name       String
+  bodyPart   String?
+  equipment  String?
+  mediaUrl   String?    // thumbnail or GIF
+  isActive   Boolean    @default(true)
+  createdAt  DateTime   @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutItems WorkoutItem[]
+
+  @@unique([userId, name])
+  @@index([userId, name])
+  @@map("custom_exercises")
+}
+
+model WorkoutSession {
+  id          String       @id @default(cuid())
+  userId      String
+  date        DateTime     @default(now())
+  title       String?      // e.g., "Push Day", "Legs", optional
+  notes       String?
+  durationMin Int?         // optional; filled later
+  createdAt   DateTime     @default(now())
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       WorkoutItem[]
+
+  @@index([userId, date])
+  @@map("workout_sessions")
+}
+
+model WorkoutItem {
+  id           String          @id @default(cuid())
+  workoutId    String
+  exerciseId   String?
+  customId     String?
+  orderIndex   Int             @default(0)  // UI ordering
+
+  workout      WorkoutSession  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise     Exercise?       @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  custom       CustomExercise? @relation(fields: [customId], references: [id], onDelete: Restrict)
+  sets         WorkoutSet[]
+
+  @@index([workoutId, orderIndex])
+  @@map("workout_items")
+}
+
+model WorkoutSet {
+  id           String         @id @default(cuid())
+  itemId       String
+  setNumber    Int
+  weightKg     Decimal?       @db.Decimal(6,2) // allow null for bodyweight sets
+  reps         Int
+  rpe          Decimal?       @db.Decimal(3,1) // optional perceived exertion
+  notes        String?
+  createdAt    DateTime       @default(now())
+
+  item         WorkoutItem    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@index([itemId, setNumber])
+  @@map("workout_sets")
 }
