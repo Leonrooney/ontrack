@@ -2,6 +2,8 @@
 
 A modern Next.js application for tracking fitness activities, managing goals, viewing forecasts, and accessing helpful FAQs.
 
+> **Status**: 🚧 Currently in progress and being hosted on [Render](https://render.com)
+
 ## Features
 
 - 📊 **Dashboard** - Comprehensive KPIs, trends, and personalized recommendations
@@ -67,7 +69,9 @@ Visit http://localhost:3000
 
 ### Render.com Deployment
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+> **Current Status**: The application is currently in progress and being hosted on [Render](https://render.com)
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
 
 Quick summary:
 1. Create PostgreSQL database on Render

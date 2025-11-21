@@ -37,8 +37,8 @@ Once the service is created, go to **Settings** → **Environment** and add:
 # Database - Use INTERNAL Database URL from PostgreSQL service
 DATABASE_URL=postgresql://<user>:<password>@<internal-host>:5432/<db>?sslmode=require
 
-# NextAuth Secret
-NEXTAUTH_SECRET=N2op8iEId61/0ExAjc8DS+gV+PtRn67/8hmNvfecTGc=
+# NextAuth Secret (generate with: openssl rand -base64 32)
+NEXTAUTH_SECRET=<your-generated-secret>
 
 # Production URLs
 NEXTAUTH_URL=https://ontrack.onrender.com

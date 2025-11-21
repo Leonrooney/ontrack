@@ -28,3 +28,5 @@ export function placeholderForBodyPart(part?: string | null) {
   return '/exercises/placeholders/default.svg';
 }
 
+
+
