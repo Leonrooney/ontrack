@@ -4,6 +4,8 @@ A modern Next.js application for tracking fitness activities, managing goals, vi
 
 > **Status**: 🚧 Currently in progress and being hosted on [Render](https://render.com)
 
+🌐 **Live Application**: [https://ontrack-backend-n1im.onrender.com](https://ontrack-backend-n1im.onrender.com)
+
 ## Features
 
 - 📊 **Dashboard** - Comprehensive KPIs, trends, and personalized recommendations
@@ -71,6 +73,8 @@ Visit http://localhost:3000
 
 > **Current Status**: The application is currently in progress and being hosted on [Render](https://render.com)
 
+🌐 **Live Application**: [https://ontrack-backend-n1im.onrender.com](https://ontrack-backend-n1im.onrender.com)
+
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
 
 Quick summary:
@@ -120,9 +124,6 @@ ontrack/
 ## Documentation
 
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Complete deployment guide
-- [DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md) - Deployment readiness
-- [READY_TO_DEPLOY.md](READY_TO_DEPLOY.md) - Quick deploy guide
-- [RENDER_CHECKLIST.md](RENDER_CHECKLIST.md) - Step-by-step checklist
 
 ## License
 

@@ -41,8 +41,8 @@ DATABASE_URL=postgresql://<user>:<password>@<internal-host>:5432/<db>?sslmode=re
 NEXTAUTH_SECRET=<your-generated-secret>
 
 # Production URLs
-NEXTAUTH_URL=https://ontrack.onrender.com
-NEXT_PUBLIC_API_URL=https://ontrack.onrender.com
+NEXTAUTH_URL=https://ontrack-backend-n1im.onrender.com
+NEXT_PUBLIC_API_URL=https://ontrack-backend-n1im.onrender.com
 
 # Node Version (recommended for deterministic builds)
 NODE_VERSION=20
@@ -50,7 +50,7 @@ NODE_VERSION=20
 
 **Important Notes:**
 - Get the **Internal Database URL** from: PostgreSQL Dashboard → Connections → Internal Connection String
-- Your actual Render URL might be `ontrack-XXXX.onrender.com` - update `NEXTAUTH_URL` accordingly
+- Current Render URL: `https://ontrack-backend-n1im.onrender.com`
 - **Never commit these values** to Git (already in `.gitignore`)
 
 ### 3. Deploy
@@ -86,7 +86,7 @@ After successful deployment, seed your production database:
 ### 5. Verify Deployment
 
 #### 5.1 Health Check
-Visit: `https://ontrack.onrender.com/api/health`
+Visit: `https://ontrack-backend-n1im.onrender.com/api/health`
 
 Expected response:
 ```json
@@ -98,14 +98,14 @@ Expected response:
 ```
 
 #### 5.2 Test Main Pages
-- **Dashboard**: `https://ontrack.onrender.com/dashboard`
-- **Activity**: `https://ontrack.onrender.com/activity`
-- **Goals**: `https://ontrack.onrender.com/goals`
-- **Forecast**: `https://ontrack.onrender.com/forecast`
-- **FAQ**: `https://ontrack.onrender.com/faq`
+- **Dashboard**: `https://ontrack-backend-n1im.onrender.com/dashboard`
+- **Activity**: `https://ontrack-backend-n1im.onrender.com/activity`
+- **Goals**: `https://ontrack-backend-n1im.onrender.com/goals`
+- **Forecast**: `https://ontrack-backend-n1im.onrender.com/forecast`
+- **FAQ**: `https://ontrack-backend-n1im.onrender.com/faq`
 
 #### 5.3 Test Authentication
-1. Visit: `https://ontrack.onrender.com/login`
+1. Visit: `https://ontrack-backend-n1im.onrender.com/login`
 2. Sign in with:
    - **Email**: `demo@ontrack.app`
    - **Password**: `Passw0rd!`
@@ -204,7 +204,7 @@ Now any push to `main` will trigger a new deployment automatically.
 
 - **Render Dashboard**: https://render.com/dashboard
 - **Render Docs**: https://render.com/docs
-- **Your App**: https://ontrack.onrender.com (or your actual URL)
+- **Your App**: https://ontrack-backend-n1im.onrender.com
 - **GitHub Repo**: https://github.com/Leonrooney/ontrack
 
 ## Support
