@@ -16,7 +16,7 @@ export default function WorkoutsHistoryPage() {
       <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
         <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'stretch', sm: 'center' }} spacing={{ xs: 1, sm: 0 }} sx={{ mb: 2 }}>
           <Typography variant="h4">Workout History</Typography>
-          <Button variant="contained" component={Link} href="/workouts/new" startIcon={<AddIcon />} fullWidth={{ xs: true, sm: false }}>
+          <Button variant="contained" component={Link} href="/workouts/new" startIcon={<AddIcon />} sx={{ width: { xs: '100%', sm: 'auto' } }}>
             Log Workout
           </Button>
         </Stack>
