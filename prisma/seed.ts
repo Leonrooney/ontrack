@@ -24,7 +24,7 @@ async function main() {
 
     where: { email },
 
-    update: {},
+    update: { passwordHash }, // Always update passwordHash to ensure it's set correctly
 
     create: { email, name: "Demo User", passwordHash },
 

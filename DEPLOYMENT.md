@@ -1,10 +1,17 @@
 # OnTrack Deployment to Render.com
 
+## ⚠️ Important: Database Migration Commands
+
+- **`prisma migrate dev`**: **NEVER** use this against Render's database. Use only for local development with `.env.local`
+- **`prisma migrate deploy`**: Use this for production deployments on Render. This applies existing migrations without creating new ones.
+
+See [LOCAL_SETUP.md](LOCAL_SETUP.md) for local development setup.
+
 ## Prerequisites
 
 - ✅ GitHub repository: `https://github.com/Leonrooney/ontrack`
 - ✅ PostgreSQL database created on Render (`ontrack-db`)
-- ✅ Local development using EXTERNAL database URL
+- ✅ Local development database set up (see [LOCAL_SETUP.md](LOCAL_SETUP.md))
 - ✅ Code committed and pushed to `main` branch
 
 ## Deployment Steps
@@ -23,7 +30,7 @@
 | **Region** | Same as your PostgreSQL database (e.g., Frankfurt) |
 | **Branch** | `main` |
 | **Root Directory** | `/` (leave blank) |
-| **Build Command** | `npm install && npx prisma migrate deploy && npm run build` |
+| **Build Command** | `npm install && npm run db:migrate:deploy && npm run build` |
 | **Start Command** | `npm start` |
 | **Instance Type** | `Free` |
 
@@ -130,6 +137,7 @@ Now any push to `main` will trigger a new deployment automatically.
 - Ensure migrations are in `prisma/migrations/`
 - Verify DATABASE_URL is correct (INTERNAL URL)
 - Check build logs for specific migration error
+- **Never use `migrate dev` in production** - only use `migrate deploy`
 
 ### 500 Error on API Routes
 **Common causes:**
@@ -206,6 +214,15 @@ Now any push to `main` will trigger a new deployment automatically.
 - **Render Docs**: https://render.com/docs
 - **Your App**: https://ontrack-backend-n1im.onrender.com
 - **GitHub Repo**: https://github.com/Leonrooney/ontrack
+
+## Migration Commands Reference
+
+| Command | When to Use | Environment |
+|---------|-------------|-------------|
+| `npm run db:migrate:dev` | Creating new migrations during development | **Local only** (with `.env.local`) |
+| `npm run db:migrate:deploy` | Applying migrations to production | **Render** (during build) |
+
+**⚠️ Critical**: Never run `migrate dev` against Render's database. It requires SUPERUSER permissions that managed databases don't allow.
 
 ## Support
 

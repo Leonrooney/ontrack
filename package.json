@@ -21,7 +21,10 @@
     "debug:media:hosts": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/debug-media-hosts.ts",
     "media:enrich": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/media/enrich-exercises.ts",
     "media:enrich:custom": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/media/enrich-custom-exercises.ts",
-    "postinstall": "prisma generate"
+    "fix:demo-user": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/fix-demo-user.ts",
+    "postinstall": "prisma generate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -37,7 +40,6 @@
     "formik": "^2.4.5",
     "next": "^14.2.5",
     "next-auth": "^4.24.7",
-    "prisma": "^5.19.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.12.7",
@@ -55,6 +57,7 @@
     "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   }

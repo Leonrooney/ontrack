@@ -11,15 +11,17 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
-  name          String?
-  password      String?   // Hashed password
-  passwordHash  String?   // Alternative field name for seed compatibility
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id               String    @id @default(cuid())
+  email            String    @unique
+  emailVerified    DateTime?
+  name             String?
+  password         String?   // Hashed password
+  passwordHash     String?   // Alternative field name for seed compatibility
+  image            String?
+  unitPreference   String?   @default("metric") // "metric" | "imperial"
+  themePreference String?   @default("system") // "system" | "light" | "dark"
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   accounts      Account[]
   sessions      Session[]

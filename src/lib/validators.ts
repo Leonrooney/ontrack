@@ -19,8 +19,18 @@ export const rangeSchema = z.enum(['day', 'week', 'month']);
 export const dateQuerySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 
 /**
+ * Profile update validation schema
+ */
+export const profileUpdateSchema = z.object({
+  name: z.string().max(100).optional(),
+  unitPreference: z.enum(['metric', 'imperial']).optional(),
+  themePreference: z.enum(['system', 'light', 'dark']).optional(),
+});
+
+/**
  * Type inference from schemas
  */
 export type ActivityInput = z.infer<typeof activitySchema>;
 export type DateRange = z.infer<typeof rangeSchema>;
+export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
 

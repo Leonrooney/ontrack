@@ -39,6 +39,10 @@ A modern Next.js application for tracking fitness activities, managing goals, vi
 
 ### Installation
 
+For **local development**, see [LOCAL_SETUP.md](LOCAL_SETUP.md) for detailed instructions.
+
+Quick start:
+
 ```bash
 # Clone repository
 git clone https://github.com/Leonrooney/ontrack.git
@@ -47,13 +51,17 @@ cd ontrack
 # Install dependencies
 npm install
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your DATABASE_URL and NEXTAUTH_SECRET
+# Set up local environment variables
+cp .env.local.example .env.local
+# Edit .env.local with your LOCAL DATABASE_URL and NEXTAUTH_SECRET
 
-# Set up database
-npx prisma generate
-npx prisma migrate dev --name init
+# Set up local database (PostgreSQL must be running)
+createdb ontrack_dev
+
+# Run migrations (LOCAL database only)
+npm run db:migrate:dev
+
+# Seed local database
 npm run prisma:seed
 
 # Start development server
@@ -61,6 +69,8 @@ npm run dev
 ```
 
 Visit http://localhost:3000
+
+**⚠️ Important**: Use `.env.local` for local development. Never run `migrate dev` against production databases.
 
 ### Demo Credentials
 
@@ -123,7 +133,8 @@ ontrack/
 
 ## Documentation
 
-- [DEPLOYMENT.md](DEPLOYMENT.md) - Complete deployment guide
+- [LOCAL_SETUP.md](LOCAL_SETUP.md) - Local development setup with local PostgreSQL
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Production deployment guide for Render
 
 ## License
 
