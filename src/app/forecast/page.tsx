@@ -61,12 +61,12 @@ export default function ForecastPage() {
 
   return (
     <MainLayout>
-      <Box>
+      <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
         <Typography variant="h4" sx={{ mb: 2 }}>
           Forecast
         </Typography>
 
-        <Paper sx={{ p: 2, mb: 3 }}>
+        <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 3, overflow: 'hidden' }}>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <FormControl fullWidth>
               <InputLabel id="metric">Metric</InputLabel>
@@ -108,57 +108,65 @@ export default function ForecastPage() {
           </Stack>
         </Paper>
 
-        <Paper sx={{ p: 2 }}>
+        <Paper sx={{ p: { xs: 1.5, sm: 2 }, overflow: 'hidden' }}>
           {isLoading ? (
             <Skeleton variant="rectangular" height={400} />
           ) : error ? (
             <Alert severity="error">Failed to load forecast</Alert>
           ) : (
-            <ResponsiveContainer width="100%" height={400}>
-              <AreaChart data={chartData}>
-                <defs>
-                  <linearGradient id="colorUpper" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="colorLower" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Area
-                  type="monotone"
-                  dataKey="upper"
-                  name="Upper band"
-                  opacity={0.15}
-                  fill="url(#colorUpper)"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="lower"
-                  name="Lower band"
-                  opacity={0.15}
-                  fill="url(#colorLower)"
-                />
-                <Line type="monotone" dataKey="actual" name="Actual" stroke="#82ca9d" strokeWidth={2} />
-                <Line
-                  type="monotone"
-                  dataKey="predicted"
-                  name="Predicted"
-                  stroke="#8884d8"
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                />
-                {data && historyLength > 0 && (
-                  <ReferenceLine x={chartData[historyLength - 1]?.date} stroke="red" strokeDasharray="3 3" />
-                )}
-              </AreaChart>
-            </ResponsiveContainer>
+            <Box sx={{ width: '100%', overflowX: 'auto' }}>
+              <ResponsiveContainer width="100%" height={400} minHeight={300}>
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorUpper" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8884d8" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorLower" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8884d8" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="date" 
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis width={60} />
+                  <Tooltip />
+                  <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                  <Area
+                    type="monotone"
+                    dataKey="upper"
+                    name="Upper band"
+                    opacity={0.15}
+                    fill="url(#colorUpper)"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="lower"
+                    name="Lower band"
+                    opacity={0.15}
+                    fill="url(#colorLower)"
+                  />
+                  <Line type="monotone" dataKey="actual" name="Actual" stroke="#82ca9d" strokeWidth={2} />
+                  <Line
+                    type="monotone"
+                    dataKey="predicted"
+                    name="Predicted"
+                    stroke="#8884d8"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                  />
+                  {data && historyLength > 0 && (
+                    <ReferenceLine x={chartData[historyLength - 1]?.date} stroke="red" strokeDasharray="3 3" />
+                  )}
+                </AreaChart>
+              </ResponsiveContainer>
+            </Box>
           )}
         </Paper>
 

@@ -46,7 +46,7 @@ async function main() {
     updated++;
   }
 
-  console.log(`✅ Enriched custom media: updated=${updated}, skipped=${skipped}`);
+  console.log(`Enriched custom media: updated=${updated}, skipped=${skipped}`);
 }
 
 main()

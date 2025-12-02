@@ -28,7 +28,7 @@ async function main() {
     });
     upserts++;
   }
-  console.log(`✅ Bulk catalog upserted: ${upserts} exercises`);
+  console.log(`Bulk catalog upserted: ${upserts} exercises`);
 }
 
 main()

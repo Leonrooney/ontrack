@@ -159,34 +159,37 @@ export default function ActivityPage() {
 
   return (
     <MainLayout>
-      <Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4" component="h1">
+      <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
+          <Typography variant="h4" component="h1" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}>
             Activity
           </Typography>
-          <Button variant="contained" startIcon={<Add />} onClick={handleAdd}>
+          <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}>
             Add Activity
           </Button>
         </Box>
 
         {/* Date Navigation */}
-        <Paper sx={{ mb: 3, p: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <IconButton onClick={handlePrevious}>
+        <Paper sx={{ mb: 3, p: { xs: 1.5, sm: 2 }, overflow: 'hidden' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+            <IconButton onClick={handlePrevious} size="small">
               <ArrowBack />
             </IconButton>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="body1">{formatDateShort(start)} - {formatDateShort(end)}</Typography>
+            <Box sx={{ textAlign: 'center', flex: '1 1 auto', minWidth: 0 }}>
+              <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, wordBreak: 'break-word' }}>
+                {formatDateShort(start)} - {formatDateShort(end)}
+              </Typography>
               <Button
                 size="small"
                 startIcon={<CalendarToday />}
                 onClick={handleToday}
                 disabled={isToday(anchorDate)}
+                sx={{ mt: 0.5 }}
               >
                 {currentRange === 'day' ? 'Today' : currentRange === 'week' ? 'This Week' : 'This Month'}
               </Button>
             </Box>
-            <IconButton onClick={handleNext} disabled={isToday(anchorDate) && currentRange === 'day'}>
+            <IconButton onClick={handleNext} disabled={isToday(anchorDate) && currentRange === 'day'} size="small">
               <ArrowForward />
             </IconButton>
           </Box>
@@ -202,7 +205,7 @@ export default function ActivityPage() {
         </Paper>
 
         {/* Chart */}
-        <Paper sx={{ mb: 3, p: 3 }}>
+        <Paper sx={{ mb: 3, p: { xs: 1.5, sm: 2, md: 3 }, overflow: 'hidden' }}>
           <Typography variant="h6" gutterBottom>
             Activity Overview
           </Typography>
@@ -222,24 +225,32 @@ export default function ActivityPage() {
               </Button>
             </Box>
           ) : (
-            <ResponsiveContainer width="100%" height={300}>
-              <ComposedChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <Tooltip />
-                <Legend />
-                <Area yAxisId="left" type="monotone" dataKey="distance" fill="#8884d8" fillOpacity={0.6} name="Distance (km)" />
-                <Line yAxisId="left" type="monotone" dataKey="steps" stroke="#82ca9d" name="Steps" />
-                <Line yAxisId="right" type="monotone" dataKey="calories" stroke="#ff7300" name="Calories" />
-              </ComposedChart>
-            </ResponsiveContainer>
+            <Box sx={{ width: '100%', overflowX: 'auto' }}>
+              <ResponsiveContainer width="100%" height={300} minHeight={250}>
+                <ComposedChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="date" 
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis yAxisId="left" width={60} />
+                  <YAxis yAxisId="right" orientation="right" width={60} />
+                  <Tooltip />
+                  <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                  <Area yAxisId="left" type="monotone" dataKey="distance" fill="#8884d8" fillOpacity={0.6} name="Distance (km)" />
+                  <Line yAxisId="left" type="monotone" dataKey="steps" stroke="#82ca9d" name="Steps" />
+                  <Line yAxisId="right" type="monotone" dataKey="calories" stroke="#ff7300" name="Calories" />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </Box>
           )}
         </Paper>
 
         {/* Table */}
-        <Paper sx={{ p: 3 }}>
+        <Paper sx={{ p: { xs: 1.5, sm: 2, md: 3 }, overflow: 'hidden' }}>
           <Typography variant="h6" gutterBottom>
             Activity Entries
           </Typography>
@@ -252,8 +263,8 @@ export default function ActivityPage() {
               No entries found
             </Typography>
           ) : (
-            <TableContainer>
-              <Table>
+            <TableContainer sx={{ maxWidth: '100%', overflowX: 'auto' }}>
+              <Table sx={{ minWidth: 650 }}>
                 <TableHead>
                   <TableRow>
                     <TableCell>Date</TableCell>
@@ -279,12 +290,14 @@ export default function ActivityPage() {
                         <Chip label={entry.workouts} size="small" color={entry.workouts > 0 ? 'primary' : 'default'} />
                       </TableCell>
                       <TableCell align="right">
-                        <Button size="small" onClick={() => handleEdit(entry)}>
-                          Edit
-                        </Button>
-                        <Button size="small" color="error" onClick={() => handleDelete(entry.id)}>
-                          Delete
-                        </Button>
+                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                          <Button size="small" onClick={() => handleEdit(entry)}>
+                            Edit
+                          </Button>
+                          <Button size="small" color="error" onClick={() => handleDelete(entry.id)}>
+                            Delete
+                          </Button>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -295,10 +308,21 @@ export default function ActivityPage() {
         </Paper>
 
         {/* Add/Edit Dialog */}
-        <Dialog open={isAddDialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <Dialog 
+          open={isAddDialogOpen} 
+          onClose={handleCloseDialog} 
+          maxWidth="sm" 
+          fullWidth
+          PaperProps={{
+            sx: {
+              m: { xs: 1, sm: 2 },
+              maxWidth: { xs: 'calc(100% - 16px)', sm: '600px' },
+            }
+          }}
+        >
           <DialogTitle>{editingEntry ? 'Edit Activity' : 'Add Activity'}</DialogTitle>
           <form onSubmit={formik.handleSubmit}>
-            <DialogContent>
+            <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
               <TextField
                 fullWidth
                 margin="normal"

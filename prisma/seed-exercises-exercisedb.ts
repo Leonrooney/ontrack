@@ -57,12 +57,12 @@ function normalizeBodyPart(bp?: string) {
 
 async function main() {
   if (!BASE) {
-    console.error('❌ EXDB_BASE_URL environment variable is required');
+    console.error('EXDB_BASE_URL environment variable is required');
     process.exit(1);
   }
 
   if (MODE === 'rapidapi' && !RAPID_KEY) {
-    console.error('❌ EXDB_RAPID_KEY environment variable is required for RapidAPI mode');
+    console.error('EXDB_RAPID_KEY environment variable is required for RapidAPI mode');
     process.exit(1);
   }
 
@@ -118,7 +118,7 @@ async function main() {
     }
   }
 
-  console.log(`✅ ExerciseDB import complete: created=${created}, updated=${updated}, skipped=${skipped}`);
+  console.log(`ExerciseDB import complete: created=${created}, updated=${updated}, skipped=${skipped}`);
 }
 
 main()

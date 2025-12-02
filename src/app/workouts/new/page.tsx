@@ -178,12 +178,12 @@ export default function NewWorkoutPage() {
 
   return (
     <MainLayout>
-      <Box>
+      <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
         <Typography variant="h4" sx={{ mb: 2 }}>
           New Workout
         </Typography>
 
-        <Paper sx={{ p: 2, mb: 2 }}>
+        <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, overflow: 'hidden' }}>
           <Stack spacing={2}>
             <TextField label="Title (optional)" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth />
             <TextField
@@ -201,10 +201,10 @@ export default function NewWorkoutPage() {
         </Paper>
 
         {items.map((it, i) => (
-          <Paper key={i} sx={{ p: 2, mb: 2 }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Typography variant="h6">{it.name}</Typography>
-              <IconButton onClick={() => removeItem(i)} aria-label="Remove exercise">
+          <Paper key={i} sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, overflow: 'hidden' }}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
+              <Typography variant="h6" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' }, wordBreak: 'break-word' }}>{it.name}</Typography>
+              <IconButton onClick={() => removeItem(i)} aria-label="Remove exercise" sx={{ flex: { xs: '0 0 auto', sm: '0 1 auto' } }}>
                 <DeleteIcon />
               </IconButton>
             </Stack>
@@ -238,7 +238,7 @@ export default function NewWorkoutPage() {
                     label="Notes"
                     value={s.notes ?? ''}
                     onChange={(e) => setCell(i, idx, 'notes', e.target.value)}
-                    sx={{ flex: 1 }}
+                    sx={{ flex: { xs: '1 1 100%', sm: 1 }, width: { xs: '100%', sm: 'auto' } }}
                   />
                   <IconButton onClick={() => removeSet(i, idx)} aria-label="Remove set">
                     <DeleteIcon />
@@ -270,9 +270,20 @@ export default function NewWorkoutPage() {
         </Stack>
 
         {/* Exercise picker */}
-        <Dialog open={pickerOpen} onClose={() => setPickerOpen(false)} fullWidth maxWidth="sm">
+        <Dialog 
+          open={pickerOpen} 
+          onClose={() => setPickerOpen(false)} 
+          fullWidth 
+          maxWidth="sm"
+          PaperProps={{
+            sx: {
+              m: { xs: 1, sm: 2 },
+              maxWidth: { xs: 'calc(100% - 16px)', sm: '600px' },
+            }
+          }}
+        >
           <DialogTitle>Select Exercise</DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
             <TextField
               autoFocus
               fullWidth
@@ -288,7 +299,7 @@ export default function NewWorkoutPage() {
             {tab === 'catalog' && (
               <>
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2, flexWrap: 'wrap' }}>
-                  <FormControl size="small" sx={{ minWidth: 200 }}>
+                  <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 200 }, width: { xs: '100%', sm: 'auto' } }}>
                     <InputLabel id="muscle-filter-label">Muscle</InputLabel>
                     <Select
                       labelId="muscle-filter-label"
@@ -308,16 +319,16 @@ export default function NewWorkoutPage() {
                   {filteredCatalog.map((ex) => (
                     <Paper
                       key={ex.id}
-                      sx={{ p: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1 }}
+                      sx={{ p: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}
                       onClick={() => addExercise(ex, false)}
                     >
                       <ExerciseThumb name={ex.name} mediaUrl={ex.mediaUrl} size={40} />
-                      <div style={{ flex: 1 }}>
-                        <Typography>{ex.name}</Typography>
-                        <Typography variant="caption" color="text.secondary">
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{ex.name}</Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                           {[ex.bodyPart, ex.equipment].filter(Boolean).join(' • ')}
                         </Typography>
-                      </div>
+                      </Box>
                       {ex.instructions ? (
                         <IconButton
                           aria-label="Instructions"
@@ -328,6 +339,7 @@ export default function NewWorkoutPage() {
                             setInstrBody(ex.instructions!);
                             setOpenInstr(true);
                           }}
+                          sx={{ flexShrink: 0 }}
                         >
                           <InfoOutlinedIcon fontSize="small" />
                         </IconButton>
@@ -357,16 +369,16 @@ export default function NewWorkoutPage() {
                   {(exData?.custom ?? []).map((ex) => (
                     <Paper
                       key={ex.id}
-                      sx={{ p: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1 }}
+                      sx={{ p: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}
                       onClick={() => addExercise(ex, true)}
                     >
                       <ExerciseThumb name={ex.name} mediaUrl={ex.mediaUrl} size={40} />
-                      <div>
-                        <Typography>{ex.name}</Typography>
-                        <Typography variant="caption" color="text.secondary">
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{ex.name}</Typography>
+                        <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                           {[ex.bodyPart, ex.equipment].filter(Boolean).join(' • ')}
                         </Typography>
-                      </div>
+                      </Box>
                     </Paper>
                   ))}
                   {(exData?.custom?.length ?? 0) === 0 && (
@@ -384,9 +396,20 @@ export default function NewWorkoutPage() {
         </Dialog>
 
         {/* Create custom exercise dialog */}
-        <Dialog open={createCustomOpen} onClose={() => setCreateCustomOpen(false)} fullWidth maxWidth="xs">
+        <Dialog 
+          open={createCustomOpen} 
+          onClose={() => setCreateCustomOpen(false)} 
+          fullWidth 
+          maxWidth="xs"
+          PaperProps={{
+            sx: {
+              m: { xs: 1, sm: 2 },
+              maxWidth: { xs: 'calc(100% - 16px)', sm: '400px' },
+            }
+          }}
+        >
           <DialogTitle>Create Custom Exercise</DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
             <Stack spacing={2} sx={{ mt: 1 }}>
               <TextField
                 autoFocus
@@ -432,9 +455,20 @@ export default function NewWorkoutPage() {
         </Dialog>
 
         {/* Instructions dialog */}
-        <Dialog open={openInstr} onClose={() => setOpenInstr(false)} maxWidth="sm" fullWidth>
+        <Dialog 
+          open={openInstr} 
+          onClose={() => setOpenInstr(false)} 
+          maxWidth="sm" 
+          fullWidth
+          PaperProps={{
+            sx: {
+              m: { xs: 1, sm: 2 },
+              maxWidth: { xs: 'calc(100% - 16px)', sm: '600px' },
+            }
+          }}
+        >
           <DialogTitle>{instrTitle}</DialogTitle>
-          <DialogContent dividers>
+          <DialogContent dividers sx={{ px: { xs: 2, sm: 3 } }}>
             <Typography variant="body2" whiteSpace="pre-line">
               {instrBody || 'No instructions available.'}
             </Typography>

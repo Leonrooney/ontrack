@@ -10,7 +10,7 @@ async function main() {
   for (const e of bad) {
     await prisma.exercise.update({ where: { id: e.id }, data: { mediaUrl: null } }).catch(() => {});
   }
-  console.log(`✅ Nullified media for ${bad.length} Wikimedia URLs`);
+  console.log(`Nullified media for ${bad.length} Wikimedia URLs`);
 }
 
 main().finally(() => prisma.$disconnect());

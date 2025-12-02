@@ -127,7 +127,7 @@ export default function DashboardPage() {
 
   return (
     <MainLayout>
-      <Box>
+      <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Dashboard
         </Typography>
@@ -257,10 +257,10 @@ export default function DashboardPage() {
         </Grid>
 
         {/* Trend Chart */}
-        <Paper sx={{ p: 3, mt: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Paper sx={{ p: { xs: 1.5, sm: 2, md: 3 }, mt: 3, overflow: 'hidden' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
             <Typography variant="h6">14-Day Trends</Typography>
-            <Box sx={{ display: 'flex', gap: 1 }}>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Chip
                 label="Steps"
                 onClick={() => setChartLines({ ...chartLines, steps: !chartLines.steps })}
@@ -282,43 +282,51 @@ export default function DashboardPage() {
             </Box>
           </Box>
           {chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={400}>
-              <ComposedChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <Tooltip />
-                <Legend />
-                {chartLines.steps && (
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="steps"
-                    stroke="#82ca9d"
-                    name="Steps"
+            <Box sx={{ width: '100%', overflowX: 'auto' }}>
+              <ResponsiveContainer width="100%" height={400} minHeight={300}>
+                <ComposedChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="date" 
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                    interval="preserveStartEnd"
                   />
-                )}
-                {chartLines.calories && (
-                  <Line
-                    yAxisId="right"
-                    type="monotone"
-                    dataKey="calories"
-                    stroke="#ff7300"
-                    name="Calories"
-                  />
-                )}
-                {chartLines.distance && (
-                  <Line
-                    yAxisId="left"
-                    type="monotone"
-                    dataKey="distance"
-                    stroke="#8884d8"
-                    name="Distance (km)"
-                  />
-                )}
-              </ComposedChart>
-            </ResponsiveContainer>
+                  <YAxis yAxisId="left" width={60} />
+                  <YAxis yAxisId="right" orientation="right" width={60} />
+                  <Tooltip />
+                  <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                  {chartLines.steps && (
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="steps"
+                      stroke="#82ca9d"
+                      name="Steps"
+                    />
+                  )}
+                  {chartLines.calories && (
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="calories"
+                      stroke="#ff7300"
+                      name="Calories"
+                    />
+                  )}
+                  {chartLines.distance && (
+                    <Line
+                      yAxisId="left"
+                      type="monotone"
+                      dataKey="distance"
+                      stroke="#8884d8"
+                      name="Distance (km)"
+                    />
+                  )}
+                </ComposedChart>
+              </ResponsiveContainer>
+            </Box>
           ) : (
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Typography color="text.secondary">No trend data available</Typography>
@@ -328,7 +336,7 @@ export default function DashboardPage() {
 
         {/* Recommendations */}
         {recommendations && recommendations.length > 0 && (
-          <Paper sx={{ p: 3, mt: 3 }}>
+          <Paper sx={{ p: { xs: 1.5, sm: 2, md: 3 }, mt: 3 }}>
             <Typography variant="h6" gutterBottom>
               Recommendations
             </Typography>

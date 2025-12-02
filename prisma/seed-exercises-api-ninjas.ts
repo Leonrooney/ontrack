@@ -8,7 +8,7 @@ const HOST = process.env.NINJAS_RAPID_HOST || 'exercises-by-api-ninjas.p.rapidap
 const KEY = process.env.NINJAS_RAPID_KEY;
 
 if (!KEY) {
-  console.error('❌ NINJAS_RAPID_KEY is required');
+  console.error('NINJAS_RAPID_KEY is required');
   process.exit(1);
 }
 
@@ -72,7 +72,7 @@ async function fetchAllFromNinjas(): Promise<NinjasExercise[]> {
     const url = `${BASE.replace(/\/$/, '')}/exercises?muscle=${encodeURIComponent(musc)}&offset=0`;
     const res = await fetch(url, { headers });
     if (!res.ok) {
-      console.warn(`⚠ Failed fetch for muscle=${musc}: ${res.status} ${res.statusText}`);
+      console.warn(`Failed fetch for muscle=${musc}: ${res.status} ${res.statusText}`);
       continue;
     }
     const arr = (await res.json()) as NinjasExercise[];
@@ -98,9 +98,9 @@ async function fetchAllFromNinjas(): Promise<NinjasExercise[]> {
 }
 
 async function main() {
-  console.log('🔎 Fetching from API Ninjas ...');
+  console.log('Fetching from API Ninjas ...');
   const ninjas = await fetchAllFromNinjas();
-  console.log(`📥 Received ${ninjas.length} unique exercises from API Ninjas`);
+  console.log(`Received ${ninjas.length} unique exercises from API Ninjas`);
 
   let created = 0;
   let updated = 0;
@@ -156,7 +156,7 @@ async function main() {
     }
   }
 
-  console.log(`✅ Done. Created: ${created}, Updated: ${updated}, Skipped: ${skipped}`);
+  console.log(`Done. Created: ${created}, Updated: ${updated}, Skipped: ${skipped}`);
 }
 
 main()

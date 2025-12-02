@@ -85,7 +85,7 @@ export async function generateRecommendations(
     if (pct >= 100) {
       const periodLabel = goal.period?.toLowerCase() || 'period';
       recommendations.push(
-        `🎉 Great job! You've met your ${periodLabel} ${goal.type.toLowerCase()} goal!`
+        `Great job! You've met your ${periodLabel} ${goal.type.toLowerCase()} goal!`
       );
     } else if (pct >= 80) {
       const remainingFormatted =
@@ -93,7 +93,7 @@ export async function generateRecommendations(
           ? Math.round(remaining)
           : remaining.toFixed(1);
       recommendations.push(
-        `💪 You're close to your ${goal.period?.toLowerCase()} ${goal.type.toLowerCase()} goal—only ${remainingFormatted} ${label} left!`
+        `You're close to your ${goal.period?.toLowerCase()} ${goal.type.toLowerCase()} goal—only ${remainingFormatted} ${label} left!`
       );
     } else if (pct < 50 && remaining > 0) {
       const remainingFormatted =
@@ -101,37 +101,37 @@ export async function generateRecommendations(
           ? Math.round(remaining)
           : remaining.toFixed(1);
       recommendations.push(
-        `🏃‍♂️ Keep pushing! You need ${remainingFormatted} more ${label} to reach your ${goal.period?.toLowerCase()} goal.`
+        `Keep pushing! You need ${remainingFormatted} more ${label} to reach your ${goal.period?.toLowerCase()} goal.`
       );
     }
   }
 
   // Trend-based recommendations
   if (stepsChange > 10) {
-    recommendations.push(
-      `📈 Excellent progress! Your steps have increased ${Math.round(stepsChange)}% over the last week.`
-    );
+      recommendations.push(
+        `Excellent progress! Your steps have increased ${Math.round(stepsChange)}% over the last week.`
+      );
   } else if (stepsChange < -10) {
-    recommendations.push(
-      `📉 Your step count has decreased. Try adding a daily walk to get back on track.`
-    );
+      recommendations.push(
+        `Your step count has decreased. Try adding a daily walk to get back on track.`
+      );
   }
 
   if (caloriesChange > 10) {
-    recommendations.push(
-      `🔥 Great work! Your calorie burn has increased ${Math.round(caloriesChange)}% recently.`
-    );
+      recommendations.push(
+        `Great work! Your calorie burn has increased ${Math.round(caloriesChange)}% recently.`
+      );
   }
 
   // Heart rate recommendations
   if (avgHeartRate) {
     if (avgHeartRate < 60) {
       recommendations.push(
-        `💚 Your average heart rate is low—consider adding some cardio to improve cardiovascular health.`
+        `Your average heart rate is low—consider adding some cardio to improve cardiovascular health.`
       );
     } else if (avgHeartRate > 100) {
       recommendations.push(
-        `⚡ Your heart rate has been elevated. Make sure to include rest days in your routine.`
+        `Your heart rate has been elevated. Make sure to include rest days in your routine.`
       );
     }
   }
@@ -139,31 +139,31 @@ export async function generateRecommendations(
   // General recommendations
   if (last30Days.workouts === 0) {
     recommendations.push(
-      `💡 Start your fitness journey! Add your first workout to begin tracking progress.`
+      `Start your fitness journey! Add your first workout to begin tracking progress.`
     );
   } else if (last30Days.workouts >= 3) {
     recommendations.push(
-      `🌟 Fantastic! You've been consistent with your workouts. Keep it up!`
+      `Fantastic! You've been consistent with your workouts. Keep it up!`
     );
   }
 
   if (last30Days.steps < 5000) {
     recommendations.push(
-      `🚶 Try to reach at least 5,000 steps daily for better health.`
+      `Try to reach at least 5,000 steps daily for better health.`
     );
   } else if (last30Days.steps >= 10000) {
     recommendations.push(
-      `🎯 Outstanding! You're consistently hitting 10,000+ steps.`
+      `Outstanding! You're consistently hitting 10,000+ steps.`
     );
   }
 
   // Ensure we return 3-5 recommendations
   if (recommendations.length === 0) {
     recommendations.push(
-      `💪 Keep tracking your activities and goals to see personalized insights!`
+      `Keep tracking your activities and goals to see personalized insights!`
     );
     recommendations.push(
-      `📊 Add more activity entries to get better recommendations.`
+      `Add more activity entries to get better recommendations.`
     );
   }
 

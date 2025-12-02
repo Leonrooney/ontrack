@@ -55,11 +55,11 @@ export function TopAppBar({ onMenuClick }: TopAppBarProps) {
             <MenuIcon />
           </IconButton>
         )}
-        <Typography variant="h6" component="div" sx={{ flexGrow: 0, mr: 4 }}>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 0, mr: { xs: 1, sm: 4 } }}>
           OnTrack
         </Typography>
         {!isMobile && (
-          <Box sx={{ display: 'flex', gap: 2, flexGrow: 1 }}>
+          <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, flexGrow: 1, flexWrap: 'wrap', overflowX: 'auto' }}>
             {navLinks.map((link) => (
               <MuiLink
                 key={link.href}
@@ -69,6 +69,7 @@ export function TopAppBar({ onMenuClick }: TopAppBarProps) {
                 underline="none"
                 sx={{
                   '&:hover': { opacity: 0.8 },
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {link.label}

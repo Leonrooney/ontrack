@@ -49,12 +49,12 @@ function FaqInner() {
 
   return (
     <MainLayout>
-      <Box>
+      <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
         <Typography variant="h4" sx={{ mb: 2 }}>
           FAQ
         </Typography>
 
-        <Paper sx={{ p: 2, mb: 2 }}>
+        <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, overflow: 'hidden' }}>
           <TextField
             fullWidth
             label="Search FAQs"
@@ -62,7 +62,7 @@ function FaqInner() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Try: steps target, calorie deficit, hydration..."
           />
-          <Stack direction="row" spacing={1} sx={{ mt: 2 }} flexWrap="wrap">
+          <Stack direction="row" spacing={1} sx={{ mt: 2 }} flexWrap="wrap" useFlexGap>
             {(allTags.length ? allTags : ['steps', 'goals', 'workouts', 'nutrition', 'hydration']).map((tag) => (
               <Chip
                 key={tag}
@@ -79,7 +79,7 @@ function FaqInner() {
           </Stack>
         </Paper>
 
-        <Paper sx={{ p: 2 }}>
+        <Paper sx={{ p: { xs: 1.5, sm: 2 }, overflow: 'hidden' }}>
           {isLoading ? (
             <Stack spacing={2}>
               <Skeleton height={40} />

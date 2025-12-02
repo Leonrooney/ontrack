@@ -40,7 +40,7 @@ async function main() {
     updated++;
   }
 
-  console.log(`✅ Enriched placeholders: updated=${updated}`);
+  console.log(`Enriched placeholders: updated=${updated}`);
 }
 
 main()

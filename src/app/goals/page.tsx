@@ -209,11 +209,11 @@ export default function GoalsPage() {
   return (
     <MainLayout>
       <Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4" component="h1">
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
+          <Typography variant="h4" component="h1" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}>
             Goals
           </Typography>
-          <Button variant="contained" startIcon={<Add />} onClick={handleAdd}>
+          <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}>
             Create Goal
           </Button>
         </Box>
@@ -242,9 +242,9 @@ export default function GoalsPage() {
             {goals.map((goal) => (
               <Card key={goal.id} sx={{ opacity: goal.isActive ? 1 : 0.6 }}>
                 <CardContent>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                    <Typography variant="h6">{getGoalTitle(goal)}</Typography>
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+                    <Typography variant="h6" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' }, wordBreak: 'break-word' }}>{getGoalTitle(goal)}</Typography>
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
                       {goal.progress && goal.progress.streakCount > 0 && (
                         <Chip
                           icon={<LocalFireDepartment />}
@@ -288,7 +288,7 @@ export default function GoalsPage() {
 
                       {goal.progress.isMetThisPeriod && (
                         <Alert severity="success" sx={{ mb: 2 }}>
-                          Goal met this {goal.period?.toLowerCase()}! 🎉
+                          Goal met this {goal.period?.toLowerCase()}!
                         </Alert>
                       )}
                     </>
@@ -314,10 +314,21 @@ export default function GoalsPage() {
         )}
 
         {/* Add/Edit Dialog */}
-        <Dialog open={isAddDialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <Dialog 
+          open={isAddDialogOpen} 
+          onClose={handleCloseDialog} 
+          maxWidth="sm" 
+          fullWidth
+          PaperProps={{
+            sx: {
+              m: { xs: 1, sm: 2 },
+              maxWidth: { xs: 'calc(100% - 16px)', sm: '600px' },
+            }
+          }}
+        >
           <DialogTitle>{editingGoal ? 'Edit Goal' : 'Create Goal'}</DialogTitle>
           <form onSubmit={formik.handleSubmit}>
-            <DialogContent>
+            <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
               <TextField
                 fullWidth
                 margin="normal"

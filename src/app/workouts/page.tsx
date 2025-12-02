@@ -13,10 +13,10 @@ export default function WorkoutsHistoryPage() {
 
   return (
     <MainLayout>
-      <Box>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+      <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'stretch', sm: 'center' }} spacing={{ xs: 1, sm: 0 }} sx={{ mb: 2 }}>
           <Typography variant="h4">Workout History</Typography>
-          <Button variant="contained" component={Link} href="/workouts/new" startIcon={<AddIcon />}>
+          <Button variant="contained" component={Link} href="/workouts/new" startIcon={<AddIcon />} fullWidth={{ xs: true, sm: false }}>
             Log Workout
           </Button>
         </Stack>
@@ -36,7 +36,7 @@ export default function WorkoutsHistoryPage() {
         ) : (
           <Stack spacing={2}>
             {data!.items.map((w: any) => (
-              <Paper key={w.id} sx={{ p: 2 }}>
+              <Paper key={w.id} sx={{ p: { xs: 1.5, sm: 2 }, overflow: 'hidden' }}>
                 <Typography variant="h6">{w.title ?? 'Workout'}</Typography>
                 <Typography variant="caption" color="text.secondary">
                   {formatDateLong(w.date)}
@@ -52,7 +52,15 @@ export default function WorkoutsHistoryPage() {
                           <ExerciseThumb name={exerciseName} mediaUrl={exerciseMediaUrl} size={32} />
                           <Typography variant="subtitle1">{exerciseName}</Typography>
                         </Stack>
-                        <Typography variant="body2" color="text.secondary" sx={{ ml: 5 }}>
+                        <Typography 
+                          variant="body2" 
+                          color="text.secondary" 
+                          sx={{ 
+                            ml: { xs: 4.5, sm: 5 },
+                            wordBreak: 'break-word',
+                            overflowWrap: 'break-word',
+                          }}
+                        >
                           {it.sets
                             .map(
                               (s: any) =>

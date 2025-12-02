@@ -4,11 +4,11 @@ import { Typography, Paper, Box } from '@mui/material';
 export default function ProfilePage() {
   return (
     <MainLayout>
-      <Box>
+      <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Profile
         </Typography>
-        <Paper sx={{ p: 3, mt: 3 }}>
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 3 }}>
           <Typography variant="body1">
             Profile content will go here.
           </Typography>

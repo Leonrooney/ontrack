@@ -34,7 +34,7 @@ async function main() {
       create: e,
     });
   }
-  console.log('✅ Seeded exercises:', EXERCISES.length);
+  console.log('Seeded exercises:', EXERCISES.length);
 }
 
 main()
@@ -44,6 +44,7 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
+
 
 
 

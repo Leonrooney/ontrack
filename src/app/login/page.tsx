@@ -48,7 +48,7 @@ export default function LoginPage() {
 
   return (
     <MainLayout>
-      <Container maxWidth="sm">
+      <Container maxWidth="sm" sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden', px: { xs: 1, sm: 2 } }}>
         <Box
           sx={{
             display: 'flex',
@@ -61,7 +61,7 @@ export default function LoginPage() {
           <Paper
             elevation={3}
             sx={{
-              p: 4,
+              p: { xs: 2, sm: 4 },
               width: '100%',
               maxWidth: 400,
             }}

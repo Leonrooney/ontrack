@@ -56,7 +56,7 @@ async function main() {
     merged++;
   }
 
-  console.log(`✅ Dedupe complete. Groups merged: ${merged}, rows removed: ${removed}`);
+  console.log(`Dedupe complete. Groups merged: ${merged}, rows removed: ${removed}`);
 }
 
 main().finally(() => prisma.$disconnect());
