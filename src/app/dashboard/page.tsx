@@ -12,6 +12,8 @@ import {
   Alert,
   Chip,
   Button,
+  Divider,
+  Stack,
 } from '@mui/material';
 import {
   DirectionsWalk,
@@ -22,7 +24,8 @@ import {
   EmojiEvents,
 } from '@mui/icons-material';
 import { useDashboard } from '@/hooks/dashboard';
-import { formatNumber, formatDistance, formatHeartRate } from '@/lib/format';
+import { useRecentWorkout, useWorkoutFrequency } from '@/hooks/workouts';
+import { formatNumber, formatDistance, formatHeartRate, formatDateLong } from '@/lib/format';
 import {
   LineChart,
   Line,
@@ -33,11 +36,17 @@ import {
   Legend,
   ResponsiveContainer,
   ComposedChart,
+  BarChart,
+  Bar,
 } from 'recharts';
 import { useState } from 'react';
+import Link from 'next/link';
+import { ExerciseThumb } from '@/components/ExerciseThumb';
 
 export default function DashboardPage() {
   const { data, isLoading, error, refetch } = useDashboard();
+  const { data: recentWorkout, isLoading: isLoadingRecent } = useRecentWorkout();
+  const { data: frequencyData, isLoading: isLoadingFrequency } = useWorkoutFrequency(90);
   const [chartLines, setChartLines] = useState({
     steps: true,
     calories: true,
@@ -131,6 +140,142 @@ export default function DashboardPage() {
         <Typography variant="h4" component="h1" gutterBottom>
           Dashboard
         </Typography>
+
+        {/* Recent Workout & Workout Frequency Widgets */}
+        <Grid container spacing={3} sx={{ mt: 1 }}>
+          {/* Recent Workout Widget */}
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Recent Workout
+                </Typography>
+                {isLoadingRecent ? (
+                  <Box sx={{ py: 2 }}>
+                    <Skeleton variant="text" width="60%" />
+                    <Skeleton variant="text" width="40%" />
+                  </Box>
+                ) : !recentWorkout ? (
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <FitnessCenter sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+                    <Typography variant="body1" color="text.secondary" gutterBottom>
+                      No workouts yet
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Start tracking your workouts to see them here
+                    </Typography>
+                    <Button variant="contained" component={Link} href="/workouts/new" size="small">
+                      Log Your First Workout
+                    </Button>
+                  </Box>
+                ) : (
+                  <Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                      <Box>
+                        <Typography variant="subtitle1" fontWeight="medium">
+                          {recentWorkout.title || 'Workout'}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {formatDateLong(recentWorkout.date)}
+                        </Typography>
+                      </Box>
+                      <Chip
+                        label={`${recentWorkout.exerciseCount} exercises`}
+                        size="small"
+                        color="primary"
+                        variant="outlined"
+                      />
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+                      <Chip label={`${recentWorkout.totalSets} sets`} size="small" />
+                    </Box>
+                    <Divider sx={{ my: 1.5 }} />
+                    <Stack spacing={1.5}>
+                      {recentWorkout.items?.slice(0, 3).map((it: any) => {
+                        const exerciseName = it.exercise?.name ?? it.custom?.name ?? 'Exercise';
+                        const exerciseMediaUrl = it.exercise?.mediaUrl ?? it.custom?.mediaUrl ?? undefined;
+                        return (
+                          <Box key={it.id}>
+                            <Stack direction="row" alignItems="center" spacing={1}>
+                              <ExerciseThumb name={exerciseName} mediaUrl={exerciseMediaUrl} size={24} />
+                              <Typography variant="body2" fontWeight="medium">
+                                {exerciseName}
+                              </Typography>
+                            </Stack>
+                            <Typography variant="caption" color="text.secondary" sx={{ ml: 4 }}>
+                              {it.sets.length} set{it.sets.length !== 1 ? 's' : ''}
+                            </Typography>
+                          </Box>
+                        );
+                      })}
+                      {recentWorkout.items?.length > 3 && (
+                        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                          +{recentWorkout.items.length - 3} more exercise{recentWorkout.items.length - 3 !== 1 ? 's' : ''}
+                        </Typography>
+                      )}
+                    </Stack>
+                    <Button
+                      component={Link}
+                      href="/workouts"
+                      size="small"
+                      sx={{ mt: 2 }}
+                      fullWidth
+                      variant="outlined"
+                    >
+                      View All Workouts
+                    </Button>
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Workout Frequency Widget */}
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  Workout Frequency
+                </Typography>
+                {isLoadingFrequency ? (
+                  <Box sx={{ py: 2 }}>
+                    <Skeleton variant="rectangular" height={250} />
+                  </Box>
+                ) : !frequencyData?.stats || frequencyData.stats.length === 0 ? (
+                  <Box sx={{ textAlign: 'center', py: 4 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      No workout data available
+                    </Typography>
+                  </Box>
+                ) : (
+                  <Box>
+                    <Box sx={{ width: '100%', height: 250, mt: 1 }}>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={frequencyData.stats}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis
+                            dataKey="week"
+                            angle={-45}
+                            textAnchor="end"
+                            height={80}
+                            interval="preserveStartEnd"
+                            fontSize={12}
+                          />
+                          <YAxis allowDecimals={false} />
+                          <Tooltip />
+                          <Bar dataKey="count" fill="#1976d2" radius={[4, 4, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </Box>
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                      Workouts per week (last {Math.ceil(90 / 7)} weeks)
+                    </Typography>
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
         {/* KPI Cards */}
         <Grid container spacing={3} sx={{ mt: 1 }}>

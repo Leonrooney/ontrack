@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { getSessionSafe } from '@/lib/auth';
 import { z } from 'zod';
 import { toPlain } from '@/lib/serialize';
+import { detectPersonalBests, storePersonalBests, getPersonalBestSetIds } from '@/lib/personal-best';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,7 +58,29 @@ export async function GET(req: Request) {
   });
 
   const hasMore = sessions.length > limit;
-  const data = (hasMore ? sessions.slice(0, -1) : sessions).map(toPlain);
+  const sessionsToReturn = hasMore ? sessions.slice(0, -1) : sessions;
+  const workoutIds = sessionsToReturn.map((s) => s.id);
+
+  // Get all PB set IDs for these workouts
+  const pbSetIds = await getPersonalBestSetIds(user.id, workoutIds);
+
+  // Add isPersonalBest flag to each set
+  const data = sessionsToReturn.map((session) => {
+    const plain = toPlain(session);
+    if (plain.items) {
+      plain.items = plain.items.map((item: any) => {
+        if (item.sets) {
+          item.sets = item.sets.map((set: any) => ({
+            ...set,
+            isPersonalBest: pbSetIds.has(set.id),
+          }));
+        }
+        return item;
+      });
+    }
+    return plain;
+  });
+
   const nextCursor = hasMore ? sessions[sessions.length - 1].id : null;
 
   return NextResponse.json({ items: data, nextCursor });
@@ -105,6 +128,27 @@ export async function POST(req: Request) {
       items: { include: { exercise: true, custom: true, sets: true } },
     },
   });
+
+  // Detect and store personal bests for all sets
+  for (const item of created.items) {
+    const exerciseId = item.exerciseId;
+    const customId = item.customId;
+
+    for (const set of item.sets) {
+      const pbs = await detectPersonalBests(
+        user.id,
+        exerciseId,
+        customId,
+        set.id,
+        set.weightKg ? Number(set.weightKg) : null,
+        set.reps,
+      );
+
+      if (pbs.length > 0) {
+        await storePersonalBests(user.id, exerciseId, customId, pbs);
+      }
+    }
+  }
 
   return NextResponse.json(toPlain(created), { status: 201 });
 }

@@ -3,48 +3,86 @@
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Box,
-  Paper,
   Typography,
+  Snackbar,
+  Alert,
   Stack,
   Button,
+  TextField,
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogContentText,
   DialogActions,
-  TextField,
-  IconButton,
-  Divider,
-  Chip,
   Tabs,
   Tab,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
+  Paper,
+  IconButton,
 } from '@mui/material';
-import { useState, useMemo } from 'react';
+import { useCreateWorkout, useWorkoutHistory } from '@/hooks/workouts';
 import { useExercises, useCreateCustomExercise } from '@/hooks/exercises';
-import { useCreateWorkout } from '@/hooks/workouts';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import { useUserPreferences } from '@/hooks/preferences';
+import { ExerciseCard, SetRow } from '@/components/workouts/ExerciseCard';
 import { useRouter } from 'next/navigation';
-import { Alert, Snackbar } from '@mui/material';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { ExerciseThumb } from '@/components/ExerciseThumb';
+import { formatDateShort, formatDateLong } from '@/lib/format';
 
-type SetRow = { setNumber: number; weightKg?: number; reps: number; rpe?: number; notes?: string };
-type ItemRow = { exerciseId?: string; customId?: string; name: string; sets: SetRow[] };
+type ItemRow = {
+  exerciseId?: string;
+  customId?: string;
+  name: string;
+  bodyPart?: string;
+  equipment?: string;
+  sets: SetRow[];
+};
 
+// SetRow type - reps can be number or empty string during editing
+type SetRowLocal = Omit<SetRow, 'reps'> & {
+  reps: number | string;
+};
+
+/**
+ * New Workout Page - Strong/Hevy-style workout logging interface
+ *
+ * Future extensions:
+ *
+ * 1. Rest Timer per Exercise:
+ *    - Add state: `const [restTimers, setRestTimers] = useState<Record<number, number>>({});`
+ *    - When a set is completed (onChangeSet), start a timer for that exercise index
+ *    - Pass `restTimerSeconds` and `onRestTimerComplete` props to ExerciseCard
+ *    - Use setInterval in ExerciseCard to countdown and update UI
+ *    - Store rest duration preference in user profile (unitPreference already exists)
+ *
+ * 2. "Use Last Workout as Template" Button:
+ *    - Add button next to "Add Exercise" in header
+ *    - On click: `const lastWorkout = historyData?.items?.[0];`
+ *    - If lastWorkout exists, map its items to current items state:
+ *      `setItems(lastWorkout.items.map(it => ({ exerciseId/customId, name, sets: it.sets })))`
+ *    - This pre-populates the workout with the exact exercises and sets from the last session
+ *    - User can then modify weights/reps as needed (Strong/Hevy behavior)
+ */
 export default function NewWorkoutPage() {
   const router = useRouter();
+  const createWorkout = useCreateWorkout();
+  const [successOpen, setSuccessOpen] = useState(false);
   const [title, setTitle] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
+  const [items, setItems] = useState<ItemRow[]>([]);
   const [exerciseQuery, setExerciseQuery] = useState('');
   const [pickerOpen, setPickerOpen] = useState(false);
   const [createCustomOpen, setCreateCustomOpen] = useState(false);
   const [tab, setTab] = useState<'catalog' | 'custom'>('catalog');
-  const [items, setItems] = useState<ItemRow[]>([]);
-  const [successOpen, setSuccessOpen] = useState(false);
   const [customName, setCustomName] = useState('');
   const [customBodyPart, setCustomBodyPart] = useState('');
   const [customEquipment, setCustomEquipment] = useState('');
@@ -53,9 +91,30 @@ export default function NewWorkoutPage() {
   const [openInstr, setOpenInstr] = useState(false);
   const [instrTitle, setInstrTitle] = useState<string>('');
   const [instrBody, setInstrBody] = useState<string>('');
+  const [workoutStartTime] = useState<Date>(new Date());
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+
   const { data: exData } = useExercises(exerciseQuery);
-  const createWorkout = useCreateWorkout();
+  const { data: historyData } = useWorkoutHistory(20); // Fetch last 20 workouts for last performance lookup
+  const { data: preferences } = useUserPreferences(); // Fetch user preferences for rest timer
   const createCustomExercise = useCreateCustomExercise();
+  const addingSetRef = useRef<Record<number, boolean>>({});
+
+  // Workout timer
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setElapsedSeconds((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Format elapsed time as M:SS
+  const formatElapsedTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const MUSCLE_OPTIONS = [
     { value: 'all', label: 'All muscles' },
@@ -90,13 +149,102 @@ export default function NewWorkoutPage() {
     return exData.catalog.filter((ex) => ex.bodyPart === selectedBodyPart);
   }, [exData?.catalog, selectedBodyPart]);
 
-  const addExercise = (ex: { id: string; name: string }, isCustom = false) => {
+  /**
+   * Find the last performance for an exercise from workout history
+   * Returns a formatted string like "Last: 100 kg x 5 @ 8 on Nov 2" or "Last: no previous data logged"
+   */
+  const getLastPerformance = (exerciseId?: string, customId?: string): string => {
+    if (!historyData?.items || historyData.items.length === 0) {
+      return 'Last: no previous data logged';
+    }
+
+    // Search through workout history (most recent first)
+    for (const workout of historyData.items) {
+      if (!workout.items) continue;
+
+      // Find the exercise in this workout
+      const item = workout.items.find(
+        (it: any) =>
+          (exerciseId && it.exerciseId === exerciseId) || (customId && it.customId === customId)
+      );
+
+      if (item && item.sets && item.sets.length > 0) {
+        // Find the "best" set (highest weight x reps, or just the last set)
+        const bestSet = item.sets.reduce((best: any, current: any) => {
+          const bestValue = (best.weightKg || 0) * best.reps;
+          const currentValue = (current.weightKg || 0) * current.reps;
+          return currentValue > bestValue ? current : best;
+        }, item.sets[0]);
+
+        const parts: string[] = [];
+        if (bestSet.weightKg != null) {
+          parts.push(`${bestSet.weightKg} kg`);
+        }
+        parts.push(`x ${bestSet.reps}`);
+
+        const dateStr = formatDateShort(workout.date);
+        return `Last: ${parts.join(' ')} on ${dateStr}`;
+      }
+    }
+
+    return 'Last: no previous data logged';
+  };
+
+  const addExercise = (ex: { id: string; name: string; bodyPart?: string; equipment?: string }, isCustom = false) => {
+    const lastPerf = getLastPerformance(isCustom ? undefined : ex.id, isCustom ? ex.id : undefined);
+    const lastSet = findLastSetForExercise(isCustom ? undefined : ex.id, isCustom ? ex.id : undefined);
+
     if (isCustom) {
-      setItems((prev) => [...prev, { customId: ex.id, name: ex.name, sets: [{ setNumber: 1, reps: 8 }] }]);
+      setItems((prev) => [
+        ...prev,
+        {
+          customId: ex.id,
+          name: ex.name,
+          bodyPart: ex.bodyPart,
+          equipment: ex.equipment,
+          sets: [lastSet || { setNumber: 1, reps: 8 }],
+        },
+      ]);
     } else {
-      setItems((prev) => [...prev, { exerciseId: ex.id, name: ex.name, sets: [{ setNumber: 1, reps: 8 }] }]);
+      setItems((prev) => [
+        ...prev,
+        {
+          exerciseId: ex.id,
+          name: ex.name,
+          bodyPart: ex.bodyPart,
+          equipment: ex.equipment,
+          sets: [lastSet || { setNumber: 1, reps: 8 }],
+        },
+      ]);
     }
     setPickerOpen(false);
+  };
+
+  /**
+   * Find the last set values for an exercise to use as defaults when adding a new set
+   */
+  const findLastSetForExercise = (exerciseId?: string, customId?: string): SetRow | null => {
+    if (!historyData?.items) return null;
+
+    for (const workout of historyData.items) {
+      if (!workout.items) continue;
+      const item = workout.items.find(
+        (it: any) =>
+          (exerciseId && it.exerciseId === exerciseId) || (customId && it.customId === customId)
+      );
+      if (item && item.sets && item.sets.length > 0) {
+        const lastSet = item.sets[item.sets.length - 1];
+        return {
+          setNumber: 1, // Will be recalculated
+          weightKg: lastSet.weightKg ? Number(lastSet.weightKg) : undefined,
+          reps: lastSet.reps,
+          notes: lastSet.notes || undefined,
+          previousWeight: lastSet.weightKg ? Number(lastSet.weightKg) : undefined,
+          previousReps: lastSet.reps,
+        };
+      }
+    }
+    return null;
   };
 
   const handleCreateCustom = async () => {
@@ -112,14 +260,50 @@ export default function NewWorkoutPage() {
     setCustomEquipment('');
     setCustomMediaUrl('');
     setCreateCustomOpen(false);
-    addExercise({ id: created.id, name: created.name }, true);
+    addExercise(
+      {
+        id: created.id,
+        name: created.name,
+        bodyPart: created.bodyPart || undefined,
+        equipment: created.equipment || undefined,
+      },
+      true
+    );
   };
 
-  const addSet = (idx: number) => {
+  const addSet = (itemIndex: number) => {
+    // Prevent double-clicks
+    if (addingSetRef.current[itemIndex]) {
+      return;
+    }
+    addingSetRef.current[itemIndex] = true;
+
     setItems((prev) => {
       const copy = [...prev];
-      const nextSetNum = (copy[idx].sets.at(-1)?.setNumber ?? 0) + 1;
-      copy[idx].sets.push({ setNumber: nextSetNum, reps: 8 });
+      const item = copy[itemIndex];
+      if (!item) {
+        addingSetRef.current[itemIndex] = false;
+        return prev; // Guard against invalid index
+      }
+      const lastSet = item.sets[item.sets.length - 1];
+      const nextSetNum = (lastSet?.setNumber ?? 0) + 1;
+      // Copy last set values or use defaults
+      copy[itemIndex] = {
+        ...item,
+        sets: [
+          ...item.sets,
+          {
+            setNumber: nextSetNum,
+            weightKg: lastSet?.weightKg,
+            reps: lastSet?.reps ?? 8,
+            notes: lastSet?.notes,
+          },
+        ],
+      };
+      // Reset flag after state update
+      setTimeout(() => {
+        addingSetRef.current[itemIndex] = false;
+      }, 100);
       return copy;
     });
   };
@@ -128,158 +312,208 @@ export default function NewWorkoutPage() {
     setItems((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  const removeSet = (i: number, s: number) => {
+  const removeSet = (itemIndex: number, setIndex: number) => {
     setItems((prev) => {
       const copy = [...prev];
-      copy[i].sets = copy[i].sets.filter((_, j) => j !== s).map((row, idx) => ({ ...row, setNumber: idx + 1 }));
+      copy[itemIndex].sets = copy[itemIndex].sets
+        .filter((_, j) => j !== setIndex)
+        .map((row, idx) => ({ ...row, setNumber: idx + 1 }));
       return copy;
     });
   };
 
-  const setCell = (i: number, s: number, field: keyof SetRow, value: any) => {
+  const onChangeSet = (itemIndex: number, setIndex: number, field: keyof SetRow, value: any) => {
     setItems((prev) => {
       const copy = [...prev];
-      copy[i].sets[s] = {
-        ...copy[i].sets[s],
-        [field]: value === '' ? undefined : field === 'reps' || field === 'setNumber' ? Number(value) : Number(value),
-      };
+      const currentSet = copy[itemIndex].sets[setIndex];
+      
+      // Handle reps specially - allow empty string during editing, but store as number
+      if (field === 'reps') {
+        const numValue = value === '' ? 1 : (typeof value === 'number' ? value : Number(value) || 1);
+        copy[itemIndex].sets[setIndex] = {
+          ...currentSet,
+          reps: numValue,
+        } as SetRow;
+      } else if (field === 'setNumber') {
+        copy[itemIndex].sets[setIndex] = {
+          ...currentSet,
+          [field]: Number(value),
+        } as SetRow;
+      } else {
+        copy[itemIndex].sets[setIndex] = {
+          ...currentSet,
+          [field]: value === '' ? undefined : Number(value),
+        } as SetRow;
+      }
+      return copy;
+    });
+  };
+
+  // Handle set completion toggle
+  const handleToggleSetComplete = (itemIndex: number, setIndex: number) => {
+    setItems((prev) => {
+      const copy = [...prev];
+      const item = copy[itemIndex];
+      if (item && item.sets[setIndex]) {
+        const currentCompleted = item.sets[setIndex].completed;
+        // Create a new array for sets to ensure React detects the change
+        const newSets = [...item.sets];
+        newSets[setIndex] = {
+          ...item.sets[setIndex],
+          completed: !currentCompleted,
+        };
+        copy[itemIndex] = {
+          ...item,
+          sets: newSets,
+        };
+      }
       return copy;
     });
   };
 
   const canSave = items.length > 0 && !createWorkout.isPending;
 
-  const onSave = async () => {
+  const handleFinish = async () => {
     await createWorkout.mutateAsync({
       title: title || undefined,
       notes: notes || undefined,
-      items: items.map((it, idx) => ({
+      items: items.map((it) => ({
         exerciseId: it.exerciseId,
         customId: it.customId,
         sets: it.sets.map((s) => ({
           setNumber: s.setNumber,
           weightKg: s.weightKg,
-          reps: s.reps,
-          rpe: s.rpe,
+          reps: typeof s.reps === 'string' ? (s.reps === '' ? 1 : Number(s.reps) || 1) : s.reps,
           notes: s.notes,
         })),
       })),
     });
-    // reset
-    setTitle('');
-    setNotes('');
-    setItems([]);
     setSuccessOpen(true);
-    // Optionally redirect after a delay
     setTimeout(() => {
       router.push('/workouts');
     }, 1500);
   };
 
+  const handleCancel = () => {
+    setCancelDialogOpen(true);
+  };
+
+  const handleCancelConfirm = () => {
+    router.push('/workouts');
+  };
+
   return (
     <MainLayout>
       <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
-        <Typography variant="h4" sx={{ mb: 2 }}>
-          New Workout
-        </Typography>
-
-        <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, overflow: 'hidden' }}>
-          <Stack spacing={2}>
-            <TextField label="Title (optional)" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth />
-            <TextField
-              label="Notes (optional)"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              fullWidth
-              multiline
-              minRows={2}
-            />
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setPickerOpen(true)}>
-              Add Exercise
-            </Button>
-          </Stack>
-        </Paper>
-
-        {items.map((it, i) => (
-          <Paper key={i} sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, overflow: 'hidden' }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
-              <Typography variant="h6" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' }, wordBreak: 'break-word' }}>{it.name}</Typography>
-              <IconButton onClick={() => removeItem(i)} aria-label="Remove exercise" sx={{ flex: { xs: '0 0 auto', sm: '0 1 auto' } }}>
-                <DeleteIcon />
-              </IconButton>
-            </Stack>
-            <Divider sx={{ my: 1 }} />
-            <Stack spacing={1}>
-              {it.sets.map((s, idx) => (
-                <Stack key={idx} direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center">
-                  <Chip label={`Set ${s.setNumber}`} />
-                  <TextField
-                    type="number"
-                    label="Weight (kg)"
-                    inputProps={{ step: 0.5, min: 0 }}
-                    value={s.weightKg ?? ''}
-                    onChange={(e) => setCell(i, idx, 'weightKg', e.target.value)}
-                  />
-                  <TextField
-                    type="number"
-                    label="Reps"
-                    inputProps={{ step: 1, min: 1 }}
-                    value={s.reps}
-                    onChange={(e) => setCell(i, idx, 'reps', e.target.value)}
-                  />
-                  <TextField
-                    type="number"
-                    label="RPE"
-                    inputProps={{ step: 0.5, min: 1, max: 10 }}
-                    value={s.rpe ?? ''}
-                    onChange={(e) => setCell(i, idx, 'rpe', e.target.value)}
-                  />
-                  <TextField
-                    label="Notes"
-                    value={s.notes ?? ''}
-                    onChange={(e) => setCell(i, idx, 'notes', e.target.value)}
-                    sx={{ flex: { xs: '1 1 100%', sm: 1 }, width: { xs: '100%', sm: 'auto' } }}
-                  />
-                  <IconButton onClick={() => removeSet(i, idx)} aria-label="Remove set">
-                    <DeleteIcon />
-                  </IconButton>
-                </Stack>
-              ))}
-              <Button variant="outlined" onClick={() => addSet(i)}>
-                Add Set
-              </Button>
-            </Stack>
-          </Paper>
-        ))}
-
-        <Stack direction="row" spacing={2}>
-          <Button variant="contained" disabled={!canSave} onClick={onSave}>
-            Save Workout
-          </Button>
+        {/* Header with Finish button */}
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={2}
+          sx={{ mb: 2 }}
+        >
+          <IconButton size="small" aria-label="Refresh">
+            <RefreshIcon fontSize="small" />
+          </IconButton>
           <Button
-            variant="text"
-            disabled={createWorkout.isPending}
-            onClick={() => {
-              setTitle('');
-              setNotes('');
-              setItems([]);
-            }}
+            variant="contained"
+            color="success"
+            onClick={handleFinish}
+            disabled={!canSave || createWorkout.isPending}
+            sx={{ minWidth: '100px' }}
           >
-            Clear
+            {createWorkout.isPending ? 'Saving...' : 'Finish'}
           </Button>
         </Stack>
 
-        {/* Exercise picker */}
-        <Dialog 
-          open={pickerOpen} 
-          onClose={() => setPickerOpen(false)} 
-          fullWidth 
+        {/* Workout Info */}
+        <Stack spacing={1} sx={{ mb: 3 }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography variant="h4">{title || 'New Workout'}</Typography>
+            <IconButton size="small" aria-label="Workout options">
+              <MoreVertIcon fontSize="small" />
+            </IconButton>
+          </Stack>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <CalendarTodayIcon fontSize="small" color="action" />
+              <Typography variant="body2" color="text.secondary">
+                {formatDateLong(workoutStartTime)}
+              </Typography>
+            </Stack>
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <AccessTimeIcon fontSize="small" color="action" />
+              <Typography variant="body2" color="text.secondary">
+                {formatElapsedTime(elapsedSeconds)}
+              </Typography>
+            </Stack>
+          </Stack>
+        </Stack>
+
+        {/* Action Buttons at Bottom */}
+        <Stack direction="row" spacing={2} sx={{ mt: 3, mb: 2 }}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setPickerOpen(true)}
+            sx={{ flex: 1 }}
+          >
+            Add Exercises
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleCancel}
+            sx={{ flex: 1 }}
+          >
+            Cancel Workout
+          </Button>
+        </Stack>
+
+        {/* Exercise Cards */}
+        {items.length === 0 ? (
+          <Paper sx={{ p: 3, textAlign: 'center' }}>
+            <Typography color="text.secondary">
+              No exercises added yet. Click "Add Exercise" to get started.
+            </Typography>
+          </Paper>
+        ) : (
+          <Stack spacing={0}>
+            {items.map((item, itemIndex) => (
+              <ExerciseCard
+                key={itemIndex}
+                exercise={{
+                  exerciseId: item.exerciseId,
+                  customId: item.customId,
+                  name: item.name,
+                  bodyPart: item.bodyPart,
+                  equipment: item.equipment,
+                }}
+                sets={item.sets}
+                lastPerformance={getLastPerformance(item.exerciseId, item.customId)}
+                defaultRestSeconds={preferences?.defaultRestSeconds}
+                onRemoveExercise={() => removeItem(itemIndex)}
+                onChangeSet={(setIndex, field, value) => onChangeSet(itemIndex, setIndex, field, value)}
+                onRemoveSet={(setIndex) => removeSet(itemIndex, setIndex)}
+                onAddSet={() => addSet(itemIndex)}
+                onToggleSetComplete={(setIndex) => handleToggleSetComplete(itemIndex, setIndex)}
+              />
+            ))}
+          </Stack>
+        )}
+
+        {/* Exercise Picker Dialog */}
+        <Dialog
+          open={pickerOpen}
+          onClose={() => setPickerOpen(false)}
+          fullWidth
           maxWidth="sm"
           PaperProps={{
             sx: {
               m: { xs: 1, sm: 2 },
               maxWidth: { xs: 'calc(100% - 16px)', sm: '600px' },
-            }
+            },
           }}
         >
           <DialogTitle>Select Exercise</DialogTitle>
@@ -299,7 +533,10 @@ export default function NewWorkoutPage() {
             {tab === 'catalog' && (
               <>
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2, flexWrap: 'wrap' }}>
-                  <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 200 }, width: { xs: '100%', sm: 'auto' } }}>
+                  <FormControl
+                    size="small"
+                    sx={{ minWidth: { xs: '100%', sm: 200 }, width: { xs: '100%', sm: 'auto' } }}
+                  >
                     <InputLabel id="muscle-filter-label">Muscle</InputLabel>
                     <Select
                       labelId="muscle-filter-label"
@@ -319,13 +556,26 @@ export default function NewWorkoutPage() {
                   {filteredCatalog.map((ex) => (
                     <Paper
                       key={ex.id}
-                      sx={{ p: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}
+                      sx={{
+                        p: 1,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        minWidth: 0,
+                      }}
                       onClick={() => addExercise(ex, false)}
                     >
                       <ExerciseThumb name={ex.name} mediaUrl={ex.mediaUrl} size={40} />
                       <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{ex.name}</Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                        <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                          {ex.name}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
+                        >
                           {[ex.bodyPart, ex.equipment].filter(Boolean).join(' • ')}
                         </Typography>
                       </Box>
@@ -369,13 +619,26 @@ export default function NewWorkoutPage() {
                   {(exData?.custom ?? []).map((ex) => (
                     <Paper
                       key={ex.id}
-                      sx={{ p: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}
+                      sx={{
+                        p: 1,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        minWidth: 0,
+                      }}
                       onClick={() => addExercise(ex, true)}
                     >
                       <ExerciseThumb name={ex.name} mediaUrl={ex.mediaUrl} size={40} />
                       <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{ex.name}</Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                        <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+                          {ex.name}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
+                        >
                           {[ex.bodyPart, ex.equipment].filter(Boolean).join(' • ')}
                         </Typography>
                       </Box>
@@ -395,17 +658,17 @@ export default function NewWorkoutPage() {
           </DialogActions>
         </Dialog>
 
-        {/* Create custom exercise dialog */}
-        <Dialog 
-          open={createCustomOpen} 
-          onClose={() => setCreateCustomOpen(false)} 
-          fullWidth 
+        {/* Create Custom Exercise Dialog */}
+        <Dialog
+          open={createCustomOpen}
+          onClose={() => setCreateCustomOpen(false)}
+          fullWidth
           maxWidth="xs"
           PaperProps={{
             sx: {
               m: { xs: 1, sm: 2 },
               maxWidth: { xs: 'calc(100% - 16px)', sm: '400px' },
-            }
+            },
           }}
         >
           <DialogTitle>Create Custom Exercise</DialogTitle>
@@ -454,17 +717,17 @@ export default function NewWorkoutPage() {
           </DialogActions>
         </Dialog>
 
-        {/* Instructions dialog */}
-        <Dialog 
-          open={openInstr} 
-          onClose={() => setOpenInstr(false)} 
-          maxWidth="sm" 
+        {/* Instructions Dialog */}
+        <Dialog
+          open={openInstr}
+          onClose={() => setOpenInstr(false)}
+          maxWidth="sm"
           fullWidth
           PaperProps={{
             sx: {
               m: { xs: 1, sm: 2 },
               maxWidth: { xs: 'calc(100% - 16px)', sm: '600px' },
-            }
+            },
           }}
         >
           <DialogTitle>{instrTitle}</DialogTitle>
@@ -478,6 +741,22 @@ export default function NewWorkoutPage() {
           </DialogActions>
         </Dialog>
 
+        {/* Cancel Workout Dialog */}
+        <Dialog open={cancelDialogOpen} onClose={() => setCancelDialogOpen(false)}>
+          <DialogTitle>Cancel Workout</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to cancel this workout? All progress will be lost.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setCancelDialogOpen(false)}>Keep Working Out</Button>
+            <Button onClick={handleCancelConfirm} color="error" variant="contained">
+              Cancel Workout
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Snackbar open={successOpen} autoHideDuration={2000} onClose={() => setSuccessOpen(false)}>
           <Alert onClose={() => setSuccessOpen(false)} severity="success" sx={{ width: '100%' }}>
             Workout saved successfully!
@@ -487,4 +766,3 @@ export default function NewWorkoutPage() {
     </MainLayout>
   );
 }
-

@@ -16,15 +16,19 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useProfile, useUpdateProfile } from '@/hooks/profile';
+import { useUserPreferences, useUpdatePreferences } from '@/hooks/preferences';
 import { useState, useEffect } from 'react';
 
 export function ProfilePageClient() {
   const { data: profile, isLoading, error } = useProfile();
   const updateMutation = useUpdateProfile();
+  const { data: preferences, isLoading: prefsLoading } = useUserPreferences();
+  const updatePreferencesMutation = useUpdatePreferences();
 
   const [name, setName] = useState('');
   const [unitPreference, setUnitPreference] = useState<'metric' | 'imperial'>('metric');
   const [themePreference, setThemePreference] = useState<'system' | 'light' | 'dark'>('system');
+  const [defaultRestSeconds, setDefaultRestSeconds] = useState<number>(90);
 
   // Initialize form values when profile data loads
   useEffect(() => {
@@ -34,6 +38,13 @@ export function ProfilePageClient() {
       setThemePreference(profile.themePreference);
     }
   }, [profile]);
+
+  // Initialize preferences when they load
+  useEffect(() => {
+    if (preferences) {
+      setDefaultRestSeconds(preferences.defaultRestSeconds);
+    }
+  }, [preferences]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +56,14 @@ export function ProfilePageClient() {
     });
   };
 
-  if (isLoading) {
+  const handlePreferencesSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    updatePreferencesMutation.mutate({
+      defaultRestSeconds,
+    });
+  };
+
+  if (isLoading || prefsLoading) {
     return (
       <MainLayout>
         <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
@@ -133,7 +151,37 @@ export function ProfilePageClient() {
           </form>
         </Paper>
 
-        {/* Snackbar for success/error messages */}
+        {/* Preferences Section */}
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 3 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Preferences
+          </Typography>
+          <form onSubmit={handlePreferencesSubmit}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Default Rest Time (seconds)"
+                value={defaultRestSeconds}
+                onChange={(e) => setDefaultRestSeconds(Number(e.target.value))}
+                inputProps={{ min: 10, max: 600, step: 5 }}
+                helperText="Rest time between sets (10-600 seconds)"
+              />
+
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={updatePreferencesMutation.isPending}
+                >
+                  {updatePreferencesMutation.isPending ? 'Saving...' : 'Save Preferences'}
+                </Button>
+              </Box>
+            </Box>
+          </form>
+        </Paper>
+
+        {/* Snackbar for profile success/error messages */}
         <Snackbar
           open={updateMutation.snackbar.open}
           autoHideDuration={6000}
@@ -145,6 +193,21 @@ export function ProfilePageClient() {
             sx={{ width: '100%' }}
           >
             {updateMutation.snackbar.message}
+          </Alert>
+        </Snackbar>
+
+        {/* Snackbar for preferences success/error messages */}
+        <Snackbar
+          open={updatePreferencesMutation.snackbar.open}
+          autoHideDuration={6000}
+          onClose={updatePreferencesMutation.closeSnackbar}
+        >
+          <Alert
+            onClose={updatePreferencesMutation.closeSnackbar}
+            severity={updatePreferencesMutation.snackbar.severity}
+            sx={{ width: '100%' }}
+          >
+            {updatePreferencesMutation.snackbar.message}
           </Alert>
         </Snackbar>
       </Box>

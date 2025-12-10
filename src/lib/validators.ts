@@ -28,9 +28,16 @@ export const profileUpdateSchema = z.object({
 });
 
 /**
+ * User preferences update validation schema
+ */
+export const preferencesUpdateSchema = z.object({
+  defaultRestSeconds: z.number().int().min(10).max(600),
+});
+
+/**
  * Type inference from schemas
  */
 export type ActivityInput = z.infer<typeof activitySchema>;
 export type DateRange = z.infer<typeof rangeSchema>;
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
-
+export type PreferencesUpdateInput = z.infer<typeof preferencesUpdateSchema>;

@@ -31,6 +31,8 @@ model User {
   reminders     Reminder[]
   workoutSessions WorkoutSession[]
   customExercises CustomExercise[]
+  preferences    UserPreferences?
+  personalBests  PersonalBest[]
 
   @@map("users")
 }
@@ -179,6 +181,7 @@ model Exercise {
   isActive     Boolean     @default(true)
   createdAt    DateTime    @default(now())
   workoutItems WorkoutItem[]
+  personalBests PersonalBest[]
 
   @@unique([name])
   @@map("exercises")
@@ -196,6 +199,7 @@ model CustomExercise {
 
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   workoutItems WorkoutItem[]
+  personalBests PersonalBest[]
 
   @@unique([userId, name])
   @@index([userId, name])
@@ -245,7 +249,42 @@ model WorkoutSet {
   createdAt    DateTime       @default(now())
 
   item         WorkoutItem    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  personalBests PersonalBest[]
 
   @@index([itemId, setNumber])
   @@map("workout_sets")
+}
+
+model UserPreferences {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  defaultRestSeconds Int     @default(90) // Default rest time in seconds (10-600)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model PersonalBest {
+  id           String      @id @default(cuid())
+  userId       String
+  exerciseId   String?     // For Exercise
+  customId     String?     // For CustomExercise
+  type         String      // "weight" | "reps"
+  weightKg     Decimal?    @db.Decimal(6,2) // For reps type: weight at which rep PB was achieved
+  reps         Int?        // For weight type: reps at which weight PB was achieved
+  value        Decimal     @db.Decimal(6,2) // The PB value (weight for weight type, reps for reps type)
+  setId        String      // The WorkoutSet that achieved this PB
+  createdAt    DateTime    @default(now())
+
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise     Exercise?   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  custom       CustomExercise? @relation(fields: [customId], references: [id], onDelete: Cascade)
+  set          WorkoutSet  @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+  @@index([userId, exerciseId, customId, type])
+  @@index([setId])
+  @@map("personal_bests")
 }
