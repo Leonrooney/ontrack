@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,35 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id               String    @id @default(cuid())
-  email            String    @unique
-  emailVerified    DateTime?
-  name             String?
-  password         String?   // Hashed password
-  passwordHash     String?   // Alternative field name for seed compatibility
-  image            String?
-  unitPreference   String?   @default("metric") // "metric" | "imperial"
-  themePreference String?   @default("system") // "system" | "light" | "dark"
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  accounts      Account[]
-  sessions      Session[]
-  activityEntries ActivityEntry[]
-  goals         Goal[]
-  achievements  Achievement[]
-  reminders     Reminder[]
-  workoutSessions WorkoutSession[]
-  customExercises CustomExercise[]
-  preferences    UserPreferences?
-  personalBests  PersonalBest[]
-
-  @@map("users")
-}
-
-model Account {
-  id                String  @id @default(cuid())
+model accounts {
+  id                String  @id
   userId            String
   type              String
   provider          String
@@ -50,241 +20,228 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users             users   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  @@map("accounts")
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-}
-
-model VerificationToken {
-  id         String   @id @default(cuid())
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verification_tokens")
-}
-
-model ActivityEntry {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String?
-  description String?
-  date        DateTime @default(now())
-  duration    Int?     // Duration in minutes
-  category    String?
-  tags        String?  // JSON array of tags
-  // Fitness tracking fields
-  steps       Int?
-  distanceKm  Float?
-  calories    Int?
-  heartRateAvg Int?
-  workouts    Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, date])
-  @@map("activity_entries")
-}
-
-model Goal {
-  id          String    @id @default(cuid())
-  userId      String
-  title       String?
-  description String?
-  // Legacy fields
-  targetDate  DateTime?
-  targetValue Float?
-  currentValue Float    @default(0)
-  unit        String?   // e.g., "hours", "days", "count"
-  status      String    @default("active") // active, completed, paused, cancelled
-  category    String?
-  // New fields for seed compatibility
-  type        String?   // e.g., "STEPS", "WORKOUTS", "DISTANCE"
-  targetInt   Int?
-  targetDec   Float?
-  period      String?   // e.g., "DAILY", "WEEKLY", "MONTHLY"
-  startDate   DateTime?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("goals")
-}
-
-model Achievement {
-  id          String   @id @default(cuid())
+model achievements {
+  id          String   @id
   userId      String
   title       String
   description String?
   icon        String?
   unlockedAt  DateTime @default(now())
   category    String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("achievements")
+  users       users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model Reminder {
-  id          String   @id @default(cuid())
+model activity_entries {
+  id           String   @id
+  userId       String
+  title        String?
+  description  String?
+  date         DateTime @default(now())
+  duration     Int?
+  category     String?
+  tags         String?
+  steps        Int?
+  distanceKm   Float?
+  calories     Int?
+  heartRateAvg Int?
+  workouts     Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime
+  users        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+}
+
+model custom_exercises {
+  id             String           @id
+  userId         String
+  name           String
+  bodyPart       String?
+  equipment      String?
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  mediaUrl       String?
+  users          users            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personal_bests personal_bests[]
+  workout_items  workout_items[]
+
+  @@unique([userId, name])
+  @@index([userId, name])
+}
+
+model exercises {
+  id             String           @id
+  name           String           @unique
+  bodyPart       String?
+  equipment      String?
+  isActive       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  mediaUrl       String?
+  instructions   String?
+  personal_bests personal_bests[]
+  workout_items  workout_items[]
+}
+
+model faqs {
+  id        String   @id
+  question  String
+  answer    String
+  category  String?
+  order     Int      @default(0)
+  tags      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model goals {
+  id           String    @id
+  userId       String
+  title        String?
+  description  String?
+  targetDate   DateTime?
+  targetValue  Float?
+  currentValue Float     @default(0)
+  unit         String?
+  status       String    @default("active")
+  category     String?
+  type         String?
+  targetInt    Int?
+  targetDec    Float?
+  period       String?
+  startDate    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime
+  isActive     Boolean   @default(true)
+  users        users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model personal_bests {
+  id               String            @id
+  userId           String
+  exerciseId       String?
+  customId         String?
+  type             String
+  weightKg         Decimal?          @db.Decimal(6, 2)
+  reps             Int?
+  value            Decimal           @db.Decimal(6, 2)
+  setId            String
+  createdAt        DateTime          @default(now())
+  custom_exercises custom_exercises? @relation(fields: [customId], references: [id], onDelete: Cascade)
+  exercises        exercises?        @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  workout_sets     workout_sets      @relation(fields: [setId], references: [id], onDelete: Cascade)
+  users            users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([setId])
+  @@index([userId, exerciseId, customId, type])
+}
+
+model reminders {
+  id          String   @id
   userId      String
   title       String
   description String?
   scheduledAt DateTime
   completed   Boolean  @default(false)
-  recurring   String?  // e.g., "daily", "weekly", "monthly", null for one-time
+  recurring   String?
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("reminders")
+  updatedAt   DateTime
+  users       users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model Faq {
-  id          String   @id @default(cuid())
-  question    String
-  answer      String
-  category    String?
-  order       Int      @default(0)
-  tags        String?  // JSON array of tags
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("faqs")
+model sessions {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  users        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model Exercise {
-  id           String      @id @default(cuid())
-  name         String
-  bodyPart     String?
-  equipment    String?
-  instructions String?
-  mediaUrl     String?     // thumbnail or GIF
-  isActive     Boolean     @default(true)
-  createdAt    DateTime    @default(now())
-  workoutItems WorkoutItem[]
-  personalBests PersonalBest[]
-
-  @@unique([name])
-  @@map("exercises")
+model user_preferences {
+  id                 String   @id
+  userId             String   @unique
+  defaultRestSeconds Int      @default(90)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime
+  users              users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model CustomExercise {
-  id         String     @id @default(cuid())
-  userId     String
-  name       String
-  bodyPart   String?
-  equipment  String?
-  mediaUrl   String?    // thumbnail or GIF
-  isActive   Boolean    @default(true)
-  createdAt  DateTime   @default(now())
-
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workoutItems WorkoutItem[]
-  personalBests PersonalBest[]
-
-  @@unique([userId, name])
-  @@index([userId, name])
-  @@map("custom_exercises")
+model users {
+  id               String             @id
+  email            String             @unique
+  emailVerified    DateTime?
+  name             String?
+  password         String?
+  passwordHash     String?
+  image            String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  themePreference  String?            @default("system")
+  unitPreference   String?            @default("metric")
+  accounts         accounts[]
+  achievements     achievements[]
+  activity_entries activity_entries[]
+  custom_exercises custom_exercises[]
+  goals            goals[]
+  personal_bests   personal_bests[]
+  reminders        reminders[]
+  sessions         sessions[]
+  user_preferences user_preferences?
+  workout_sessions workout_sessions[]
 }
 
-model WorkoutSession {
-  id          String       @id @default(cuid())
-  userId      String
-  date        DateTime     @default(now())
-  title       String?      // e.g., "Push Day", "Legs", optional
-  notes       String?
-  durationMin Int?         // optional; filled later
-  createdAt   DateTime     @default(now())
+model verification_tokens {
+  id         String   @id
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items       WorkoutItem[]
-
-  @@index([userId, date])
-  @@map("workout_sessions")
+  @@unique([identifier, token])
 }
 
-model WorkoutItem {
-  id           String          @id @default(cuid())
-  workoutId    String
-  exerciseId   String?
-  customId     String?
-  orderIndex   Int             @default(0)  // UI ordering
-
-  workout      WorkoutSession  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  exercise     Exercise?       @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
-  custom       CustomExercise? @relation(fields: [customId], references: [id], onDelete: Restrict)
-  sets         WorkoutSet[]
+model workout_items {
+  id               String            @id
+  workoutId        String
+  exerciseId       String?
+  orderIndex       Int               @default(0)
+  customId         String?
+  custom_exercises custom_exercises? @relation(fields: [customId], references: [id], onDelete: Restrict)
+  exercises        exercises?        @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+  workout_sessions workout_sessions  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workout_sets     workout_sets[]
 
   @@index([workoutId, orderIndex])
-  @@map("workout_items")
 }
 
-model WorkoutSet {
-  id           String         @id @default(cuid())
-  itemId       String
-  setNumber    Int
-  weightKg     Decimal?       @db.Decimal(6,2) // allow null for bodyweight sets
-  reps         Int
-  rpe          Decimal?       @db.Decimal(3,1) // optional perceived exertion
-  notes        String?
-  createdAt    DateTime       @default(now())
+model workout_sessions {
+  id            String          @id
+  userId        String
+  date          DateTime        @default(now())
+  title         String?
+  notes         String?
+  durationMin   Int?
+  createdAt     DateTime        @default(now())
+  workout_items workout_items[]
+  users         users           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  item         WorkoutItem    @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  personalBests PersonalBest[]
+  @@index([userId, date])
+}
+
+model workout_sets {
+  id             String           @id
+  itemId         String
+  setNumber      Int
+  weightKg       Decimal?         @db.Decimal(6, 2)
+  reps           Int
+  rpe            Decimal?         @db.Decimal(3, 1)
+  notes          String?
+  createdAt      DateTime         @default(now())
+  personal_bests personal_bests[]
+  workout_items  workout_items    @relation(fields: [itemId], references: [id], onDelete: Cascade)
 
   @@index([itemId, setNumber])
-  @@map("workout_sets")
-}
-
-model UserPreferences {
-  id                String   @id @default(cuid())
-  userId            String   @unique
-  defaultRestSeconds Int     @default(90) // Default rest time in seconds (10-600)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("user_preferences")
-}
-
-model PersonalBest {
-  id           String      @id @default(cuid())
-  userId       String
-  exerciseId   String?     // For Exercise
-  customId     String?     // For CustomExercise
-  type         String      // "weight" | "reps"
-  weightKg     Decimal?    @db.Decimal(6,2) // For reps type: weight at which rep PB was achieved
-  reps         Int?        // For weight type: reps at which weight PB was achieved
-  value        Decimal     @db.Decimal(6,2) // The PB value (weight for weight type, reps for reps type)
-  setId        String      // The WorkoutSet that achieved this PB
-  createdAt    DateTime    @default(now())
-
-  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exercise     Exercise?   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
-  custom       CustomExercise? @relation(fields: [customId], references: [id], onDelete: Cascade)
-  set          WorkoutSet  @relation(fields: [setId], references: [id], onDelete: Cascade)
-
-  @@index([userId, exerciseId, customId, type])
-  @@index([setId])
-  @@map("personal_bests")
 }
