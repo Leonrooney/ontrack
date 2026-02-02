@@ -25,4 +25,3 @@ export function useFaq(query: string, tag?: string) {
     staleTime: 5 * 60_000,
   });
 }
-

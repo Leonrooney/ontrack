@@ -46,7 +46,11 @@ export function ExerciseThumb({
   size?: number;
 }) {
   if (!mediaUrl) {
-    return <Avatar sx={{ width: size, height: size }}>{name.slice(0, 1).toUpperCase()}</Avatar>;
+    return (
+      <Avatar sx={{ width: size, height: size }}>
+        {name.slice(0, 1).toUpperCase()}
+      </Avatar>
+    );
   }
 
   // Check if it's a local placeholder (starts with /)
@@ -57,7 +61,16 @@ export function ExerciseThumb({
   if (isLocal) {
     // Local SVG placeholders - use regular img tag
     return (
-      <img src={sanitizedUrl} alt={name} style={{ width: size, height: size, borderRadius: 8, objectFit: 'cover' }} />
+      <img
+        src={sanitizedUrl}
+        alt={name}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: 8,
+          objectFit: 'cover',
+        }}
+      />
     );
   }
 
@@ -74,7 +87,13 @@ export function ExerciseThumb({
           flexShrink: 0,
         }}
       >
-        <Image src={sanitizedUrl} alt={name} fill sizes={`${size}px`} style={{ objectFit: 'cover' }} />
+        <Image
+          src={sanitizedUrl}
+          alt={name}
+          fill
+          sizes={`${size}px`}
+          style={{ objectFit: 'cover' }}
+        />
       </div>
     );
   }
@@ -95,4 +114,3 @@ export function ExerciseThumb({
     />
   );
 }
-

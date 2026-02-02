@@ -23,14 +23,21 @@ export interface ForecastResponse {
   }>;
 }
 
-export function useForecast(metric: ForecastMetric, method: ForecastMethod, horizon: number) {
+export function useForecast(
+  metric: ForecastMetric,
+  method: ForecastMethod,
+  horizon: number
+) {
   return useQuery({
     queryKey: ['forecast', metric, method, horizon],
     queryFn: async () => {
-      const qs = new URLSearchParams({ metric, method, horizon: String(horizon) });
+      const qs = new URLSearchParams({
+        metric,
+        method,
+        horizon: String(horizon),
+      });
       return apiGet<ForecastResponse>(`/api/forecast?${qs.toString()}`);
     },
     staleTime: 60_000,
   });
 }
-

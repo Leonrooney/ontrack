@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
   Box,
@@ -16,10 +16,19 @@ import { MainLayout } from '@/components/layout/MainLayout';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      router.push('/dashboard');
+      router.refresh();
+    }
+  }, [session, status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +57,15 @@ export default function LoginPage() {
 
   return (
     <MainLayout>
-      <Container maxWidth="sm" sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden', px: { xs: 1, sm: 2 } }}>
+      <Container
+        maxWidth="sm"
+        sx={{
+          width: '100%',
+          maxWidth: '100%',
+          overflowX: 'hidden',
+          px: { xs: 1, sm: 2 },
+        }}
+      >
         <Box
           sx={{
             display: 'flex',
@@ -69,7 +86,12 @@ export default function LoginPage() {
             <Typography variant="h4" component="h1" gutterBottom align="center">
               Sign In
             </Typography>
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ mb: 3 }}
+            >
               Sign in to access OnTrack
             </Typography>
 
@@ -111,7 +133,14 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <Box sx={{ mt: 3, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+            <Box
+              sx={{
+                mt: 3,
+                p: 2,
+                bgcolor: 'background.default',
+                borderRadius: 1,
+              }}
+            >
               <Typography variant="body2" color="text.secondary" align="center">
                 Demo Credentials:
               </Typography>
@@ -128,4 +157,3 @@ export default function LoginPage() {
     </MainLayout>
   );
 }
-

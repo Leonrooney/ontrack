@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-export function useExercises(q?: string, bodyPart?: string, includeCustom = true) {
+export function useExercises(
+  q?: string,
+  bodyPart?: string,
+  includeCustom = true
+) {
   return useQuery({
     queryKey: ['exercises', { q, bodyPart, includeCustom }],
     queryFn: async () => {
@@ -8,7 +12,9 @@ export function useExercises(q?: string, bodyPart?: string, includeCustom = true
       if (q) params.set('q', q);
       if (bodyPart) params.set('bodyPart', bodyPart);
       if (!includeCustom) params.set('includeCustom', 'false');
-      const res = await fetch(`/api/exercises?${params.toString()}`, { credentials: 'same-origin' });
+      const res = await fetch(`/api/exercises?${params.toString()}`, {
+        credentials: 'same-origin',
+      });
       if (!res.ok) throw new Error('Failed to load exercises');
       return res.json() as Promise<{ catalog: any[]; custom: any[] }>;
     },
@@ -19,7 +25,12 @@ export function useExercises(q?: string, bodyPart?: string, includeCustom = true
 export function useCreateCustomExercise() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: { name: string; bodyPart?: string; equipment?: string; mediaUrl?: string }) => {
+    mutationFn: async (payload: {
+      name: string;
+      bodyPart?: string;
+      equipment?: string;
+      mediaUrl?: string;
+    }) => {
       const res = await fetch(`/api/exercises`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

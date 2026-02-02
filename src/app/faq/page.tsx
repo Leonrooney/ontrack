@@ -62,19 +62,35 @@ function FaqInner() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Try: steps target, calorie deficit, hydration..."
           />
-          <Stack direction="row" spacing={1} sx={{ mt: 2 }} flexWrap="wrap" useFlexGap>
-            {(allTags.length ? allTags : ['steps', 'goals', 'workouts', 'nutrition', 'hydration']).map((tag) => (
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ mt: 2 }}
+            flexWrap="wrap"
+            useFlexGap
+          >
+            {(allTags.length
+              ? allTags
+              : ['steps', 'goals', 'workouts', 'nutrition', 'hydration']
+            ).map((tag) => (
               <Chip
                 key={tag}
                 label={tag}
                 clickable
                 color={activeTag === tag ? 'primary' : 'default'}
-                onClick={() => setActiveTag(activeTag === tag ? undefined : tag)}
+                onClick={() =>
+                  setActiveTag(activeTag === tag ? undefined : tag)
+                }
                 sx={{ mb: 1 }}
               />
             ))}
             {activeTag && (
-              <Chip label="Clear tag" onClick={() => setActiveTag(undefined)} variant="outlined" sx={{ mb: 1 }} />
+              <Chip
+                label="Clear tag"
+                onClick={() => setActiveTag(undefined)}
+                variant="outlined"
+                sx={{ mb: 1 }}
+              />
             )}
           </Stack>
         </Paper>
@@ -89,7 +105,9 @@ function FaqInner() {
           ) : error ? (
             <Alert severity="error">Failed to load FAQs</Alert>
           ) : (data?.items.length ?? 0) === 0 ? (
-            <Typography color="text.secondary">No results. Try different keywords or tags.</Typography>
+            <Typography color="text.secondary">
+              No results. Try different keywords or tags.
+            </Typography>
           ) : (
             <Stack spacing={3}>
               {data!.items.map((faq) => (
@@ -99,8 +117,15 @@ function FaqInner() {
                       {faq.question}
                     </MuiLink>
                   </Typography>
-                  <Typography sx={{ mt: 1, whiteSpace: 'pre-line' }}>{faq.answer}</Typography>
-                  <Stack direction="row" spacing={1} sx={{ mt: 1 }} flexWrap="wrap">
+                  <Typography sx={{ mt: 1, whiteSpace: 'pre-line' }}>
+                    {faq.answer}
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    sx={{ mt: 1 }}
+                    flexWrap="wrap"
+                  >
                     {faq.tags.map((t) => (
                       <Chip key={t} label={t} size="small" />
                     ))}

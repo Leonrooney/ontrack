@@ -2,7 +2,11 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/prisma';
-import { loadRegistry, normalizeName, placeholderForBodyPart } from '@/lib/media/enrich';
+import {
+  loadRegistry,
+  normalizeName,
+  placeholderForBodyPart,
+} from '@/lib/media/enrich';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,25 +26,29 @@ export async function POST() {
   let catalogUpdated = 0;
   let customUpdated = 0;
 
-  const catalog = await prisma.exercise.findMany();
+  const catalog = await prisma.exercises.findMany();
   for (const ex of catalog) {
     if (ex.mediaUrl) continue;
-    const url = reg[normalizeName(ex.name)] ?? placeholderForBodyPart(ex.bodyPart);
-    await prisma.exercise.update({ where: { id: ex.id }, data: { mediaUrl: url } });
+    const url =
+      reg[normalizeName(ex.name)] ?? placeholderForBodyPart(ex.bodyPart);
+    await prisma.exercises.update({
+      where: { id: ex.id },
+      data: { mediaUrl: url },
+    });
     catalogUpdated++;
   }
 
-  const custom = await prisma.customExercise.findMany();
+  const custom = await prisma.custom_exercises.findMany();
   for (const ex of custom) {
     if (ex.mediaUrl) continue;
-    const url = reg[normalizeName(ex.name)] ?? placeholderForBodyPart(ex.bodyPart);
-    await prisma.customExercise.update({ where: { id: ex.id }, data: { mediaUrl: url } });
+    const url =
+      reg[normalizeName(ex.name)] ?? placeholderForBodyPart(ex.bodyPart);
+    await prisma.custom_exercises.update({
+      where: { id: ex.id },
+      data: { mediaUrl: url },
+    });
     customUpdated++;
   }
 
   return NextResponse.json({ catalogUpdated, customUpdated });
 }
-
-
-
-

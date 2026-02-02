@@ -1,36 +1,2769 @@
 [
-  { "name": "Barbell Bench Press", "bodyPart": "Chest", "equipment": "Barbell" },
-  { "name": "Incline Dumbbell Press", "bodyPart": "Chest", "equipment": "Dumbbell" },
-  { "name": "Chest Fly (Cable)", "bodyPart": "Chest", "equipment": "Cable" },
-  { "name": "Push-Up", "bodyPart": "Chest", "equipment": "Bodyweight" },
-  { "name": "Back Squat", "bodyPart": "Legs", "equipment": "Barbell" },
-  { "name": "Front Squat", "bodyPart": "Legs", "equipment": "Barbell" },
-  { "name": "Romanian Deadlift", "bodyPart": "Legs", "equipment": "Barbell" },
-  { "name": "Leg Press", "bodyPart": "Legs", "equipment": "Machine" },
-  { "name": "Walking Lunge", "bodyPart": "Legs", "equipment": "Dumbbell" },
-  { "name": "Deadlift", "bodyPart": "Back", "equipment": "Barbell" },
-  { "name": "Conventional Deadlift", "bodyPart": "Back", "equipment": "Barbell" },
-  { "name": "Sumo Deadlift", "bodyPart": "Back", "equipment": "Barbell" },
-  { "name": "Lat Pulldown", "bodyPart": "Back", "equipment": "Machine" },
-  { "name": "Seated Cable Row", "bodyPart": "Back", "equipment": "Cable" },
-  { "name": "Pull-Up", "bodyPart": "Back", "equipment": "Bodyweight" },
-  { "name": "Bent-Over Row", "bodyPart": "Back", "equipment": "Barbell" },
-  { "name": "Overhead Press", "bodyPart": "Shoulders", "equipment": "Barbell" },
-  { "name": "Seated Shoulder Press", "bodyPart": "Shoulders", "equipment": "Dumbbell" },
-  { "name": "Lateral Raise", "bodyPart": "Shoulders", "equipment": "Dumbbell" },
-  { "name": "Rear Delt Fly", "bodyPart": "Shoulders", "equipment": "Dumbbell" },
-  { "name": "Barbell Curl", "bodyPart": "Arms", "equipment": "Barbell" },
-  { "name": "Dumbbell Curl", "bodyPart": "Arms", "equipment": "Dumbbell" },
-  { "name": "Hammer Curl", "bodyPart": "Arms", "equipment": "Dumbbell" },
-  { "name": "Skullcrusher", "bodyPart": "Arms", "equipment": "Barbell" },
-  { "name": "Tricep Pushdown", "bodyPart": "Arms", "equipment": "Cable" },
-  { "name": "Dip", "bodyPart": "Arms", "equipment": "Bodyweight" },
-  { "name": "Plank", "bodyPart": "Core", "equipment": "Bodyweight" },
-  { "name": "Hanging Leg Raise", "bodyPart": "Core", "equipment": "Bodyweight" },
-  { "name": "Cable Crunch", "bodyPart": "Core", "equipment": "Cable" },
-  { "name": "Russian Twist", "bodyPart": "Core", "equipment": "Dumbbell" }
+  {
+    "name": "Barbell Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Barbell",
+    "instructions": "Lie on bench, grip bar slightly wider than shoulders. Lower bar to chest, press up explosively. Keep feet flat on floor, maintain arch in back.",
+    "mediaUrl": "/exercises/hevy/00251201-Barbell-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Incline Bench Press (Barbell)",
+    "bodyPart": "Chest",
+    "equipment": "Barbell",
+    "instructions": "Set bench to 30-45 degree incline. Grip bar slightly wider than shoulders. Lower to upper chest, press up."
+  },
+  {
+    "name": "Incline Bench Press (Dumbbell)",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "instructions": "Set bench to 30-45 degree incline. Hold dumbbells at shoulder level, press up and together. Lower with control."
+  },
+  {
+    "name": "Incline Bench Press (Smith Machine)",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "instructions": "Set bench to incline in Smith machine. Press bar from upper chest, controlled movement."
+  },
+  {
+    "name": "Decline Bench Press (Barbell)",
+    "bodyPart": "Chest",
+    "equipment": "Barbell",
+    "instructions": "Secure feet in decline bench. Grip bar, lower to lower chest, press up. Focus on lower pec engagement."
+  },
+  {
+    "name": "Bench Press (Dumbbell)",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "instructions": "Lie on flat bench, hold dumbbells at shoulder level. Press up and together, lower with control."
+  },
+  {
+    "name": "Chest Fly (Dumbbell)",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "instructions": "Lie on bench, hold dumbbells above chest with slight bend in arms. Lower in wide arc, squeeze together at top."
+  },
+  {
+    "name": "Chest Fly (Cable)",
+    "bodyPart": "Chest",
+    "equipment": "Cable",
+    "instructions": "Set cables at chest height. Stand between, pull handles together in front. Squeeze chest at peak contraction."
+  },
+  {
+    "name": "Chest Fly (Machine)",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "instructions": "Sit in pec deck machine. Adjust seat so handles align with chest. Push handles together, squeeze, return slowly."
+  },
+  {
+    "name": "Butterfly (Pec Deck)",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "instructions": "Sit in pec deck, push handles together. Squeeze chest muscles, return slowly with control."
+  },
+  {
+    "name": "Push-Up",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "instructions": "Start in plank position, hands slightly wider than shoulders. Lower body until chest nearly touches floor, push up."
+  },
+  {
+    "name": "Diamond Push-Up",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "instructions": "Form diamond with hands, perform push-up. Targets triceps and inner chest."
+  },
+  {
+    "name": "Dips",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "instructions": "Support body on parallel bars. Lower until shoulders below elbows, push up. Lean forward for chest emphasis."
+  },
+  {
+    "name": "Back Squat",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "instructions": "Bar on upper traps. Feet shoulder-width, toes slightly out. Descend until thighs parallel, drive up through heels."
+  },
+  {
+    "name": "Front Squat",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "instructions": "Bar on front delts, crossed arms or clean grip. Keep torso upright, squat deep. Emphasizes quads.",
+    "mediaUrl": "/exercises/hevy/00421201-Barbell-Front-Squat_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Bulgarian Split Squat",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "instructions": "Rear foot elevated on bench. Hold dumbbells, lunge down on front leg. Keep front knee behind toes.",
+    "mediaUrl": "/exercises/hevy/22901101-Dumbbell-Bulgarian-Split-Squat-(female)_Thighs_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Walking Lunge",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "instructions": "Step forward into lunge, push off back foot, alternate legs. Keep torso upright throughout.",
+    "mediaUrl": "/exercises/hevy/14601201-Walking-Lunge-Male_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Leg Press",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Sit in leg press, feet shoulder-width on platform. Lower until knees at 90 degrees, press up. Don't lock knees.",
+    "mediaUrl": "/exercises/hevy/07391201-Sled-45-Leg-Press_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Leg Press Horizontal (Machine)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Horizontal leg press machine. Push platform away, lower with control. Full range of motion."
+  },
+  {
+    "name": "Hack Squat",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Position in hack squat machine, shoulders against pads. Squat down, drive up through heels.",
+    "mediaUrl": "/exercises/hevy/00461201-Barbell-Hack-Squat_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Leg Extension",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Sit in leg extension machine. Extend legs against resistance, squeeze quads at top, lower slowly.",
+    "mediaUrl": "/exercises/hevy/05851201-Lever-Leg-Extension_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Leg Extension (Machine)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Sit in leg extension machine. Extend legs, squeeze quads at top, lower with control."
+  },
+  {
+    "name": "Leg Curl (Lying)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Lie face down, curl heels toward glutes. Squeeze hamstrings, lower with control."
+  },
+  {
+    "name": "Lying Leg Curl (Machine)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Lie face down in leg curl machine. Curl heels to glutes, squeeze hamstrings, lower slowly."
+  },
+  {
+    "name": "Leg Curl (Seated)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Sit in leg curl machine. Curl heels toward glutes, squeeze hamstrings, lower slowly."
+  },
+  {
+    "name": "Seated Leg Curl (Machine)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Sit in leg curl machine. Curl heels toward glutes, squeeze hamstrings, lower with control."
+  },
+  {
+    "name": "Romanian Deadlift",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "instructions": "Hold bar, slight knee bend. Hinge at hips, lower bar along legs. Feel stretch in hamstrings, return to standing.",
+    "mediaUrl": "/exercises/hevy/00851201-Barbell-Romanian-Deadlift_Hips-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Stiff-Leg Deadlift",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "instructions": "Keep legs straight, hinge at hips. Lower bar, feel hamstring stretch, return to standing."
+  },
+  {
+    "name": "Calf Raise (Standing)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Stand on platform, raise onto toes. Squeeze calves at top, lower slowly for full stretch."
+  },
+  {
+    "name": "Standing Calf Raise (Machine)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Stand in calf raise machine. Raise onto toes, squeeze calves, lower for full stretch."
+  },
+  {
+    "name": "Calf Raise (Seated)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Sit in calf raise machine, place balls of feet on platform. Raise onto toes, squeeze, lower."
+  },
+  {
+    "name": "Seated Calf Raise",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "instructions": "Sit in seated calf raise machine. Raise onto toes, squeeze calves, lower with control."
+  },
+  {
+    "name": "Deadlift",
+    "bodyPart": "Back",
+    "equipment": "Barbell",
+    "instructions": "Feet hip-width, bar over mid-foot. Hinge and bend knees, grip bar. Drive through heels, extend hips and knees simultaneously.",
+    "mediaUrl": "/exercises/hevy/07521201-Smith-Deadlift_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Conventional Deadlift",
+    "bodyPart": "Back",
+    "equipment": "Barbell",
+    "instructions": "Standard deadlift stance, feet hip-width. Hinge and squat to bar, drive up keeping bar close to body."
+  },
+  {
+    "name": "Sumo Deadlift",
+    "bodyPart": "Back",
+    "equipment": "Barbell",
+    "instructions": "Wide stance, toes pointed out. Grip bar inside legs. Drive up, emphasize quads and inner thighs.",
+    "mediaUrl": "/exercises/hevy/01171201-Barbell-Sumo-Deadlift_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Bent-Over Row (Barbell)",
+    "bodyPart": "Back",
+    "equipment": "Barbell",
+    "instructions": "Hinge at hips, row bar to lower chest/upper abs. Squeeze lats, lower with control."
+  },
+  {
+    "name": "Bent-Over Row (Dumbbell)",
+    "bodyPart": "Back",
+    "equipment": "Dumbbell",
+    "instructions": "Hinge at hips, row dumbbells to sides. Squeeze shoulder blades together, lower slowly."
+  },
+  {
+    "name": "T-Bar Row",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "instructions": "Straddle T-bar, row to chest. Squeeze lats and rhomboids, lower with control."
+  },
+  {
+    "name": "Chest Supported Row",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "instructions": "Sit with chest against pad. Row handles to sides, squeeze shoulder blades, lower slowly."
+  },
+  {
+    "name": "Seated Cable Row",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "instructions": "Sit with legs slightly bent. Row handle to lower chest/upper abs, squeeze lats, return slowly."
+  },
+  {
+    "name": "Seated Cable Row - V Grip",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "instructions": "Use V-grip handle. Row to lower chest, focus on mid-back and rhomboids."
+  },
+  {
+    "name": "Seated Cable Row - V Grip (Cable)",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "instructions": "Sit with V-grip handle. Row to lower chest, squeeze mid-back muscles, return slowly."
+  },
+  {
+    "name": "Lat Pulldown",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "instructions": "Grip bar wider than shoulders. Pull to upper chest, squeeze lats, return slowly with control."
+  },
+  {
+    "name": "Lat Pulldown (Machine)",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "instructions": "Grip bar wider than shoulders. Pull to upper chest, squeeze lats, lower with control."
+  },
+  {
+    "name": "Lat Pulldown (Cable)",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "instructions": "Use cable machine with lat pulldown bar. Pull to upper chest, focus on lat engagement."
+  },
+  {
+    "name": "Pull-Up",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "instructions": "Hang from bar, pull body up until chin over bar. Lower with control. Use assistance if needed."
+  },
+  {
+    "name": "Chin-Up",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "instructions": "Underhand grip, pull up until chin over bar. Emphasizes biceps and lats."
+  },
+  {
+    "name": "Wide-Grip Pull-Up",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "instructions": "Wide overhand grip, pull up. Emphasizes upper lats and teres major."
+  },
+  {
+    "name": "Cable Pullover",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "instructions": "Kneel or stand, pull cable from high position down and across body. Targets lats and serratus."
+  },
+  {
+    "name": "Lat Pushdown",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "instructions": "Stand with cable at high position. Pull down and forward, engage lats and serratus."
+  },
+  {
+    "name": "Lats Crane",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "instructions": "Use lat pulldown machine with wide grip. Pull to upper chest, focus on lat width."
+  },
+  {
+    "name": "Face Pull",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "instructions": "Set cable at face height. Pull rope to face, external rotate at end. Targets rear delts and upper back."
+  },
+  {
+    "name": "Overhead Press",
+    "bodyPart": "Shoulders",
+    "equipment": "Barbell",
+    "instructions": "Press bar from shoulder level overhead. Keep core tight, press straight up, lower with control."
+  },
+  {
+    "name": "Overhead Press (Barbell)",
+    "bodyPart": "Shoulders",
+    "equipment": "Barbell",
+    "instructions": "Press bar from shoulders overhead. Maintain tight core, press straight up."
+  },
+  {
+    "name": "Shoulder Press (Dumbbell)",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "instructions": "Press dumbbells from shoulder level overhead. Keep slight forward lean, press up together."
+  },
+  {
+    "name": "Seated Shoulder Press",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "instructions": "Sit on bench, press dumbbells overhead. Maintain back support, press up together.",
+    "mediaUrl": "/exercises/hevy/04051201-Dumbbell-Seated-Shoulder-Press_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Shoulder Press (Machine Plates)",
+    "bodyPart": "Shoulders",
+    "equipment": "Machine",
+    "instructions": "Sit in shoulder press machine. Press handles overhead, lower with control."
+  },
+  {
+    "name": "Lateral Raise",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "instructions": "Raise dumbbells to sides until parallel to floor. Slight forward lean, lower slowly.",
+    "mediaUrl": "/exercises/hevy/01781201-Cable-Lateral-Raise_shoulder_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lateral Raise (Dumbbell)",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "instructions": "Raise dumbbells to sides, parallel to floor. Slight forward lean, lower with control."
+  },
+  {
+    "name": "Lateral Raise (Cable)",
+    "bodyPart": "Shoulders",
+    "equipment": "Cable",
+    "instructions": "Stand with cable at side. Raise arm to side, slight forward lean. Targets medial deltoids."
+  },
+  {
+    "name": "Front Raise",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "instructions": "Raise dumbbells forward until parallel to floor. Lower with control, alternate or together.",
+    "mediaUrl": "/exercises/hevy/00411101-Barbell-Front-Raise_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Rear Delt Reverse Fly",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "instructions": "Bend forward, raise dumbbells to sides. Squeeze rear delts, lower slowly."
+  },
+  {
+    "name": "Rear Delt Reverse Fly (Cable)",
+    "bodyPart": "Shoulders",
+    "equipment": "Cable",
+    "instructions": "Set cables at shoulder height. Cross arms, pull cables apart. Squeeze rear delts."
+  },
+  {
+    "name": "Upright Row",
+    "bodyPart": "Shoulders",
+    "equipment": "Barbell",
+    "instructions": "Pull bar to upper chest, elbows high. Targets delts and traps. Keep bar close to body.",
+    "mediaUrl": "/exercises/hevy/01211201-Barbell-Upright-Row_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Upright Row (Cable)",
+    "bodyPart": "Shoulders",
+    "equipment": "Cable",
+    "instructions": "Use cable with straight bar. Pull to upper chest, elbows high, lower slowly."
+  },
+  {
+    "name": "Shrugs",
+    "bodyPart": "Shoulders",
+    "equipment": "Barbell",
+    "instructions": "Hold bar at sides, raise shoulders up. Squeeze traps at top, lower slowly."
+  },
+  {
+    "name": "Barbell Curl",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "instructions": "Curl bar to shoulders, squeeze biceps. Keep elbows stationary, lower with control.",
+    "mediaUrl": "/exercises/hevy/00311201-Barbell-Curl_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "instructions": "Curl dumbbells to shoulders. Can alternate or do together. Squeeze biceps at top."
+  },
+  {
+    "name": "Hammer Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "instructions": "Neutral grip, curl dumbbells. Targets brachialis and brachioradialis. Lower slowly.",
+    "mediaUrl": "/exercises/hevy/01661201-Cable-Hammer-Curl_Forearm_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Hammer Curl (Cable)",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "instructions": "Use cable with rope or straight bar, neutral grip. Curl to shoulders, squeeze."
+  },
+  {
+    "name": "Preacher Curl",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "instructions": "Sit at preacher bench, curl bar. Isolates biceps, prevents swinging. Lower slowly.",
+    "mediaUrl": "/exercises/hevy/00701201-Barbell-Preacher-Curl_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Preacher Curl (Barbell)",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "instructions": "Sit at preacher bench, curl bar. Isolates biceps completely, lower with control."
+  },
+  {
+    "name": "Preacher Curl (Dumbbell)",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "instructions": "Sit at preacher bench with dumbbell. Curl one arm at a time, isolate biceps."
+  },
+  {
+    "name": "Bicep Curl (Cable)",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "instructions": "Stand with cable at low position. Curl handle to shoulder, squeeze biceps, lower."
+  },
+  {
+    "name": "Incline Bicep Curl (Cable)",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "instructions": "Set bench to incline, use cable. Curl with extended arm position for full stretch."
+  },
+  {
+    "name": "Seated Incline Curl (Dumbbell)",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "instructions": "Sit on incline bench, curl dumbbells. Extended arm position stretches biceps fully."
+  },
+  {
+    "name": "Concentration Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "instructions": "Sit, rest elbow on inner thigh. Curl dumbbell, isolate biceps. Alternate arms.",
+    "mediaUrl": "/exercises/hevy/02971201-Dumbbell-Concentration-Curl_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "EZ Bar Biceps Curl",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "instructions": "Use EZ bar for wrist comfort. Curl to shoulders, squeeze biceps, lower slowly."
+  },
+  {
+    "name": "Triceps Pushdown",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "instructions": "Push cable down until arms extended. Squeeze triceps, return slowly. Keep elbows at sides.",
+    "mediaUrl": "/exercises/hevy/16051201-Cable-Triceps-Pushdown-(SZ-bar)_Upper-arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Triceps Rope Pushdown",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "instructions": "Use rope attachment. Push down, spread rope at bottom. Squeeze triceps, return slowly."
+  },
+  {
+    "name": "Triceps Extension (Cable)",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "instructions": "Cable behind head, extend arms overhead. Squeeze triceps, lower slowly."
+  },
+  {
+    "name": "Overhead Triceps Extension (Cable)",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "instructions": "Cable at low position, pull overhead. Extend arms, squeeze triceps, lower."
+  },
+  {
+    "name": "Over Head Tricep Extension",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "instructions": "Cable overhead, extend arms down. Squeeze triceps at bottom, return slowly."
+  },
+  {
+    "name": "Skullcrusher",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "instructions": "Lie on bench, lower bar to forehead. Extend arms, squeeze triceps. Keep elbows stationary."
+  },
+  {
+    "name": "Skullcrusher (Barbell)",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "instructions": "Lie on bench, lower bar to forehead. Extend arms, squeeze triceps, lower with control."
+  },
+  {
+    "name": "Skullcrusher (Dumbbell)",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "instructions": "Lie on bench, lower dumbbells to sides of head. Extend arms, squeeze triceps."
+  },
+  {
+    "name": "Close-Grip Bench Press",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "instructions": "Narrow grip on bench press. Targets triceps. Lower to chest, press up."
+  },
+  {
+    "name": "Dip",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "instructions": "Support on parallel bars. Lower until shoulders below elbows, push up. Targets triceps and chest."
+  },
+  {
+    "name": "Plank",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "instructions": "Hold body in straight line, support on forearms and toes. Engage core, breathe normally."
+  },
+  {
+    "name": "Side Plank",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "instructions": "Support on one forearm and side of foot. Hold body straight, engage obliques.",
+    "mediaUrl": "/exercises/hevy/07151201-Side-Plank-m_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Crunch",
+    "bodyPart": "Core",
+    "equipment": "Cable",
+    "instructions": "Kneel with cable overhead. Crunch down, bringing elbows to knees. Squeeze abs."
+  },
+  {
+    "name": "Hanging Leg Raise",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "instructions": "Hang from bar, raise legs to parallel or higher. Lower with control, engage lower abs."
+  },
+  {
+    "name": "Russian Twist",
+    "bodyPart": "Core",
+    "equipment": "Dumbbell",
+    "instructions": "Sit, lean back slightly. Rotate torso side to side, hold weight for resistance.",
+    "mediaUrl": "/exercises/hevy/06871201-Russian-Twist_waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Ab Wheel Rollout",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "instructions": "Kneel, roll wheel forward while maintaining straight line. Roll back to start.",
+    "mediaUrl": "/exercises/hevy/08571201-Wheel-Rollout_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dead Bug",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "instructions": "Lie on back, raise arms and legs. Lower opposite arm and leg, return. Maintain core engagement.",
+    "mediaUrl": "/exercises/hevy/78391201-Dead-Bug-(VERSION-3)-(female)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Farmer's Walk",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "instructions": "Carry heavy dumbbells, walk for distance or time. Maintain posture, engage core.",
+    "mediaUrl": "/exercises/hevy/21331201-Farmers-walk_Cardio_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Swing",
+    "bodyPart": "Full Body",
+    "equipment": "Kettlebell",
+    "instructions": "Hinge at hips, swing kettlebell to chest height. Drive through hips, control descent.",
+    "mediaUrl": "/exercises/hevy/05491201-Kettlebell-Swing_Hips-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Sam Sulek Curl",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "instructions": "High cable position, curl with extended arm. Full stretch and contraction for biceps."
+  },
+  {
+    "name": "3 4 Sit up",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/00011201-3-4-Sit-up_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "45 Side Bend",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/00021201-45-Side-Bend_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "air bike m",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/00031201-air-bike-m_waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Alternate Heel Touchers",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/00061101-Alternate-Heel-Touchers_waist-FIX_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Assisted Chest Dip (kneeling)",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/00091201-Assisted-Chest-Dip-(kneeling)_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Assisted Pull up",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/00171201-Assisted-Pull-up_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Assisted Triceps Dip (kneeling)",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/00191201-Assisted-Triceps-Dip-(kneeling)_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Bent Over Row",
+    "bodyPart": "Back",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00271201-Barbell-Bent-Over-Row_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Clean and Press",
+    "bodyPart": "Shoulders",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00281201-Barbell-Clean-and-Press_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Close Grip Bench Press",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00301201-Barbell-Close-Grip-Bench-Press_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Deadlift",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00321201-Barbell-Deadlift_Hips-FIX_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Decline Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00331201-Barbell-Decline-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Drag Curl",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00381201-Barbell-Drag-Curl_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Full Squat",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00431201-Barbell-Full-Squat_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Good Morning",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00441201-Barbell-Good-Morning_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Incline Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00471201-Barbell-Incline-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell JM Bench Press",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00521201-Barbell-JM-Bench-Press_Upper-Arms-FIX_-2_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Lunge",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00541201-Barbell-Lunge_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Lying Triceps Extension Skull Crusher",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00601201-Barbell-Lying-Triceps-Extension-Skull-Crusher_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Overhead Squat",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00691201-Barbell-Overhead-Squat_Thighs-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Prone Incline Curl",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00721201-Barbell-Prone-Incline-Curl_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Rack Pull",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00741101-Barbell-Rack-Pull_Hips-FIX_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Revers Wrist Curl II",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00791201-Barbell-Revers-Wrist-Curl-II_Forearms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Reverse Curl",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00801201-Barbell-Reverse-Curl_Forearm_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Seated Overhead Triceps Extension",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00921201-Barbell-Seated-Overhead-Triceps-Extension_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Shrug",
+    "bodyPart": "Back",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/00951201-Barbell-Shrug_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Standing Leg Calf Raise",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/01081101-Barbell-Standing-Leg-Calf-Raise_Calf_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Straight Leg Deadlift",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/01161201-Barbell-Straight-Leg-Deadlift_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Wide Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/01221201-Barbell-Wide-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Battling Ropes",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/01281201-Battling-Ropes_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Bycicle Twisting Crunch",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/01471201-Bycicle-Twisting-Crunch_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Alternate Triceps Extension",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01491201-Cable-Alternate-Triceps-Extension_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Bar Lateral Pulldown",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01501201-Cable-Bar-Lateral-Pulldown_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01511201-Cable-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Curl",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01561201-Cable-Curl_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Hammer Curl (with rope) (male)",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01651201-Cable-Hammer-Curl-(with-rope)-(male)_Forearms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Kneeling Crunch",
+    "bodyPart": "Core",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01751201-Cable-Kneeling-Crunch_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Low Fly",
+    "bodyPart": "Chest",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01791201-Cable-Low-Fly_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Low Seated Row",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01801201-Cable-Low-Seated-Row_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable One Arm Curl",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01901201-Cable-One-Arm-Curl_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable One Arm Lateral Raise",
+    "bodyPart": "Full Body",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01921201-Cable-One-Arm-Lateral-Raise_Shoulders-3_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Overhead Triceps Extension (rope attachment)",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/01941201-Cable-Overhead-Triceps-Extension-(rope-attachment)_Upper-Arms-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Pushdown",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/02011201-Cable-Pushdown_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Reverse Curl",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/02061201-Cable-Reverse-Curl_Forearm_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Reverse grip Straight Back Seated High Row",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/02081201-Cable-Reverse-grip-Straight-Back-Seated-High-Row_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Seated Wide grip Row",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/02181201-Cable-Seated-Wide-grip-Row_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Shrug",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/02201201-Cable-Shrug_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Standing Cross over High Reverse Fly",
+    "bodyPart": "Shoulders",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/02251201-Cable-Standing-Cross-over-High-Reverse-Fly_Shoulders_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Straight Arm Pulldown (with rope)",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/02371201-Cable-Straight-Arm-Pulldown-(with-rope)_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Straight Arm Pulldown",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/02381201-Cable-Straight-Arm-Pulldown_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Chest Dip",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/02511201-Chest-Dip_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Close Grip Push up",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/02591201-Close-Grip-Push-up_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Crunch Floor m",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/02741201-Crunch-Floor-m_waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Decline Crunch",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/02771201-Decline-Crunch_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Decline Push Up",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/02791201-Decline-Push-Up_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Diamond Push up",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/02831101-Diamond-Push-up_Upper-Arms_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Arnold Press II",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/02871201-Dumbbell-Arnold-Press-II_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Around Pullover",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/02881201-Dumbbell-Around-Pullover_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/02891201-Dumbbell-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Bench Seated Press",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/02901201-Dumbbell-Bench-Seated-Press_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Bent over Row",
+    "bodyPart": "Back",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/02921201-Dumbbell-Bent-over-Row_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Bent Over Row",
+    "bodyPart": "Back",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/02931201-Dumbbell-Bent-Over-Row_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Biceps Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/02941201-Dumbbell-Biceps-Curl_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Cross Body Hammer Curl",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/02981101-Dumbbell-Cross-Body-Hammer-Curl_Forearms_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Deadlift",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03001201-Dumbbell-Deadlift_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Decline Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03011201-Dumbbell-Decline-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Decline Fly",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03021201-Dumbbell-Decline-Fly_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Fly",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03081201-Dumbbell-Fly_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Hammer Curl (version 2)",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03121201-Dumbbell-Hammer-Curl-(version-2)_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Incline Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03141201-Dumbbell-Incline-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Incline Biceps Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03151201-Dumbbell-Incline-Biceps-Curl_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Incline Fly",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03191201-Dumbbell-Incline-Fly_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Incline Row",
+    "bodyPart": "Back",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03271201-Dumbbell-Incline-Row_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Kickback",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03331201-Dumbbell-Kickback_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Lunge",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03361201-Dumbbell-Lunge_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell One Arm Triceps Extension (on bench)",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03621201-Dumbbell-One-Arm-Triceps-Extension-(on-bench)_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Prone Incline Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03741201-Dumbbell-Prone-Incline-Curl_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Pullover",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03751201-Dumbbell-Pullover_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Rear Lunge",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03811201-Dumbbell-Rear-Lunge_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Revers grip Biceps Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03821201-Dumbbell-Revers-grip-Biceps-Curl_Forearms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Reverse Fly",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03831201-Dumbbell-Reverse-Fly_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Seated Lateral Raise",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/03961201-Dumbbell-Seated-Lateral-Raise_shoulder_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Seated Preacher Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04021201-Dumbbell-Seated-Preacher-Curl_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Seated Revers grip Concentration Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04031201-Dumbbell-Seated-Revers-grip-Concentration-Curl_Forearms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Shrug",
+    "bodyPart": "Back",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04061201-Dumbbell-Shrug_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Side Bend",
+    "bodyPart": "Core",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04071201-Dumbbell-Side-Bend_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Squat",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04131201-Dumbbell-Squat_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Standing Calf Raise",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04171201-Dumbbell-Standing-Calf-Raise_Calves_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Standing Overhead Press",
+    "bodyPart": "Shoulders",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04261201-Dumbbell-Standing-Overhead-Press_shoulder_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Standing Triceps Extension",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04301201-Dumbbell-Standing-Triceps-Extension_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Step up",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04311101-Dumbbell-Step-up_Hips_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Tate Press",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04361201-Dumbbell-Tate-Press_Triceps_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Zottman Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/04391201-Dumbbell-Zottman-Curl_Upper-Arms-FIX_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Front Plank m",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/04631201-Front-Plank-m_waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Sternum Pull up (Gironda)",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/04661201-Sternum-Pull-up-(Gironda)_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Handstand Push Up",
+    "bodyPart": "Shoulders",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/04711201-Handstand-Push-Up_Shoulders_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Hanging Straight Leg Hip Raise",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/04741201-Hanging-Straight-Leg-Hip-Raise_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Inverted Row",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/04991201-Inverted-Row_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Jump Rope",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/05111101-Jump-Rope_Cardio_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Jump Squat",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/05141201-Jump-Squat_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Kettlebell One Arm Snatch",
+    "bodyPart": "Full Body",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/05421101-Kettlebell-One-Arm-Snatch_Shoulders_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Sumo High Pull",
+    "bodyPart": "Full Body",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/05481101-Kettlebell-Sumo-High-Pull_back_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Thruster",
+    "bodyPart": "Full Body",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/05501101-Kettlebell-Thruster_Shoulders_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Turkish Get Up (Squat style)",
+    "bodyPart": "Full Body",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/05511101-Kettlebell-Turkish-Get-Up-(Squat-style)_Thighs_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Landmine 180",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/05621201-Landmine-180_waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lateral Box Jump (female)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/05641201-Lateral-Box-Jump-(female)_Plyometrics-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "assisted chin up",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/05721301-assisted-chin-up_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Back Extension",
+    "bodyPart": "Core",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05731201-Lever-Back-Extension_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Chest Press (plate loaded)",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05761201-Lever-Chest-Press-(plate-loaded)_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Chest Press",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05771201-Lever-Chest-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Front Pulldown",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05791201-Lever-Front-Pulldown_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever High Row (plate loaded)",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05811101-Lever-High-Row-(plate-loaded)_Back_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Lying Leg Curl",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05861201-Lever-Lying-Leg-Curl_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Military Press (plate loaded)",
+    "bodyPart": "Shoulders",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05871201-Lever-Military-Press-(plate-loaded)_shoulder_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Neutral Grip Seated Row (plate loaded)",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05881201-Lever-Neutral-Grip-Seated-Row-(plate-loaded)_Back-_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Reverse Hyperextension (plate loaded)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05931201-Lever-Reverse-Hyperextension-(plate-loaded)_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Calf Raise (plate loaded)",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05941201-Lever-Seated-Calf-Raise-(plate-loaded)_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Crunch (chest pad)",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05951201-Lever-Seated-Crunch-(chest-pad)_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Fly",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05961201-Lever-Seated-Fly_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Hip Abduction",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05971201-Lever-Seated-Hip-Abduction_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Hip Adduction",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05981201-Lever-Seated-Hip-Adduction_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Leg Curl",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/05991201-Lever-Seated-Leg-Curl_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Reverse Fly",
+    "bodyPart": "Shoulders",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/06021201-Lever-Seated-Reverse-Fly_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Shrug (plate loaded)",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/06041201-Lever-Shrug-(plate-loaded)_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Standing Calf Raise",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/06051201-Lever-Standing-Calf-Raise_Calves_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever T bar Row (plate loaded)",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/06061201-Lever-T-bar-Row-(plate-loaded)_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Oblique Crunches Floor",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/06351201-Oblique-Crunches-Floor_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Power Clean",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/06481201-Power-Clean_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Pull up",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/06521201-Pull-up_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Push up m",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/06621201-Push-up-m_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Ring Dip",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/06771201-Ring-Dip_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Scapular Pull Up",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/06881201-Scapular-Pull-Up_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Shoulder Tap Push up",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/06991201-Shoulder-Tap-Push-up_Plyometrics_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Single Arm Push up",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/07251201-Single-Arm-Push-up_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Sled 45 Calf Press",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/07381201-Sled-45-Calf-Press_Calves_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Smith Back Shrug",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/07461201-Smith-Back-Shrug_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Smith Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/07481201-Smith-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Smith Chair Squat",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/07501201-Smith-Chair-Squat_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Smith Decline Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/07531201-Smith-Decline-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Smith Incline Bench Press",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/07571201-Smith-Incline-Bench-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Suspended Push Up",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08061201-Suspended-Push-Up_Chest_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Trap Bar Deadlift",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08111201-Trap-Bar-Deadlift_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Triceps Dip",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08141201-Triceps-Dip_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Triceps Dips Floor",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08151201-Triceps-Dips-Floor_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "V up",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08251201-V-up_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Weighted Pull Up",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08411201-Weighted-Pull-Up_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Weighted Sissy Squat",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08511201-Weighted-Sissy-Squat_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Weighted Svend Press",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08561201-Weighted-Svend-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Wrist Roller",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08591101-Wrist-Roller_Forearms_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable twist (up down)",
+    "bodyPart": "Core",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/08621201-Cable-twist-(up-down)_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Reverse plank",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08671201-Reverse-plank_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Reverse Crunch m",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/08721201-Reverse-Crunch-m_waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Curtsey lunge (female)",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/08811201-Dumbbell-Curtsey-lunge-(female)_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Horizontal One leg Press",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/08831201-Lever-Horizontal-One-leg-Press_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Band Deadlift (female)",
+    "bodyPart": "Legs",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/08951201-Band-Deadlift-(female)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Band Middle Fly (female)",
+    "bodyPart": "Chest",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/09131201-Band-Middle-Fly-(female)_Chest_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Band Standing Chest Press (female)",
+    "bodyPart": "Chest",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/09201201-Band-Standing-Chest-Press-(female)_Chest_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Downward Facing Dog Adho Mukha Svanasana",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/09491101-Downward-Facing-Dog-Adho-Mukha-Svanasana_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Band close grip pulldown",
+    "bodyPart": "Full Body",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/09741101-Band-close-grip-pulldown_Back_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Torso Rotation (male)",
+    "bodyPart": "Core",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/100651201-Lever-Torso-Rotation-(male)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Standing Single Leg Calf Raise",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/100761201-Lever-Standing-Single-Leg-Calf-Raise_Calves_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Weighted Plate LU Raise (male)",
+    "bodyPart": "Shoulders",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/101141201-Weighted-Plate-LU-Raise-(male)_Shoulders_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Frog Jump",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/101651201-Frog-Jump_Plyometrics_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lying Neck Flexion",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/101661201-Lying-Neck-Flexion_Neck_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lying Neck Extension",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/101671201-Lying-Neck-Extension_Neck_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Standing Single Leg Calf Raise",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/101691201-Barbell-Standing-Single-Leg-Calf-Raise_Calves_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Hamstring Bridge (VERSION 2) (female)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/101801201-Hamstring-Bridge-(VERSION-2)-(female)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Burpee Over the Bar (male)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/101811201-Burpee-Over-the-Bar-(male)_Plyometrics_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Pec Deck Fly",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/10301201-Lever-Pec-Deck-Fly_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Alternate Biceps Curl",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/10321101-Lever-Alternate-Biceps-Curl_Upper-Arms_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Triceps Extension",
+    "bodyPart": "Arms",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/10331201-Lever-Triceps-Extension_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Standing Rear Kick",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/10371201-Lever-Standing-Rear-Kick_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Weighted Lying Neck Extension",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/10421101-Weighted-Lying-Neck-Extension_neck_small_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Weighted Lying Neck Flexion",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/10431201-Weighted-Lying-Neck-Flexion_neck_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Hip Thrust",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/10601101-Barbell-Hip-Thrust_Hips_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell sumo squat",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/10631201-Barbell-sumo-squat_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Sumo Squat (male)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/10641201-Sumo-Squat-(male)_Thighs-FIX__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Suspender Arm Curl (female)",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/10701201-Suspender-Arm-Curl-(female)_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Suspender Front Raise (female)",
+    "bodyPart": "Shoulders",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/10751201-Suspender-Front-Raise-(female)_Shoulders_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Suspender Jack knife (female)",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/10821201-Suspender-Jack-knife-(female)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Suspender Row",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/10921101-Suspender-Row_Back_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Suspender Squat",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/11431101-Suspender-Squat_Thighs_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Burpee",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/11601201-Burpee_Cardio_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lying Leg Raise",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/11631201-Lying-Leg-Raise_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Smith Calf Raise (version 2)",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/11641101-Smith-Calf-Raise-(version-2)_Calves_small_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Standing Military Press (without rack)",
+    "bodyPart": "Shoulders",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/11651201-Barbell-Standing-Military-Press-(without-rack)_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Jump Split m",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/11661201-Jump-Split-m_Plyometrics_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Assisted Weighted Push up",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/11721201-Assisted-Weighted-Push-up_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Squat m",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/11971201-Squat-m_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Push Press",
+    "bodyPart": "Shoulders",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/12001201-Push-Press_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable horizontal Pallof Press",
+    "bodyPart": "Core",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/12021201-Cable-horizontal-Pallof-Press_waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable one arm lat pulldown",
+    "bodyPart": "Full Body",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/12041101-Cable-one-arm-lat-pulldown_back_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable pull through",
+    "bodyPart": "Legs",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/12061201-Cable-pull-through_hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable twist (down up)",
+    "bodyPart": "Core",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/12071201-Cable-twist-(down-up)_waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Smith Standing Shoulder Press",
+    "bodyPart": "Shoulders",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/12241201-Smith-Standing-Shoulder-Press_Shoulders_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Standing Plate Presses",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/12251101-Standing-Plate-Presses_Shoulders_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Flutter Kicks (version 3)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/12441201-Flutter-Kicks-(version-3)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Standing Up Straight Crossovers",
+    "bodyPart": "Chest",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/12691201-Cable-Standing-Up-Straight-Crossovers_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Clap Push Up",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/12731101-Clap-Push-Up_Plyometrics_Chest_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Decline Chest Press",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/13001201-Lever-Decline-Chest-Press_Chest-FIX__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Chin Up",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/13261201-Chin-Up_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Bodyweight Standing Calf Raise",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/13731101-Bodyweight-Standing-Calf-Raise_Calves_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Bench dip on floor",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/13991201-Bench-dip-on-floor_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "L sit",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/14021201-L-sit_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Wide Grip Pull Up",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/14291201-Wide-Grip-Pull-Up_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Dip",
+    "bodyPart": "Arms",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/14511201-Lever-Seated-Dip_Upper-Arms_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Bent Leg Kickback (kneeling)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/14741201-Bent-Leg-Kickback-(kneeling)_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Bent Leg Side Kick (kneeling) (female)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/14751201-Bent-Leg-Side-Kick-(kneeling)-(female)_Hips-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Incline Chest Press",
+    "bodyPart": "Chest",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/14791201-Lever-Incline-Chest-Press_Chest_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Clean Pull",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/15171101-Barbell-Clean-Pull_Weightlifts_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Hang Clean",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/15201201-Barbell-Hang-Clean_Weightlifts-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Hang Clean Below the Knees",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/15211101-Barbell-Hang-Clean-Below-the-Knees_Weightlifts_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Hang Snatch",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/15221101-Barbell-Hang-Snatch_Weightlifts_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Power Snatch",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/15301101-Barbell-Power-Snatch_Weightlifts_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Snatch",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/15331101-Barbell-Snatch_Weightlifts_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Split Jerk",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/15381101-Barbell-Split-Jerk_Weightlifts_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell full Zercher Squat",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/15451101-Barbell-full-Zercher-Squat_Thighs_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Cable Overhead Curl",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/16361201-Cable-Overhead-Curl_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Cross Body Hammer Curl (Version 2)",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/16571201-Dumbbell-Cross-Body-Hammer-Curl-(Version-2)_Upper-Arms-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Squat Row (with rope attachment)",
+    "bodyPart": "Legs",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/17171201-Cable-Squat-Row-(with-rope-attachment)_Back_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Weighted Tricep Dips",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/17551201-Weighted-Tricep-Dips_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Single Leg Deadlift",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/17561201-Barbell-Single-Leg-Deadlift_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Single Leg Squat (pistol) male",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/17591101-Single-Leg-Squat-(pistol)-male_Thighs_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Hanging Leg Hip Raise",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/17641201-Hanging-Leg-Hip-Raise_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Hyperextension (VERSION 2)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/18601201-Hyperextension-(VERSION-2)_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Triceps Dip (plate loaded)",
+    "bodyPart": "Arms",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/18711201-Lever-Triceps-Dip-(plate-loaded)_Upper-Arms-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Single Leg",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/20711101-Single-Leg_Hip-Thrusts_Hips_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Captains chair leg raise",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/21261201-Captains-chair-leg-raise_Hips_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Weighted decline crunch",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/21301201-Weighted-decline-crunch_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Hip Thrust",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/21461201-Lever-Hip-Thrust_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Elliptical Machine Walk",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/21921201-Elliptical-Machine-Walk_Cardio_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Run (female)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/21961201-Run-(female)_Cardio_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Run on Treadmill (female)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/21971201-Run-on-Treadmill-(female)_Cardio_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Rear Lunge (female)",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/22261201-Barbell-Rear-Lunge-(female)_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Lying Triceps Extension (female)",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/22511201-Dumbbell-Lying-Triceps-Extension-(female)_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Row (version 2)",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/22651201-Lever-Seated-Row-(version-2)_Back_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Leg Press",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/22671201-Lever-Seated-Leg-Press_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Rowing Straight Back (with rowing machine) (female)",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/22701201-Rowing-Straight-Back-(with-rowing-machine)-(female)_Cardio_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Boxing Right Cross",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/22731101-Boxing-Right-Cross_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Stationary Bike Run (version 4)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/22791201-Stationary-Bike-Run-(version-4)_Cardio_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Goblet Squat (female)",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/22811201-Dumbbell-Goblet-Squat-(female)_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Pullover (plate loaded)",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/22851201-Lever-Pullover-(plate-loaded)_Back__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Walking on Stepmill",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/23111201-Walking-on-Stepmill_Cardio_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lying Elbow to Knee",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/23121201-Lying-Elbow-to-Knee_Waist_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Lever Rotary Calf",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/23151201-Lever-Rotary-Calf_Calves_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Sumo Squat (female)",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/23221201-Dumbbell-Sumo-Squat-(female)_Thighs__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Goblet Squat (female)",
+    "bodyPart": "Legs",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/23561201-Kettlebell-Goblet-Squat-(female)_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Single Leg Squat with Support (female)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/23751201-Single-Leg-Squat-with-Support-(female)_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Pushdown (with rope attachment) (female)",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/24381201-Cable-Pushdown-(with-rope-attachment)-(female)_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Resistance Band Lateral Walk",
+    "bodyPart": "Full Body",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/24601101-Resistance-Band-Lateral-Walk_Hips_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Rear Delt Fly (female)",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/24871101-Dumbbell-Rear-Delt-Fly-(female)_Shoulders_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Power Sled Push (female)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/25241201-Power-Sled-Push-(female)_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Seated Palms Up Wrist Curl (female)",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/26331201-Dumbbell-Seated-Palms-Up-Wrist-Curl-(female)_Forea_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Seated Row with V bar",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/26611201-Cable-Seated-Row-with-V-bar_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Pike Push up",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/29211101-Pike-Push-up_Chest_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Around Head Rotation",
+    "bodyPart": "Back",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/29391201-Kettlebell-Around-Head-Rotation_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Belt Squat",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/29501201-Lever-Belt-Squat_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Split Squat",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/29601201-Dumbbell-Split-Squat_Thighs_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Captains Chair Straight Leg Raise",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/29631101-Captains-Chair-Straight-Leg-Raise_Waist_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Side Lunge",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/29721201-Side-Lunge_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Landmine Squat and Press",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/29761301-Landmine-Squat-and-Press_360_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Elbow Up and Down Dynamic Plank",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/29781201-Elbow-Up-and-Down-Dynamic-Plank_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Renegade Row (female)",
+    "bodyPart": "Back",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/29811201-Dumbbell-Renegade-Row-(female)_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Weighted Close Grip Chin up on Dip Cage",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/29871101-Weighted-Close-Grip-Chin-up-on-Dip-Cage_Back_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Pendlay Row",
+    "bodyPart": "Back",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/30171201-Barbell-Pendlay-Row_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "High Knee Skips (male)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/30911201-High-Knee-Skips-(male)_Cardio-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Jumping Jack (male)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/30941201-Jumping-Jack-(male)_Cardio_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Bent over Row with V bar (plate loaded)",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/32001201-Lever-Bent-over-Row-with-V-bar-(plate-loaded)_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Kneeling Push up (male)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/32111101-Kneeling-Push-up-(male)_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Handstand",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/33021101-Handstand_Upper-arms_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Barbell Thruster",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/33051201-Barbell-Thruster_Weightlifting_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Incline Y Raise",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/35411201-Dumbbell-Incline-Y-Raise_Shoulders__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Lying on Floor Chest Press",
+    "bodyPart": "Chest",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/36681201-Dumbbell-Lying-on-Floor-Chest-Press_Chest_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Squeeze Bench Press",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/36811201-Dumbbell-Squeeze-Bench-Press_Chest-FIX__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Floor Chest Press",
+    "bodyPart": "Chest",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/37241201-Barbell-Floor-Chest-Press_Chest_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Incline Push Up (on box)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/37851201-Incline-Push-Up-(on-box)_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Band Assisted Pull Up (VERSION 3) (female)",
+    "bodyPart": "Back",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/38441201-Band-Assisted-Pull-Up-(VERSION-3)-(female)_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Seated Chest Fly",
+    "bodyPart": "Full Body",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/38691101-Cable-Seated-Chest-Fly_Chest_small_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Jack knife Sit up (female)",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/38841201-Jack-knife-Sit-up-(female)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell One Arm Snatch",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/38881101-Dumbbell-One-Arm-Snatch_small_thumbnail@3x.jpg"
+  },
+  {
+    "name": "Assault Bike Run",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/38931101-Assault-Bike-Run_Cardio_small_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Band bent over row (male)",
+    "bodyPart": "Back",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/38991201-Band-bent-over-row-(male)_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Single Leg Calf Raise (female) (VERSION 2)",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/39731201-Dumbbell-Single-Leg-Calf-Raise-(female)-(VERSION-2)_Calves_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Landmine One Arm Bent Over Row",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/40381201-Landmine-One-Arm-Bent-Over-Row_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Leg Raise Dragon Flag",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/40581201-Leg-Raise-Dragon-Flag_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Low Row (plate loaded)",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/42141201-Lever-Low-Row-(plate-loaded)_Back__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Band Knelling Lat Pulldown",
+    "bodyPart": "Back",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/43581201-Band-Knelling-Lat-Pulldown_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Single Arm Clean (female)",
+    "bodyPart": "Full Body",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/45301201-Kettlebell-Single-Arm-Clean-(female)_Weightlifts_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Standing Slingshots (female)",
+    "bodyPart": "Shoulders",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/45341201-Kettlebell-Standing-Slingshots-(female)_Shoulders_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Neutral Grip Kickback",
+    "bodyPart": "Full Body",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/45661101-Cable-Neutral-Grip-Kickback_Upper-arms_small_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Resistance Band Pull Apart",
+    "bodyPart": "Shoulders",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/45681201-Resistance-Band-Pull-Apart_Shoulders_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Band Standing Hammer Curl",
+    "bodyPart": "Arms",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/46191201-Band-Standing-Hammer-Curl_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Single Leg Hip Thrust",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/47551101-Dumbbell-Single-Leg-Hip-Thrust_Hips_small_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Sit up",
+    "bodyPart": "Core",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/47561201-Dumbbell-Sit-up_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Pull up (negative) (female)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/47741201-Pull-up-(negative)-(female)_Back__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Unilateral Bicep Curl",
+    "bodyPart": "Arms",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/48381201-Cable-Unilateral-Bicep-Curl_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Spiderman Plank",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/48791201-Spiderman-Plank_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Pendulum Squat (plate loaded)",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/49511201-Lever-Pendulum-Squat-(plate-loaded)_Thighs__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Box Squat",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/49621201-Barbell-Box-Squat_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Jump Shrug",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/49641201-Jump-Shrug_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Pause Full Squat",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/50161201-Barbell-Pause-Full-Squat_Thighs__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Single Arm Triceps Pushdown (rope attachment",
+    "bodyPart": "Full Body",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/50331201-Cable-Single-Arm-Triceps-Pushdown-(rope-attachment_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Single Leg Calf Raise Off Step",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/50521201-Single-Leg-Calf-Raise-Off-Step_Calves_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dead Hang Stretch",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/50551101-Dead-Hang-Stretch_Stretching_small_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Sumo Squat (VERSION 2)",
+    "bodyPart": "Legs",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/50731201-Kettlebell-Sumo-Squat-(VERSION-2)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Overhead Lunge",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/50761201-Dumbbell-Overhead-Lunge_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Landmine Single Arm Press",
+    "bodyPart": "Shoulders",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/50941201-Landmine-Single-Arm-Press_Shoulders_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Medicine Ball Throw Squat with Wall",
+    "bodyPart": "Shoulders",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/51611201-Medicine-Ball-Throw-Squat-with-Wall_Shoulders_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Standing Single Leg Curl (plate loaded)",
+    "bodyPart": "Full Body",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/51811201-Lever-Standing-Single-Leg-Curl-(plate-loaded)_Thig_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Bird Dog (VERSION 2) (female)",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/51821201-Bird-Dog-(VERSION-2)-(female)_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Bodyweight Muscle Up (VERSION 2)",
+    "bodyPart": "Back",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/51941201-Bodyweight-Muscle-Up-(VERSION-2)_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Waiter Biceps Curl",
+    "bodyPart": "Arms",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/52011201-Dumbbell-Waiter-Biceps-Curl_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lying Toe Touch",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/52751201-Lying-Toe-Touch_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell KAS Glute Bridge (female)",
+    "bodyPart": "Legs",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/54511201-Barbell-KAS-Glute-Bridge-(female)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Ring Pull Up",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/55221201-Ring-Pull-Up_Back_1_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Hollow Rock (male)",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/56491201-Hollow-Rock-(male)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Suspension Fly",
+    "bodyPart": "Chest",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/57371201-Suspension-Fly_Chest-FIX_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Band squat (female)",
+    "bodyPart": "Legs",
+    "equipment": "Band",
+    "mediaUrl": "/exercises/hevy/57491201-Band-squat-(female)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Smith Hip Thrust (female)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/57611201-Smith-Hip-Thrust-(female)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Glute Ham Raise (VERSION 2) (female)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/57771201-Glute-Ham-Raise-(VERSION-2)-(female)_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Weighted Hyperextension (female)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/57821201-Weighted-Hyperextension-(female)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Squat (plate loaded) (female)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/57881201-Lever-Squat-(plate-loaded)-(female)_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Suspension Triceps Extension (male)",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/58761201-Suspension-Triceps-Extension-(male)_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Single Leg Bridge with Outstretched Leg (left) (ma",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/60001201-Single-Leg-Bridge-with-Outstretched-Leg-(left)-(ma_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Donkey Kickback (male)",
+    "bodyPart": "Legs",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/60401201-Cable-Donkey-Kickback-(male)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Frog Hip Thrust (male)",
+    "bodyPart": "Legs",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/61601201-Dumbbell-Frog-Hip-Thrust-(male)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lying Scissors Cross (male)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/62141201-Lying-Scissors-Cross-(male)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Standing Single Arm Fly",
+    "bodyPart": "Chest",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/62191201-Cable-Standing-Single-Arm-Fly_Chest_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Larsen Press (male)",
+    "bodyPart": "Chest",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/62701201-Barbell-Larsen-Press-(male)_Chest_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "EZ Barbell Standing Back Wrist Curl",
+    "bodyPart": "Arms",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/63651201-EZ-Barbell-Standing-Back-Wrist-Curl_Forearms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Bodyweight Reverse Lunge (female)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/63881201-Bodyweight-Reverse-Lunge-(female)_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Lateral Pulldown with Mag Grip",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/63921201-Cable-Lateral-Pulldown-with-Mag-Grip_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Weighted Plate Lying Crunch (male)",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/66031201-Weighted-Plate-Lying-Crunch-(male)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Sit (wall) (female)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/66961201-Sit-(wall)-(female)_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Weighted Plate Standing Biceps Curl (male)",
+    "bodyPart": "Arms",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/66981201-Weighted-Plate-Standing-Biceps-Curl-(male)_Forearm_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Barbell Incline Shoulders Press (inside squat cage",
+    "bodyPart": "Full Body",
+    "equipment": "Barbell",
+    "mediaUrl": "/exercises/hevy/68771201-Barbell-Incline-Shoulders-Press-(inside-squat-cage_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Superman Hold (male)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/68861201-Superman-Hold-(male)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Side Step Deep Squat (male)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/69241201-Side-Step-Deep-Squat-(male)_Plyometrics_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Biceps Curl (female)",
+    "bodyPart": "Arms",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/69331201-Kettlebell-Biceps-Curl-(female)_Upper-Arms_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Seated Leg Extension (VERSION 2)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/71081201-Lever-Seated-Leg-Extension-(VERSION-2)_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Jump Box (female)",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/71591201-Jump-Box-(female)_Plyometrics_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Cross Lat Pulldown (VERSION 2) (male)",
+    "bodyPart": "Back",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/71791201-Lever-Cross-Lat-Pulldown-(VERSION-2)-(male)_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Gorilla Row (male)",
+    "bodyPart": "Full Body",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/72301201-Kettlebell-Gorilla-Row-(male)_Back__thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Hanging Front Lever Raise (male)",
+    "bodyPart": "Core",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/72511201-Hanging-Front-Lever-Raise-(male)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Plank Alternate Knee Tuck (female)",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/75311201-Plank-Alternate-Knee-Tuck-(female)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Medicine Ball Slam (VERSION 2) (male)",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/75351201-Medicine-Ball-Slam-(VERSION-2)-(male)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Split Stance Single Arm Row (male)",
+    "bodyPart": "Back",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/75641201-Cable-Split-Stance-Single-Arm-Row-(male)_Back_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable Standing Supinated Face Pull (with rope)",
+    "bodyPart": "Full Body",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/77441201-Cable-Standing-Supinated-Face-Pull-(with-rope)_Sho_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Nordic Hamstring Curl (male)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/77461201-Nordic-Hamstring-Curl-(male)_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Glute Bridge from Bench (male)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/80151201-Glute-Bridge-from-Bench-(male)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lying Knee Raise (male)",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/81941201-Lying-Knee-Raise-(male)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Standing Single Side Leg Raise Chair Supported (fe",
+    "bodyPart": "Full Body",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/86421201-Standing-Single-Side-Leg-Raise-Chair-Supported-(fe_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Step Up on Box",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/94901201-Step-Up-on-Box_Thighs_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Dumbbell Single Leg Romanian Deadlift Leg Raise (m",
+    "bodyPart": "Full Body",
+    "equipment": "Dumbbell",
+    "mediaUrl": "/exercises/hevy/97541201-Dumbbell-Single-Leg-Romanian-Deadlift-Leg-Raise-(m_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Hanging Knee Raise (male)",
+    "bodyPart": "Core",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/98191201-Hanging-Knee-Raise-(male)_Waist_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Side Plank Clamshell (male)",
+    "bodyPart": "Legs",
+    "equipment": "Bodyweight",
+    "mediaUrl": "/exercises/hevy/98491201-Side-Plank-Clamshell-(male)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Cable 45 degrees Single Arm Reverse Fly (male)",
+    "bodyPart": "Full Body",
+    "equipment": "Cable",
+    "mediaUrl": "/exercises/hevy/98681201-Cable-45-degrees-Single-Arm-Reverse-Fly-(male)_Sho_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Lever Pure Rear Kick (female)",
+    "bodyPart": "Legs",
+    "equipment": "Machine",
+    "mediaUrl": "/exercises/hevy/99041201-Lever-Pure-Rear-Kick-(female)_Hips_thumbnail_@3x.jpg"
+  },
+  {
+    "name": "Kettlebell Single Arm Shoulder Press (male)",
+    "bodyPart": "Full Body",
+    "equipment": "Kettlebell",
+    "mediaUrl": "/exercises/hevy/99571201-Kettlebell-Single-Arm-Shoulder-Press-(male)_Should_thumbnail_@3x.jpg"
+  }
 ]
-
-
-
-

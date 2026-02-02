@@ -40,10 +40,18 @@ export function useUpdateProfile() {
     mutationFn: updateProfile,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      setSnackbar({ open: true, message: 'Profile updated successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Profile updated successfully',
+        severity: 'success',
+      });
     },
     onError: () => {
-      setSnackbar({ open: true, message: 'Failed to update profile', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to update profile',
+        severity: 'error',
+      });
     },
   });
 
@@ -53,7 +61,3 @@ export function useUpdateProfile() {
     closeSnackbar: () => setSnackbar({ ...snackbar, open: false }),
   };
 }
-
-
-
-

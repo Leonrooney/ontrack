@@ -3,7 +3,12 @@ import { prisma } from '@/lib/prisma';
 import { getSessionSafe } from '@/lib/auth';
 import { z } from 'zod';
 import { toPlain } from '@/lib/serialize';
-import { getPersonalBestSetIds, detectPersonalBests, storePersonalBests } from '@/lib/personal-best';
+import {
+  getPersonalBestSetIds,
+  detectPersonalBests,
+  storePersonalBests,
+} from '@/lib/personal-best';
+import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,7 +52,7 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: { email },
     select: { id: true },
   });
@@ -55,15 +60,15 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const workout = await prisma.workoutSession.findUnique({
+  const workout = await prisma.workout_sessions.findUnique({
     where: { id: params.id },
     include: {
-      items: {
+      workout_items: {
         orderBy: { orderIndex: 'asc' },
         include: {
-          exercise: true,
-          custom: true,
-          sets: { orderBy: { setNumber: 'asc' } },
+          exercises: true,
+          custom_exercises: true,
+          workout_sets: { orderBy: { setNumber: 'asc' } },
         },
       },
     },
@@ -82,17 +87,30 @@ export async function GET(
   const pbSetIds = await getPersonalBestSetIds(user.id, [workout.id]);
 
   // Add isPersonalBest flag to each set
-  const plain = toPlain(workout);
-  if (plain.items) {
-    plain.items = plain.items.map((item: any) => {
-      if (item.sets) {
-        item.sets = item.sets.map((set: any) => ({
+  const plain: any = toPlain(workout);
+  if (plain.workout_items) {
+    plain.items = plain.workout_items.map((item: any) => {
+      // Map exercises/custom_exercises to exercise/custom for frontend compatibility
+      // Map workout_sets to sets for frontend compatibility
+      const mappedItem: any = {
+        ...item,
+        exercise: item.exercises || null,
+        custom: item.custom_exercises || null,
+        sets: item.workout_sets || [],
+      };
+      delete mappedItem.exercises;
+      delete mappedItem.custom_exercises;
+      delete mappedItem.workout_sets;
+
+      if (mappedItem.sets) {
+        mappedItem.sets = mappedItem.sets.map((set: any) => ({
           ...set,
           isPersonalBest: pbSetIds.has(set.id),
         }));
       }
-      return item;
+      return mappedItem;
     });
+    delete plain.workout_items;
   }
 
   return NextResponse.json(plain);
@@ -112,7 +130,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: { email },
     select: { id: true },
   });
@@ -121,7 +139,7 @@ export async function PATCH(
   }
 
   // Check ownership first
-  const existing = await prisma.workoutSession.findUnique({
+  const existing = await prisma.workout_sessions.findUnique({
     where: { id: params.id },
     select: { userId: true },
   });
@@ -148,13 +166,14 @@ export async function PATCH(
   // If items are provided, we need to replace all items and sets
   if (items !== undefined) {
     // Delete existing items (cascades to sets)
-    await prisma.workoutItem.deleteMany({
+    await prisma.workout_items.deleteMany({
       where: { workoutId: params.id },
     });
 
     // Create new items
-    await prisma.workoutItem.createMany({
+    await prisma.workout_items.createMany({
       data: items.map((it, idx) => ({
+        id: randomUUID(),
         workoutId: params.id,
         orderIndex: idx,
         exerciseId: 'exerciseId' in it ? it.exerciseId : null,
@@ -163,7 +182,7 @@ export async function PATCH(
     });
 
     // Get the created items to create sets
-    const createdItems = await prisma.workoutItem.findMany({
+    const createdItems = await prisma.workout_items.findMany({
       where: { workoutId: params.id },
       orderBy: { orderIndex: 'asc' },
     });
@@ -173,8 +192,9 @@ export async function PATCH(
       const item = items[i];
       const createdItem = createdItems[i];
       if (createdItem) {
-        await prisma.workoutSet.createMany({
-          data: item.sets.map((s) => ({
+        await prisma.workout_sets.createMany({
+          data: item.sets.map((s: any) => ({
+            id: randomUUID(),
             itemId: createdItem.id,
             setNumber: s.setNumber,
             weightKg: s.weightKg != null ? s.weightKg : null,
@@ -204,16 +224,16 @@ export async function PATCH(
     updateData.notes = notes || null;
   }
 
-  const updated = await prisma.workoutSession.update({
+  const updated = await prisma.workout_sessions.update({
     where: { id: params.id },
     data: updateData,
     include: {
-      items: {
+      workout_items: {
         orderBy: { orderIndex: 'asc' },
         include: {
-          exercise: true,
-          custom: true,
-          sets: { orderBy: { setNumber: 'asc' } },
+          exercises: true,
+          custom_exercises: true,
+          workout_sets: { orderBy: { setNumber: 'asc' } },
         },
       },
     },
@@ -221,18 +241,18 @@ export async function PATCH(
 
   // If items were updated, detect and store new PBs
   if (items !== undefined) {
-    for (const item of updated.items) {
+    for (const item of updated.workout_items) {
       const exerciseId = item.exerciseId;
       const customId = item.customId;
 
-      for (const set of item.sets) {
+      for (const set of item.workout_sets) {
         const pbs = await detectPersonalBests(
           user.id,
           exerciseId,
           customId,
           set.id,
           set.weightKg ? Number(set.weightKg) : null,
-          set.reps,
+          set.reps
         );
 
         if (pbs.length > 0) {
@@ -246,17 +266,30 @@ export async function PATCH(
   const pbSetIds = await getPersonalBestSetIds(user.id, [updated.id]);
 
   // Add isPersonalBest flag to each set
-  const plain = toPlain(updated);
-  if (plain.items) {
-    plain.items = plain.items.map((item: any) => {
-      if (item.sets) {
-        item.sets = item.sets.map((set: any) => ({
+  const plain: any = toPlain(updated);
+  if (plain.workout_items) {
+    plain.items = plain.workout_items.map((item: any) => {
+      // Map exercises/custom_exercises to exercise/custom for frontend compatibility
+      // Map workout_sets to sets for frontend compatibility
+      const mappedItem: any = {
+        ...item,
+        exercise: item.exercises || null,
+        custom: item.custom_exercises || null,
+        sets: item.workout_sets || [],
+      };
+      delete mappedItem.exercises;
+      delete mappedItem.custom_exercises;
+      delete mappedItem.workout_sets;
+
+      if (mappedItem.sets) {
+        mappedItem.sets = mappedItem.sets.map((set: any) => ({
           ...set,
           isPersonalBest: pbSetIds.has(set.id),
         }));
       }
-      return item;
+      return mappedItem;
     });
+    delete plain.workout_items;
   }
 
   return NextResponse.json(plain);
@@ -276,7 +309,7 @@ export async function DELETE(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: { email },
     select: { id: true },
   });
@@ -285,7 +318,7 @@ export async function DELETE(
   }
 
   // Check ownership
-  const existing = await prisma.workoutSession.findUnique({
+  const existing = await prisma.workout_sessions.findUnique({
     where: { id: params.id },
     select: { userId: true },
   });
@@ -299,12 +332,9 @@ export async function DELETE(
   }
 
   // Delete workout (cascades to items and sets)
-  await prisma.workoutSession.delete({
+  await prisma.workout_sessions.delete({
     where: { id: params.id },
   });
 
   return NextResponse.json({ success: true });
 }
-
-
-

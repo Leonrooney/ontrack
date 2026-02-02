@@ -4,7 +4,10 @@ import { z } from 'zod';
  * Activity entry validation schema
  */
 export const activitySchema = z.object({
-  date: z.string().datetime().or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
+  date: z
+    .string()
+    .datetime()
+    .or(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)),
   steps: z.number().min(0),
   distanceKm: z.number().min(0),
   calories: z.number().min(0),

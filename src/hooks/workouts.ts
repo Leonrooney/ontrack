@@ -6,7 +6,9 @@ export function useWorkoutHistory(limit = 20) {
   return useQuery({
     queryKey: ['workouts', { limit }],
     queryFn: async () => {
-      const res = await fetch(`/api/workouts?limit=${limit}`, { credentials: 'same-origin' });
+      const res = await fetch(`/api/workouts?limit=${limit}`, {
+        credentials: 'same-origin',
+      });
       if (!res.ok) throw new Error('Failed to load workouts');
       return res.json() as Promise<{ items: any[]; nextCursor: string | null }>;
     },
@@ -17,7 +19,9 @@ export function useWorkout(id: string) {
   return useQuery({
     queryKey: ['workout', id],
     queryFn: async () => {
-      const res = await fetch(`/api/workouts/${id}`, { credentials: 'same-origin' });
+      const res = await fetch(`/api/workouts/${id}`, {
+        credentials: 'same-origin',
+      });
       if (!res.ok) throw new Error('Failed to load workout');
       return res.json();
     },
@@ -112,10 +116,18 @@ export function useUpdateWorkout() {
       qc.invalidateQueries({ queryKey: ['dashboard'] });
       qc.invalidateQueries({ queryKey: ['activity'] });
       qc.invalidateQueries({ queryKey: ['goals'] });
-      setSnackbar({ open: true, message: 'Workout updated successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Workout updated successfully',
+        severity: 'success',
+      });
     },
     onError: () => {
-      setSnackbar({ open: true, message: 'Failed to update workout', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to update workout',
+        severity: 'error',
+      });
     },
   });
 
@@ -150,10 +162,18 @@ export function useDeleteWorkout() {
       qc.invalidateQueries({ queryKey: ['dashboard'] });
       qc.invalidateQueries({ queryKey: ['activity'] });
       qc.invalidateQueries({ queryKey: ['goals'] });
-      setSnackbar({ open: true, message: 'Workout deleted successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Workout deleted successfully',
+        severity: 'success',
+      });
     },
     onError: () => {
-      setSnackbar({ open: true, message: 'Failed to delete workout', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to delete workout',
+        severity: 'error',
+      });
     },
   });
 
@@ -168,7 +188,9 @@ export function useRecentWorkout() {
   return useQuery({
     queryKey: ['workouts', 'recent'],
     queryFn: async () => {
-      const res = await fetch('/api/workouts/recent', { credentials: 'same-origin' });
+      const res = await fetch('/api/workouts/recent', {
+        credentials: 'same-origin',
+      });
       if (!res.ok) throw new Error('Failed to load recent workout');
       const data = await res.json();
       return data || null;
@@ -181,11 +203,105 @@ export function useWorkoutFrequency(range = 90) {
   return useQuery({
     queryKey: ['workouts', 'stats', { range }],
     queryFn: async () => {
-      const res = await fetch(`/api/workouts/stats?range=${range}`, { credentials: 'same-origin' });
+      const res = await fetch(`/api/workouts/stats?range=${range}`, {
+        credentials: 'same-origin',
+      });
       if (!res.ok) throw new Error('Failed to load workout stats');
-      return res.json() as Promise<{ stats: Array<{ week: string; weekStart: string; count: number }> }>;
+      return res.json() as Promise<{
+        stats: Array<{ week: string; weekStart: string; count: number }>;
+      }>;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
+export function useDailyWorkoutStats(weekOffset = 0) {
+  return useQuery({
+    queryKey: ['workouts', 'stats', 'daily', { weekOffset }],
+    queryFn: async () => {
+      const res = await fetch(`/api/workouts/stats/daily?week=${weekOffset}`, {
+        credentials: 'same-origin',
+      });
+      if (!res.ok) throw new Error('Failed to load daily workout stats');
+      return res.json() as Promise<{
+        stats: Array<{ day: string; date: string; count: number }>;
+        weekStart: string;
+        weekEnd: string;
+      }>;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
 
+export function useMonthlyWorkoutStats(monthOffset = 0) {
+  return useQuery({
+    queryKey: ['workouts', 'stats', 'monthly', { monthOffset }],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/workouts/stats/monthly?month=${monthOffset}`,
+        { credentials: 'same-origin' }
+      );
+      if (!res.ok) throw new Error('Failed to load monthly workout stats');
+      return res.json() as Promise<{
+        calendar: Array<{
+          date: string;
+          day: number;
+          hasWorkout: boolean;
+          isCurrentMonth: boolean;
+        }>;
+        month: string;
+        monthStart: string;
+        monthEnd: string;
+      }>;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useMuscleGroupStats(range = 90) {
+  return useQuery({
+    queryKey: ['workouts', 'stats', 'muscle-groups', { range }],
+    queryFn: async () => {
+      const res = await fetch(
+        `/api/workouts/stats/muscle-groups?range=${range}`,
+        { credentials: 'same-origin' }
+      );
+      if (!res.ok) throw new Error('Failed to load muscle group stats');
+      return res.json() as Promise<{
+        current: {
+          Back: number;
+          Chest: number;
+          Core: number;
+          Shoulders: number;
+          Arms: number;
+          Legs: number;
+        };
+        previous: {
+          Back: number;
+          Chest: number;
+          Core: number;
+          Shoulders: number;
+          Arms: number;
+          Legs: number;
+        };
+        currentRaw: {
+          Back: number;
+          Chest: number;
+          Core: number;
+          Shoulders: number;
+          Arms: number;
+          Legs: number;
+        };
+        previousRaw: {
+          Back: number;
+          Chest: number;
+          Core: number;
+          Shoulders: number;
+          Arms: number;
+          Legs: number;
+        };
+        maxValue: number;
+      }>;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}

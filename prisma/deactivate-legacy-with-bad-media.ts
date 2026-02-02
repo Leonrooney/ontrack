@@ -12,11 +12,9 @@ async function main() {
     where: { mediaUrl: null },
     data: { isActive: false },
   });
-  console.log(`Deactivated with wikimedia: ${bad1.count}, with null media: ${bad2.count}`);
+  console.log(
+    `Deactivated with wikimedia: ${bad1.count}, with null media: ${bad2.count}`
+  );
 }
 
 main().finally(() => prisma.$disconnect());
-
-
-
-

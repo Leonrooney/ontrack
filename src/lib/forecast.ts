@@ -34,11 +34,16 @@ export function exponentialSmoothing(series: number[], alpha = 0.3): number[] {
   return out;
 }
 
-export function naiveStdDevResiduals(actual: number[], fitted: number[]): number {
+export function naiveStdDevResiduals(
+  actual: number[],
+  fitted: number[]
+): number {
   const n = Math.min(actual.length, fitted.length);
   if (n < 2) return 0;
 
-  const residuals = actual.slice(-n).map((a, i) => a - fitted[fitted.length - n + i]);
+  const residuals = actual
+    .slice(-n)
+    .map((a, i) => a - fitted[fitted.length - n + i]);
   const mean = residuals.reduce((a, b) => a + b, 0) / n;
   const varSum = residuals.reduce((a, r) => a + (r - mean) * (r - mean), 0);
 
@@ -79,7 +84,7 @@ export function forecastSeries(
   const sd = naiveStdDevResiduals(series, fitted);
 
   // last fitted as base for recursive future (flat ES/MA extension)
-  const last = fitted[fitted.length - 1] ?? (series.at(-1) ?? 0);
+  const last = fitted[fitted.length - 1] ?? series.at(-1) ?? 0;
   const preds = Array.from({ length: horizon }, () => last);
 
   const lastDate = new Date(dates[dates.length - 1]);
@@ -101,4 +106,3 @@ export function forecastSeries(
     })),
   };
 }
-

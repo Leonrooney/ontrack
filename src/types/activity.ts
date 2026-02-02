@@ -22,4 +22,3 @@ export interface ActivityInput {
 }
 
 export type DateRange = 'day' | 'week' | 'month';
-

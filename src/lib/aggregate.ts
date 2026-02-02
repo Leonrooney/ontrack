@@ -16,7 +16,7 @@ export async function sumActivityForRange(
   userId: string,
   bounds: PeriodBounds
 ): Promise<ActivityAggregate> {
-  const entries = await prisma.activityEntry.findMany({
+  const entries = await prisma.activity_entries.findMany({
     where: {
       userId,
       date: {
@@ -28,7 +28,10 @@ export async function sumActivityForRange(
 
   return {
     steps: entries.reduce((sum, e) => sum + (e.steps || 0), 0),
-    distanceKm: entries.reduce((sum, e) => sum + (toNumber(e.distanceKm) || 0), 0),
+    distanceKm: entries.reduce(
+      (sum, e) => sum + (toNumber(e.distanceKm) || 0),
+      0
+    ),
     calories: entries.reduce((sum, e) => sum + (e.calories || 0), 0),
     workouts: entries.reduce((sum, e) => sum + (e.workouts || 0), 0),
   };
@@ -38,14 +41,20 @@ export async function sumActivityForRange(
  * Compute streak for a goal
  */
 export async function computeStreak(
-  goal: { type: string; period: string; userId: string; targetInt?: number | null; targetDec?: number | null },
+  goal: {
+    type: string;
+    period: string;
+    userId: string;
+    targetInt?: number | null;
+    targetDec?: number | null;
+  },
   recentPeriods: PeriodBounds[]
 ): Promise<number> {
   let streak = 0;
 
   for (const periodBounds of recentPeriods.reverse()) {
     const aggregate = await sumActivityForRange(goal.userId, periodBounds);
-    
+
     let target: number;
     let actual: number;
 
@@ -72,7 +81,7 @@ export async function computeStreak(
     }
 
     const pct = target > 0 ? (actual / target) * 100 : 0;
-    
+
     if (pct >= 100) {
       streak++;
     } else {
@@ -82,4 +91,3 @@ export async function computeStreak(
 
   return streak;
 }
-

@@ -33,9 +33,13 @@ export async function generateRecommendations(
   const firstWeekSteps = trends.steps.slice(0, 7).reduce((a, b) => a + b, 0);
   const lastWeekSteps = trends.steps.slice(-7).reduce((a, b) => a + b, 0);
   const stepsChange =
-    firstWeekSteps > 0 ? ((lastWeekSteps - firstWeekSteps) / firstWeekSteps) * 100 : 0;
+    firstWeekSteps > 0
+      ? ((lastWeekSteps - firstWeekSteps) / firstWeekSteps) * 100
+      : 0;
 
-  const firstWeekCalories = trends.calories.slice(0, 7).reduce((a, b) => a + b, 0);
+  const firstWeekCalories = trends.calories
+    .slice(0, 7)
+    .reduce((a, b) => a + b, 0);
   const lastWeekCalories = trends.calories.slice(-7).reduce((a, b) => a + b, 0);
   const caloriesChange =
     firstWeekCalories > 0
@@ -108,19 +112,19 @@ export async function generateRecommendations(
 
   // Trend-based recommendations
   if (stepsChange > 10) {
-      recommendations.push(
-        `Excellent progress! Your steps have increased ${Math.round(stepsChange)}% over the last week.`
-      );
+    recommendations.push(
+      `Excellent progress! Your steps have increased ${Math.round(stepsChange)}% over the last week.`
+    );
   } else if (stepsChange < -10) {
-      recommendations.push(
-        `Your step count has decreased. Try adding a daily walk to get back on track.`
-      );
+    recommendations.push(
+      `Your step count has decreased. Try adding a daily walk to get back on track.`
+    );
   }
 
   if (caloriesChange > 10) {
-      recommendations.push(
-        `Great work! Your calorie burn has increased ${Math.round(caloriesChange)}% recently.`
-      );
+    recommendations.push(
+      `Great work! Your calorie burn has increased ${Math.round(caloriesChange)}% recently.`
+    );
   }
 
   // Heart rate recommendations
@@ -169,4 +173,3 @@ export async function generateRecommendations(
 
   return recommendations.slice(0, 5);
 }
-

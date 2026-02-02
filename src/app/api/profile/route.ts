@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: {
         id: true,
@@ -72,7 +72,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -98,7 +98,7 @@ export async function PUT(request: NextRequest) {
       updateData.themePreference = validated.data.themePreference;
     }
 
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.users.update({
       where: { id: user.id },
       data: updateData,
       select: {
@@ -125,4 +125,3 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-

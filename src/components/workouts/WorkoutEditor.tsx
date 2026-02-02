@@ -27,9 +27,21 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { ExerciseThumb } from '@/components/ExerciseThumb';
+import { MUSCLE_OPTIONS, bodyPartFromMuscleValue } from '@/lib/exercises';
 
-type SetRow = { setNumber: number; weightKg?: number; reps: number; rpe?: number; notes?: string };
-type ItemRow = { exerciseId?: string; customId?: string; name: string; sets: SetRow[] };
+type SetRow = {
+  setNumber: number;
+  weightKg?: number;
+  reps: number;
+  rpe?: number;
+  notes?: string;
+};
+type ItemRow = {
+  exerciseId?: string;
+  customId?: string;
+  name: string;
+  sets: SetRow[];
+};
 
 interface WorkoutEditorProps {
   mode: 'create' | 'edit';
@@ -73,7 +85,12 @@ interface WorkoutEditorProps {
   isSaving?: boolean;
 }
 
-export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }: WorkoutEditorProps) {
+export function WorkoutEditor({
+  mode,
+  initialWorkout,
+  onSave,
+  isSaving = false,
+}: WorkoutEditorProps) {
   const [title, setTitle] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [exerciseQuery, setExerciseQuery] = useState('');
@@ -114,31 +131,6 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
     }
   }, [mode, initialWorkout]);
 
-  const MUSCLE_OPTIONS = [
-    { value: 'all', label: 'All muscles' },
-    { value: 'abdominals', label: 'Abdominals', bodyPart: 'Core' },
-    { value: 'obliques', label: 'Obliques', bodyPart: 'Core' },
-    { value: 'lower_back', label: 'Lower Back', bodyPart: 'Back' },
-    { value: 'lats', label: 'Lats', bodyPart: 'Back' },
-    { value: 'middle_back', label: 'Middle Back', bodyPart: 'Back' },
-    { value: 'upper_back', label: 'Upper Back', bodyPart: 'Back' },
-    { value: 'quadriceps', label: 'Quadriceps', bodyPart: 'Legs' },
-    { value: 'hamstrings', label: 'Hamstrings', bodyPart: 'Legs' },
-    { value: 'glutes', label: 'Glutes', bodyPart: 'Legs' },
-    { value: 'calves', label: 'Calves', bodyPart: 'Legs' },
-    { value: 'chest', label: 'Chest', bodyPart: 'Chest' },
-    { value: 'shoulders', label: 'Shoulders', bodyPart: 'Shoulders' },
-    { value: 'biceps', label: 'Biceps', bodyPart: 'Arms' },
-    { value: 'triceps', label: 'Triceps', bodyPart: 'Arms' },
-    { value: 'forearms', label: 'Forearms', bodyPart: 'Arms' },
-  ];
-
-  function bodyPartFromMuscleValue(val: string): string | null {
-    if (val === 'all') return null;
-    const found = MUSCLE_OPTIONS.find((o) => o.value === val);
-    return found?.bodyPart ?? null;
-  }
-
   const selectedBodyPart = bodyPartFromMuscleValue(muscleFilter);
 
   const filteredCatalog = useMemo(() => {
@@ -149,9 +141,15 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
 
   const addExercise = (ex: { id: string; name: string }, isCustom = false) => {
     if (isCustom) {
-      setItems((prev) => [...prev, { customId: ex.id, name: ex.name, sets: [{ setNumber: 1, reps: 8 }] }]);
+      setItems((prev) => [
+        ...prev,
+        { customId: ex.id, name: ex.name, sets: [{ setNumber: 1, reps: 8 }] },
+      ]);
     } else {
-      setItems((prev) => [...prev, { exerciseId: ex.id, name: ex.name, sets: [{ setNumber: 1, reps: 8 }] }]);
+      setItems((prev) => [
+        ...prev,
+        { exerciseId: ex.id, name: ex.name, sets: [{ setNumber: 1, reps: 8 }] },
+      ]);
     }
     setPickerOpen(false);
   };
@@ -188,7 +186,9 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
   const removeSet = (i: number, s: number) => {
     setItems((prev) => {
       const copy = [...prev];
-      copy[i].sets = copy[i].sets.filter((_, j) => j !== s).map((row, idx) => ({ ...row, setNumber: idx + 1 }));
+      copy[i].sets = copy[i].sets
+        .filter((_, j) => j !== s)
+        .map((row, idx) => ({ ...row, setNumber: idx + 1 }));
       return copy;
     });
   };
@@ -198,7 +198,12 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
       const copy = [...prev];
       copy[i].sets[s] = {
         ...copy[i].sets[s],
-        [field]: value === '' ? undefined : field === 'reps' || field === 'setNumber' ? Number(value) : Number(value),
+        [field]:
+          value === ''
+            ? undefined
+            : field === 'reps' || field === 'setNumber'
+              ? Number(value)
+              : Number(value),
       };
       return copy;
     });
@@ -228,7 +233,12 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
     <Box>
       <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, overflow: 'hidden' }}>
         <Stack spacing={2}>
-          <TextField label="Title (optional)" value={title} onChange={(e) => setTitle(e.target.value)} fullWidth />
+          <TextField
+            label="Title (optional)"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            fullWidth
+          />
           <TextField
             label="Notes (optional)"
             value={notes}
@@ -237,26 +247,54 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
             multiline
             minRows={2}
           />
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setPickerOpen(true)}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setPickerOpen(true)}
+          >
             Add Exercise
           </Button>
         </Stack>
       </Paper>
 
       {items.map((it, i) => (
-        <Paper key={i} sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, overflow: 'hidden' }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
-            <Typography variant="h6" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' }, wordBreak: 'break-word' }}>
+        <Paper
+          key={i}
+          sx={{ p: { xs: 1.5, sm: 2 }, mb: 2, overflow: 'hidden' }}
+        >
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            flexWrap="wrap"
+            gap={1}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                flex: { xs: '1 1 100%', sm: '0 1 auto' },
+                wordBreak: 'break-word',
+              }}
+            >
               {it.name}
             </Typography>
-            <IconButton onClick={() => removeItem(i)} aria-label="Remove exercise" sx={{ flex: { xs: '0 0 auto', sm: '0 1 auto' } }}>
+            <IconButton
+              onClick={() => removeItem(i)}
+              aria-label="Remove exercise"
+              sx={{ flex: { xs: '0 0 auto', sm: '0 1 auto' } }}
+            >
               <DeleteIcon />
             </IconButton>
           </Stack>
           <Divider sx={{ my: 1 }} />
           <Stack spacing={1}>
             {it.sets.map((s, idx) => (
-              <Stack key={idx} direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center">
+              <Stack
+                key={idx}
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={1}
+                alignItems="center"
+              >
                 <Chip label={`Set ${s.setNumber}`} />
                 <TextField
                   type="number"
@@ -283,9 +321,15 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
                   label="Notes"
                   value={s.notes ?? ''}
                   onChange={(e) => setCell(i, idx, 'notes', e.target.value)}
-                  sx={{ flex: { xs: '1 1 100%', sm: 1 }, width: { xs: '100%', sm: 'auto' } }}
+                  sx={{
+                    flex: { xs: '1 1 100%', sm: 1 },
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
                 />
-                <IconButton onClick={() => removeSet(i, idx)} aria-label="Remove set">
+                <IconButton
+                  onClick={() => removeSet(i, idx)}
+                  aria-label="Remove set"
+                >
                   <DeleteIcon />
                 </IconButton>
               </Stack>
@@ -299,7 +343,11 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
 
       <Stack direction="row" spacing={2}>
         <Button variant="contained" disabled={!canSave} onClick={handleSave}>
-          {isSaving ? 'Saving...' : mode === 'edit' ? 'Update Workout' : 'Save Workout'}
+          {isSaving
+            ? 'Saving...'
+            : mode === 'edit'
+              ? 'Update Workout'
+              : 'Save Workout'}
         </Button>
       </Stack>
 
@@ -327,13 +375,33 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
             sx={{ my: 1 }}
           />
           <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 1 }}>
-            <Tab label={`Catalog (${exData?.catalog?.length ?? 0})`} value="catalog" />
-            <Tab label={`My Custom (${exData?.custom?.length ?? 0})`} value="custom" />
+            <Tab
+              label={`Catalog (${exData?.catalog?.length ?? 0})`}
+              value="catalog"
+            />
+            <Tab
+              label={`My Custom (${exData?.custom?.length ?? 0})`}
+              value="custom"
+            />
           </Tabs>
           {tab === 'catalog' && (
             <>
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2, flexWrap: 'wrap' }}>
-                <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 200 }, width: { xs: '100%', sm: 'auto' } }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 2,
+                  alignItems: 'center',
+                  mb: 2,
+                  flexWrap: 'wrap',
+                }}
+              >
+                <FormControl
+                  size="small"
+                  sx={{
+                    minWidth: { xs: '100%', sm: 200 },
+                    width: { xs: '100%', sm: 'auto' },
+                  }}
+                >
                   <InputLabel id="muscle-filter-label">Muscle</InputLabel>
                   <Select
                     labelId="muscle-filter-label"
@@ -353,14 +421,41 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
                 {filteredCatalog.map((ex) => (
                   <Paper
                     key={ex.id}
-                    sx={{ p: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}
+                    sx={{
+                      p: 1,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      minWidth: 0,
+                    }}
                     onClick={() => addExercise(ex, false)}
                   >
-                    <ExerciseThumb name={ex.name} mediaUrl={ex.mediaUrl} size={40} />
+                    <ExerciseThumb
+                      name={ex.name}
+                      mediaUrl={ex.mediaUrl}
+                      size={40}
+                    />
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{ex.name}</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                        {[ex.bodyPart, ex.equipment].filter(Boolean).join(' • ')}
+                      <Typography
+                        sx={{
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word',
+                        }}
+                      >
+                        {ex.name}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word',
+                        }}
+                      >
+                        {[ex.bodyPart, ex.equipment]
+                          .filter(Boolean)
+                          .join(' • ')}
                       </Typography>
                     </Box>
                     {ex.instructions ? (
@@ -382,7 +477,8 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
                 ))}
                 {filteredCatalog.length === 0 && (
                   <Typography color="text.secondary" sx={{ mt: 1 }}>
-                    No catalog exercises found. Try seeding or changing your search.
+                    No catalog exercises found. Try seeding or changing your
+                    search.
                   </Typography>
                 )}
               </Stack>
@@ -403,14 +499,41 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
                 {(exData?.custom ?? []).map((ex) => (
                   <Paper
                     key={ex.id}
-                    sx={{ p: 1, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}
+                    sx={{
+                      p: 1,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      minWidth: 0,
+                    }}
                     onClick={() => addExercise(ex, true)}
                   >
-                    <ExerciseThumb name={ex.name} mediaUrl={ex.mediaUrl} size={40} />
+                    <ExerciseThumb
+                      name={ex.name}
+                      mediaUrl={ex.mediaUrl}
+                      size={40}
+                    />
                     <Box sx={{ flex: 1, minWidth: 0 }}>
-                      <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>{ex.name}</Typography>
-                      <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                        {[ex.bodyPart, ex.equipment].filter(Boolean).join(' • ')}
+                      <Typography
+                        sx={{
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word',
+                        }}
+                      >
+                        {ex.name}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word',
+                        }}
+                      >
+                        {[ex.bodyPart, ex.equipment]
+                          .filter(Boolean)
+                          .join(' • ')}
                       </Typography>
                     </Box>
                   </Paper>
@@ -514,7 +637,3 @@ export function WorkoutEditor({ mode, initialWorkout, onSave, isSaving = false }
     </Box>
   );
 }
-
-
-
-

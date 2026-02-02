@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSessionSafe } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { preferencesUpdateSchema } from '@/lib/validators';
+import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -28,16 +29,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Find or create preferences
-    let preferences = await prisma.userPreferences.findUnique({
+    let preferences = await prisma.user_preferences.findUnique({
       where: { userId: user.id },
     });
 
     // If no preferences exist, create with defaults
     if (!preferences) {
-      preferences = await prisma.userPreferences.create({
+      preferences = await prisma.user_preferences.create({
         data: {
+          id: randomUUID(),
           userId: user.id,
           defaultRestSeconds: 90,
+          updatedAt: new Date(),
         },
       });
     }
@@ -79,7 +82,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -89,14 +92,17 @@ export async function PUT(request: NextRequest) {
     }
 
     // Upsert preferences (create if doesn't exist, update if it does)
-    const preferences = await prisma.userPreferences.upsert({
+    const preferences = await prisma.user_preferences.upsert({
       where: { userId: user.id },
       update: {
         defaultRestSeconds: validated.data.defaultRestSeconds,
+        updatedAt: new Date(),
       },
       create: {
+        id: randomUUID(),
         userId: user.id,
         defaultRestSeconds: validated.data.defaultRestSeconds,
+        updatedAt: new Date(),
       },
     });
 
@@ -113,7 +119,3 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-
-
-
-

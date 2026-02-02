@@ -14,9 +14,14 @@ interface WeeklyStat {
 export async function GET(req: Request) {
   const session = await getSessionSafe();
   const email = session?.user?.email;
-  if (!email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!email)
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const user = await prisma.users.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (!user)
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(req.url);
   const rangeDays = Number(url.searchParams.get('range') ?? 90);
@@ -27,7 +32,7 @@ export async function GET(req: Request) {
   const startDate = subDays(endDate, rangeDays);
 
   // Fetch all workouts in the range
-  const workouts = await prisma.workoutSession.findMany({
+  const workouts = await prisma.workout_sessions.findMany({
     where: {
       userId: user.id,
       date: {
@@ -48,7 +53,7 @@ export async function GET(req: Request) {
   // Start from the week containing startDate and go forward
   const firstWeekStart = startOfWeek(startDate, { weekStartsOn: 1 }); // Monday
   const lastWeekStart = startOfWeek(endDate, { weekStartsOn: 1 });
-  
+
   let currentWeek = new Date(firstWeekStart);
   while (currentWeek <= lastWeekStart) {
     const weekKey = format(currentWeek, 'yyyy-MM-dd');
@@ -80,4 +85,3 @@ export async function GET(req: Request) {
 
   return NextResponse.json({ stats });
 }
-

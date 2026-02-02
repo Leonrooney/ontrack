@@ -22,11 +22,9 @@ async function main() {
     counts.set(h, (counts.get(h) ?? 0) + 1);
   }
 
-  console.table([...counts.entries()].map(([host, count]) => ({ host, count })));
+  console.table(
+    [...counts.entries()].map(([host, count]) => ({ host, count }))
+  );
 }
 
 main().finally(() => prisma.$disconnect());
-
-
-
-

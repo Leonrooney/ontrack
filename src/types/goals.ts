@@ -32,4 +32,3 @@ export interface GoalInput {
   startDate?: string;
   isActive?: boolean;
 }
-

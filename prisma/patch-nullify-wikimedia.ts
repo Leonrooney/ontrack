@@ -8,10 +8,11 @@ async function main() {
     where: { mediaUrl: { contains: 'upload.wikimedia.org' } },
   });
   for (const e of bad) {
-    await prisma.exercise.update({ where: { id: e.id }, data: { mediaUrl: null } }).catch(() => {});
+    await prisma.exercise
+      .update({ where: { id: e.id }, data: { mediaUrl: null } })
+      .catch(() => {});
   }
   console.log(`Nullified media for ${bad.length} Wikimedia URLs`);
 }
 
 main().finally(() => prisma.$disconnect());
-

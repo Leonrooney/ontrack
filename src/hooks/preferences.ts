@@ -16,7 +16,9 @@ async function fetchPreferences(): Promise<UserPreferences> {
   return apiGet<UserPreferences>('/api/preferences');
 }
 
-async function updatePreferences(input: PreferencesUpdateInput): Promise<UserPreferences> {
+async function updatePreferences(
+  input: PreferencesUpdateInput
+): Promise<UserPreferences> {
   return apiPut<UserPreferences>('/api/preferences', input);
 }
 
@@ -39,10 +41,18 @@ export function useUpdatePreferences() {
     mutationFn: updatePreferences,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['preferences'] });
-      setSnackbar({ open: true, message: 'Preferences updated successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Preferences updated successfully',
+        severity: 'success',
+      });
     },
     onError: () => {
-      setSnackbar({ open: true, message: 'Failed to update preferences', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to update preferences',
+        severity: 'error',
+      });
     },
   });
 
@@ -52,7 +62,3 @@ export function useUpdatePreferences() {
     closeSnackbar: () => setSnackbar({ ...snackbar, open: false }),
   };
 }
-
-
-
-

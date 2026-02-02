@@ -24,7 +24,7 @@ export async function PATCH(
   const { id } = await params;
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -40,12 +40,15 @@ export async function PATCH(
     const validated = partialSchema.parse(body);
 
     // Check ownership
-    const existing = await prisma.activityEntry.findUnique({
+    const existing = await prisma.activity_entries.findUnique({
       where: { id },
     });
 
     if (!existing) {
-      return NextResponse.json({ error: 'Activity not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Activity not found' },
+        { status: 404 }
+      );
     }
 
     if (existing.userId !== user.id) {
@@ -53,15 +56,23 @@ export async function PATCH(
     }
 
     // Update
-    const entry = await prisma.activityEntry.update({
+    const entry = await prisma.activity_entries.update({
       where: { id },
       data: {
         ...(validated.date && { date: new Date(validated.date) }),
         ...(validated.steps !== undefined && { steps: validated.steps }),
-        ...(validated.distanceKm !== undefined && { distanceKm: validated.distanceKm }),
-        ...(validated.calories !== undefined && { calories: validated.calories }),
-        ...(validated.heartRateAvg !== undefined && { heartRateAvg: validated.heartRateAvg }),
-        ...(validated.workouts !== undefined && { workouts: validated.workouts }),
+        ...(validated.distanceKm !== undefined && {
+          distanceKm: validated.distanceKm,
+        }),
+        ...(validated.calories !== undefined && {
+          calories: validated.calories,
+        }),
+        ...(validated.heartRateAvg !== undefined && {
+          heartRateAvg: validated.heartRateAvg,
+        }),
+        ...(validated.workouts !== undefined && {
+          workouts: validated.workouts,
+        }),
       },
     });
 
@@ -107,7 +118,7 @@ export async function DELETE(
   const { id } = await params;
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -117,12 +128,15 @@ export async function DELETE(
     }
 
     // Check ownership
-    const existing = await prisma.activityEntry.findUnique({
+    const existing = await prisma.activity_entries.findUnique({
       where: { id },
     });
 
     if (!existing) {
-      return NextResponse.json({ error: 'Activity not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Activity not found' },
+        { status: 404 }
+      );
     }
 
     if (existing.userId !== user.id) {
@@ -130,7 +144,7 @@ export async function DELETE(
     }
 
     // Delete
-    await prisma.activityEntry.delete({
+    await prisma.activity_entries.delete({
       where: { id },
     });
 
@@ -143,4 +157,3 @@ export async function DELETE(
     );
   }
 }
-

@@ -3,7 +3,12 @@ import { prisma } from '@/lib/prisma';
 import { getSessionSafe } from '@/lib/auth';
 import { z } from 'zod';
 import { toPlain } from '@/lib/serialize';
-import { detectPersonalBests, storePersonalBests, getPersonalBestSetIds } from '@/lib/personal-best';
+import {
+  detectPersonalBests,
+  storePersonalBests,
+  getPersonalBestSetIds,
+} from '@/lib/personal-best';
+import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,23 +41,32 @@ const CreateWorkoutSchema = z.object({
 export async function GET(req: Request) {
   const session = await getSessionSafe();
   const email = session?.user?.email;
-  if (!email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!email)
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const user = await prisma.users.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (!user)
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(req.url);
   const limit = Number(url.searchParams.get('limit') ?? 20);
   const cursor = url.searchParams.get('cursor') ?? undefined;
 
-  const sessions = await prisma.workoutSession.findMany({
+  const sessions = await prisma.workout_sessions.findMany({
     where: { userId: user.id },
     orderBy: { date: 'desc' },
     take: limit + 1,
     ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
     include: {
-      items: {
+      workout_items: {
         orderBy: { orderIndex: 'asc' },
-        include: { exercise: true, custom: true, sets: { orderBy: { setNumber: 'asc' } } },
+        include: {
+          exercises: true,
+          custom_exercises: true,
+          workout_sets: { orderBy: { setNumber: 'asc' } },
+        },
       },
     },
   });
@@ -66,17 +80,31 @@ export async function GET(req: Request) {
 
   // Add isPersonalBest flag to each set
   const data = sessionsToReturn.map((session) => {
-    const plain = toPlain(session);
-    if (plain.items) {
-      plain.items = plain.items.map((item: any) => {
-        if (item.sets) {
-          item.sets = item.sets.map((set: any) => ({
+    const plain: any = toPlain(session);
+    // Map workout_items to items for API compatibility
+    if (plain.workout_items) {
+      plain.items = plain.workout_items.map((item: any) => {
+        // Map exercises/custom_exercises to exercise/custom for frontend compatibility
+        // Map workout_sets to sets for frontend compatibility
+        const mappedItem: any = {
+          ...item,
+          exercise: item.exercises || null,
+          custom: item.custom_exercises || null,
+          sets: item.workout_sets || [],
+        };
+        delete mappedItem.exercises;
+        delete mappedItem.custom_exercises;
+        delete mappedItem.workout_sets;
+
+        if (mappedItem.sets) {
+          mappedItem.sets = mappedItem.sets.map((set: any) => ({
             ...set,
             isPersonalBest: pbSetIds.has(set.id),
           }));
         }
-        return item;
+        return mappedItem;
       });
+      delete plain.workout_items;
     }
     return plain;
   });
@@ -89,31 +117,42 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const session = await getSessionSafe();
   const email = session?.user?.email;
-  if (!email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!email)
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const user = await prisma.users.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (!user)
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const json = await req.json();
   const parsed = CreateWorkoutSchema.safeParse(json);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json(
+      { error: parsed.error.flatten() },
+      { status: 400 }
+    );
   }
 
   const { date, title, notes, items } = parsed.data;
 
-  const created = await prisma.workoutSession.create({
+  const created = await prisma.workout_sessions.create({
     data: {
+      id: randomUUID(),
       userId: user.id,
       date: date ? new Date(date) : new Date(),
       title,
       notes,
-      items: {
+      workout_items: {
         create: items.map((it, idx) => ({
+          id: randomUUID(),
           orderIndex: idx,
           exerciseId: 'exerciseId' in it ? it.exerciseId : null,
           customId: 'customId' in it ? it.customId : null,
-          sets: {
+          workout_sets: {
             create: it.sets.map((s) => ({
+              id: randomUUID(),
               setNumber: s.setNumber,
               weightKg: s.weightKg != null ? s.weightKg : null,
               reps: s.reps,
@@ -125,23 +164,29 @@ export async function POST(req: Request) {
       },
     },
     include: {
-      items: { include: { exercise: true, custom: true, sets: true } },
+      workout_items: {
+        include: {
+          exercises: true,
+          custom_exercises: true,
+          workout_sets: true,
+        },
+      },
     },
   });
 
   // Detect and store personal bests for all sets
-  for (const item of created.items) {
+  for (const item of created.workout_items) {
     const exerciseId = item.exerciseId;
     const customId = item.customId;
 
-    for (const set of item.sets) {
+    for (const set of item.workout_sets) {
       const pbs = await detectPersonalBests(
         user.id,
         exerciseId,
         customId,
         set.id,
         set.weightKg ? Number(set.weightKg) : null,
-        set.reps,
+        set.reps
       );
 
       if (pbs.length > 0) {
@@ -150,6 +195,25 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json(toPlain(created), { status: 201 });
-}
+  // Map workout_items to items for API compatibility
+  const response: any = toPlain(created);
+  if (response.workout_items) {
+    response.items = response.workout_items.map((item: any) => {
+      // Map exercises/custom_exercises to exercise/custom for frontend compatibility
+      // Map workout_sets to sets for frontend compatibility
+      const mappedItem: any = {
+        ...item,
+        exercise: item.exercises || null,
+        custom: item.custom_exercises || null,
+        sets: item.workout_sets || [],
+      };
+      delete mappedItem.exercises;
+      delete mappedItem.custom_exercises;
+      delete mappedItem.workout_sets;
+      return mappedItem;
+    });
+    delete response.workout_items;
+  }
 
+  return NextResponse.json(response, { status: 201 });
+}

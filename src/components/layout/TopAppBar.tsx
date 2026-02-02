@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import {
   AppBar,
   Toolbar,
@@ -11,7 +10,11 @@ import {
   Box,
   Link as MuiLink,
 } from '@mui/material';
-import { Brightness4, Brightness7, Menu as MenuIcon } from '@mui/icons-material';
+import {
+  Brightness4,
+  Brightness7,
+  Menu as MenuIcon,
+} from '@mui/icons-material';
 import { useTheme as useThemeContext } from '@/contexts/ThemeContext';
 import Link from 'next/link';
 
@@ -43,7 +46,24 @@ export function TopAppBar({ onMenuClick }: TopAppBarProps) {
   };
 
   return (
-    <AppBar position="sticky">
+    <AppBar
+      position="sticky"
+      sx={{
+        background: (theme) =>
+          theme.palette.mode === 'dark'
+            ? 'rgba(18, 18, 18, 0.8)'
+            : 'rgba(255, 255, 255, 0.9)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: (theme) =>
+          theme.palette.mode === 'dark'
+            ? `1px solid rgba(255, 255, 255, 0.1)`
+            : `1px solid ${theme.palette.divider}`,
+        boxShadow: (theme) =>
+          theme.palette.mode === 'dark'
+            ? '0 2px 8px rgba(0, 0, 0, 0.3)'
+            : '0 1px 3px rgba(0, 0, 0, 0.06)',
+      }}
+    >
       <Toolbar>
         {isMobile && (
           <IconButton
@@ -55,11 +75,23 @@ export function TopAppBar({ onMenuClick }: TopAppBarProps) {
             <MenuIcon />
           </IconButton>
         )}
-        <Typography variant="h6" component="div" sx={{ flexGrow: 0, mr: { xs: 1, sm: 4 } }}>
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ flexGrow: 0, mr: { xs: 1, sm: 4 } }}
+        >
           OnTrack
         </Typography>
         {!isMobile && (
-          <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 }, flexGrow: 1, flexWrap: 'wrap', overflowX: 'auto' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: { xs: 1, sm: 2 },
+              flexGrow: 1,
+              flexWrap: 'wrap',
+              overflowX: 'auto',
+            }}
+          >
             {navLinks.map((link) => (
               <MuiLink
                 key={link.href}
@@ -84,4 +116,3 @@ export function TopAppBar({ onMenuClick }: TopAppBarProps) {
     </AppBar>
   );
 }
-

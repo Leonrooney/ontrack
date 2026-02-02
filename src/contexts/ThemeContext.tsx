@@ -17,7 +17,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mode, setMode] = useState<ThemeMode>('system');
-  const [resolvedMode, setResolvedMode] = useState<'light' | 'dark'>('light');
+  const [resolvedMode, setResolvedMode] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
     // Load from localStorage
@@ -59,7 +59,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const theme = resolvedMode === 'dark' ? darkTheme : lightTheme;
 
   return (
-    <ThemeContext.Provider value={{ mode, setMode: handleSetMode, resolvedMode }}>
+    <ThemeContext.Provider
+      value={{ mode, setMode: handleSetMode, resolvedMode }}
+    >
       <MUIThemeProvider theme={theme}>
         <CssBaseline />
         {children}
@@ -75,4 +77,3 @@ export function useTheme() {
   }
   return context;
 }
-

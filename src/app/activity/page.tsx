@@ -25,11 +25,32 @@ import {
   Chip,
 } from '@mui/material';
 import { useState } from 'react';
-import { ArrowBack, ArrowForward, CalendarToday, Add } from '@mui/icons-material';
+import {
+  ArrowBack,
+  ArrowForward,
+  CalendarToday,
+  Add,
+} from '@mui/icons-material';
 import { DateRange } from '@/types/activity';
-import { useActivity, useCreateActivity, useUpdateActivity, useDeleteActivity } from '@/hooks/activity';
-import { getRangeBounds, getPreviousPeriod, getNextPeriod, isToday } from '@/lib/date';
-import { formatDateShort, formatNumber, formatDistance, formatHeartRate, formatDateISO } from '@/lib/format';
+import {
+  useActivity,
+  useCreateActivity,
+  useUpdateActivity,
+  useDeleteActivity,
+} from '@/hooks/activity';
+import {
+  getRangeBounds,
+  getPreviousPeriod,
+  getNextPeriod,
+  isToday,
+} from '@/lib/date';
+import {
+  formatDateShort,
+  formatNumber,
+  formatDistance,
+  formatHeartRate,
+  formatDateISO,
+} from '@/lib/format';
 import { useFormik } from 'formik';
 import * as yup from 'yup'; // Will switch to zod in a moment
 import {
@@ -65,7 +86,12 @@ export default function ActivityPage() {
   const ranges: DateRange[] = ['day', 'week', 'month'];
   const currentRange = ranges[tab];
 
-  const { data: entries = [], isLoading, error, refetch } = useActivity(currentRange, anchorDate);
+  const {
+    data: entries = [],
+    isLoading,
+    error,
+    refetch,
+  } = useActivity(currentRange, anchorDate);
 
   const createMutation = useCreateActivity();
   const updateMutation = useUpdateActivity();
@@ -129,7 +155,8 @@ export default function ActivityPage() {
           steps: values.steps,
           distanceKm: values.distanceKm,
           calories: values.calories,
-          heartRateAvg: values.heartRateAvg === '' ? undefined : values.heartRateAvg,
+          heartRateAvg:
+            values.heartRateAvg === '' ? undefined : values.heartRateAvg,
           workouts: values.workouts,
         };
 
@@ -160,23 +187,56 @@ export default function ActivityPage() {
   return (
     <MainLayout>
       <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
-          <Typography variant="h4" component="h1" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 3,
+            flexWrap: 'wrap',
+            gap: 1,
+          }}
+        >
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}
+          >
             Activity
           </Typography>
-          <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={handleAdd}
+            size="small"
+            sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}
+          >
             Add Activity
           </Button>
         </Box>
 
         {/* Date Navigation */}
         <Paper sx={{ mb: 3, p: { xs: 1.5, sm: 2 }, overflow: 'hidden' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 1,
+            }}
+          >
             <IconButton onClick={handlePrevious} size="small">
               <ArrowBack />
             </IconButton>
             <Box sx={{ textAlign: 'center', flex: '1 1 auto', minWidth: 0 }}>
-              <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, wordBreak: 'break-word' }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  wordBreak: 'break-word',
+                }}
+              >
                 {formatDateShort(start)} - {formatDateShort(end)}
               </Typography>
               <Button
@@ -186,10 +246,18 @@ export default function ActivityPage() {
                 disabled={isToday(anchorDate)}
                 sx={{ mt: 0.5 }}
               >
-                {currentRange === 'day' ? 'Today' : currentRange === 'week' ? 'This Week' : 'This Month'}
+                {currentRange === 'day'
+                  ? 'Today'
+                  : currentRange === 'week'
+                    ? 'This Week'
+                    : 'This Month'}
               </Button>
             </Box>
-            <IconButton onClick={handleNext} disabled={isToday(anchorDate) && currentRange === 'day'} size="small">
+            <IconButton
+              onClick={handleNext}
+              disabled={isToday(anchorDate) && currentRange === 'day'}
+              size="small"
+            >
               <ArrowForward />
             </IconButton>
           </Box>
@@ -212,7 +280,10 @@ export default function ActivityPage() {
           {isLoading ? (
             <Skeleton variant="rectangular" height={300} />
           ) : error ? (
-            <Alert severity="error" action={<Button onClick={() => refetch()}>Retry</Button>}>
+            <Alert
+              severity="error"
+              action={<Button onClick={() => refetch()}>Retry</Button>}
+            >
               Failed to load activity data
             </Alert>
           ) : chartData.length === 0 ? (
@@ -220,7 +291,11 @@ export default function ActivityPage() {
               <Typography variant="body1" color="text.secondary" gutterBottom>
                 No activity yet for this period
               </Typography>
-              <Button variant="contained" startIcon={<Add />} onClick={handleAdd}>
+              <Button
+                variant="contained"
+                startIcon={<Add />}
+                onClick={handleAdd}
+              >
                 Add Activity
               </Button>
             </Box>
@@ -229,8 +304,8 @@ export default function ActivityPage() {
               <ResponsiveContainer width="100%" height={300} minHeight={250}>
                 <ComposedChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="date" 
+                  <XAxis
+                    dataKey="date"
                     angle={-45}
                     textAnchor="end"
                     height={60}
@@ -240,9 +315,28 @@ export default function ActivityPage() {
                   <YAxis yAxisId="right" orientation="right" width={60} />
                   <Tooltip />
                   <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                  <Area yAxisId="left" type="monotone" dataKey="distance" fill="#8884d8" fillOpacity={0.6} name="Distance (km)" />
-                  <Line yAxisId="left" type="monotone" dataKey="steps" stroke="#82ca9d" name="Steps" />
-                  <Line yAxisId="right" type="monotone" dataKey="calories" stroke="#ff7300" name="Calories" />
+                  <Area
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="distance"
+                    fill="#8884d8"
+                    fillOpacity={0.6}
+                    name="Distance (km)"
+                  />
+                  <Line
+                    yAxisId="left"
+                    type="monotone"
+                    dataKey="steps"
+                    stroke="#82ca9d"
+                    name="Steps"
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="calories"
+                    stroke="#ff7300"
+                    name="Calories"
+                  />
                 </ComposedChart>
               </ResponsiveContainer>
             </Box>
@@ -280,21 +374,47 @@ export default function ActivityPage() {
                   {entries.map((entry) => (
                     <TableRow key={entry.id}>
                       <TableCell>{formatDateShort(entry.date)}</TableCell>
-                      <TableCell align="right">{formatNumber(entry.steps)}</TableCell>
-                      <TableCell align="right">{formatDistance(entry.distanceKm)}</TableCell>
-                      <TableCell align="right">{formatNumber(entry.calories)}</TableCell>
                       <TableCell align="right">
-                        {entry.heartRateAvg ? formatHeartRate(entry.heartRateAvg) : '-'}
+                        {formatNumber(entry.steps)}
                       </TableCell>
                       <TableCell align="right">
-                        <Chip label={entry.workouts} size="small" color={entry.workouts > 0 ? 'primary' : 'default'} />
+                        {formatDistance(entry.distanceKm)}
                       </TableCell>
                       <TableCell align="right">
-                        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                          <Button size="small" onClick={() => handleEdit(entry)}>
+                        {formatNumber(entry.calories)}
+                      </TableCell>
+                      <TableCell align="right">
+                        {entry.heartRateAvg
+                          ? formatHeartRate(entry.heartRateAvg)
+                          : '-'}
+                      </TableCell>
+                      <TableCell align="right">
+                        <Chip
+                          label={entry.workouts}
+                          size="small"
+                          color={entry.workouts > 0 ? 'primary' : 'default'}
+                        />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            gap: 0.5,
+                            flexWrap: 'wrap',
+                            justifyContent: 'flex-end',
+                          }}
+                        >
+                          <Button
+                            size="small"
+                            onClick={() => handleEdit(entry)}
+                          >
                             Edit
                           </Button>
-                          <Button size="small" color="error" onClick={() => handleDelete(entry.id)}>
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => handleDelete(entry.id)}
+                          >
                             Delete
                           </Button>
                         </Box>
@@ -308,19 +428,21 @@ export default function ActivityPage() {
         </Paper>
 
         {/* Add/Edit Dialog */}
-        <Dialog 
-          open={isAddDialogOpen} 
-          onClose={handleCloseDialog} 
-          maxWidth="sm" 
+        <Dialog
+          open={isAddDialogOpen}
+          onClose={handleCloseDialog}
+          maxWidth="sm"
           fullWidth
           PaperProps={{
             sx: {
               m: { xs: 1, sm: 2 },
               maxWidth: { xs: 'calc(100% - 16px)', sm: '600px' },
-            }
+            },
           }}
         >
-          <DialogTitle>{editingEntry ? 'Edit Activity' : 'Add Activity'}</DialogTitle>
+          <DialogTitle>
+            {editingEntry ? 'Edit Activity' : 'Add Activity'}
+          </DialogTitle>
           <form onSubmit={formik.handleSubmit}>
             <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
               <TextField
@@ -330,7 +452,9 @@ export default function ActivityPage() {
                 type="date"
                 {...formik.getFieldProps('date')}
                 error={formik.touched.date && Boolean(formik.errors.date)}
-                helperText={(formik.touched.date && formik.errors.date) as string}
+                helperText={
+                  (formik.touched.date && formik.errors.date) as string
+                }
                 InputLabelProps={{ shrink: true }}
               />
               <TextField
@@ -340,7 +464,9 @@ export default function ActivityPage() {
                 type="number"
                 {...formik.getFieldProps('steps')}
                 error={formik.touched.steps && Boolean(formik.errors.steps)}
-                helperText={(formik.touched.steps && formik.errors.steps) as string}
+                helperText={
+                  (formik.touched.steps && formik.errors.steps) as string
+                }
               />
               <TextField
                 fullWidth
@@ -348,8 +474,13 @@ export default function ActivityPage() {
                 label="Distance (km)"
                 type="number"
                 {...formik.getFieldProps('distanceKm')}
-                error={formik.touched.distanceKm && Boolean(formik.errors.distanceKm)}
-                helperText={(formik.touched.distanceKm && formik.errors.distanceKm) as string}
+                error={
+                  formik.touched.distanceKm && Boolean(formik.errors.distanceKm)
+                }
+                helperText={
+                  (formik.touched.distanceKm &&
+                    formik.errors.distanceKm) as string
+                }
               />
               <TextField
                 fullWidth
@@ -357,8 +488,12 @@ export default function ActivityPage() {
                 label="Calories"
                 type="number"
                 {...formik.getFieldProps('calories')}
-                error={formik.touched.calories && Boolean(formik.errors.calories)}
-                helperText={(formik.touched.calories && formik.errors.calories) as string}
+                error={
+                  formik.touched.calories && Boolean(formik.errors.calories)
+                }
+                helperText={
+                  (formik.touched.calories && formik.errors.calories) as string
+                }
               />
               <TextField
                 fullWidth
@@ -366,8 +501,14 @@ export default function ActivityPage() {
                 label="Heart Rate (avg)"
                 type="number"
                 {...formik.getFieldProps('heartRateAvg')}
-                error={formik.touched.heartRateAvg && Boolean(formik.errors.heartRateAvg)}
-                helperText={(formik.touched.heartRateAvg && formik.errors.heartRateAvg) as string}
+                error={
+                  formik.touched.heartRateAvg &&
+                  Boolean(formik.errors.heartRateAvg)
+                }
+                helperText={
+                  (formik.touched.heartRateAvg &&
+                    formik.errors.heartRateAvg) as string
+                }
               />
               <TextField
                 fullWidth
@@ -375,8 +516,12 @@ export default function ActivityPage() {
                 label="Workouts"
                 type="number"
                 {...formik.getFieldProps('workouts')}
-                error={formik.touched.workouts && Boolean(formik.errors.workouts)}
-                helperText={(formik.touched.workouts && formik.errors.workouts) as string}
+                error={
+                  formik.touched.workouts && Boolean(formik.errors.workouts)
+                }
+                helperText={
+                  (formik.touched.workouts && formik.errors.workouts) as string
+                }
               />
             </DialogContent>
             <DialogActions>

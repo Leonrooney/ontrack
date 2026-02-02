@@ -5,33 +5,37 @@ import { getPeriodBounds, listPreviousPeriods } from '@/lib/period';
 import { sumActivityForRange, computeStreak } from '@/lib/aggregate';
 import { prisma } from '@/lib/prisma';
 import { toPlain, toNumber } from '@/lib/serialize';
+import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
-const goalSchema = z.object({
-  type: z.enum(['STEPS', 'CALORIES', 'WORKOUTS', 'DISTANCE']),
-  period: z.enum(['DAILY', 'WEEKLY', 'MONTHLY']),
-  targetInt: z.number().min(0).optional(),
-  targetDec: z.number().min(0).optional(),
-  startDate: z.string().optional(),
-  isActive: z.boolean().optional(),
-}).refine(
-  (data) => {
-    const intTypes = ['STEPS', 'WORKOUTS'];
-    const decTypes = ['DISTANCE', 'CALORIES'];
-    
-    if (intTypes.includes(data.type)) {
-      return data.targetInt !== undefined && data.targetDec === undefined;
+const goalSchema = z
+  .object({
+    type: z.enum(['STEPS', 'CALORIES', 'WORKOUTS', 'DISTANCE']),
+    period: z.enum(['DAILY', 'WEEKLY', 'MONTHLY']),
+    targetInt: z.number().min(0).optional(),
+    targetDec: z.number().min(0).optional(),
+    startDate: z.string().optional(),
+    isActive: z.boolean().optional(),
+  })
+  .refine(
+    (data) => {
+      const intTypes = ['STEPS', 'WORKOUTS'];
+      const decTypes = ['DISTANCE', 'CALORIES'];
+
+      if (intTypes.includes(data.type)) {
+        return data.targetInt !== undefined && data.targetDec === undefined;
+      }
+      if (decTypes.includes(data.type)) {
+        return data.targetDec !== undefined && data.targetInt === undefined;
+      }
+      return false;
+    },
+    {
+      message:
+        'Must provide targetInt for STEPS/WORKOUTS or targetDec for DISTANCE/CALORIES',
     }
-    if (decTypes.includes(data.type)) {
-      return data.targetDec !== undefined && data.targetInt === undefined;
-    }
-    return false;
-  },
-  {
-    message: 'Must provide targetInt for STEPS/WORKOUTS or targetDec for DISTANCE/CALORIES',
-  }
-);
+  );
 
 /**
  * GET /api/goals
@@ -46,7 +50,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -55,7 +59,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const goals = await prisma.goal.findMany({
+    const goals = await prisma.goals.findMany({
       where: {
         userId: user.id,
       },
@@ -76,7 +80,7 @@ export async function GET(request: NextRequest) {
 
         const bounds = getPeriodBounds(goal.period as any, new Date());
         const aggregate = await sumActivityForRange(user.id, bounds);
-        
+
         let target: number;
         let current: number;
 
@@ -162,7 +166,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.users.findUnique({
     where: { email },
     select: { id: true },
   });
@@ -175,15 +179,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = goalSchema.parse(body);
 
-    const goal = await prisma.goal.create({
+    const goal = await prisma.goals.create({
       data: {
+        id: randomUUID(),
         userId: user.id,
         type: validated.type,
         period: validated.period,
         targetInt: validated.targetInt,
         targetDec: validated.targetDec,
-        startDate: validated.startDate ? new Date(validated.startDate) : new Date(),
+        startDate: validated.startDate
+          ? new Date(validated.startDate)
+          : new Date(),
         isActive: validated.isActive ?? true,
+        updatedAt: new Date(),
       },
     });
 
@@ -217,4 +225,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

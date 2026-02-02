@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       dayStart.setHours(0, 0, 0, 0);
       const dayEnd = new Date(date);
       dayEnd.setHours(23, 59, 59, 999);
-      
+
       const dayData = await sumActivityForRange(userId, {
         start: dayStart,
         end: dayEnd,
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate average heart rate
-    const activityEntries = await prisma.activityEntry.findMany({
+    const activityEntries = await prisma.activity_entries.findMany({
       where: {
         userId,
         date: {
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
         : null;
 
     // Get goals and calculate completion rate
-    const goals = await prisma.goal.findMany({
+    const goals = await prisma.goals.findMany({
       where: {
         userId,
         isActive: true,
@@ -174,4 +174,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

@@ -22,6 +22,7 @@ import {
   MenuItem,
   Paper,
   IconButton,
+  Chip,
 } from '@mui/material';
 import { useCreateWorkout, useWorkoutHistory } from '@/hooks/workouts';
 import { useExercises, useCreateCustomExercise } from '@/hooks/exercises';
@@ -29,6 +30,7 @@ import { useUserPreferences } from '@/hooks/preferences';
 import { ExerciseCard, SetRow } from '@/components/workouts/ExerciseCard';
 import { useRouter } from 'next/navigation';
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { useWorkoutPersistence } from '@/hooks/useWorkoutPersistence';
 import AddIcon from '@mui/icons-material/Add';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -36,7 +38,12 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { ExerciseThumb } from '@/components/ExerciseThumb';
-import { formatDateShort, formatDateLong } from '@/lib/format';
+import {
+  formatDateShort,
+  formatDateLong,
+  formatElapsedTime,
+} from '@/lib/format';
+import { MUSCLE_OPTIONS, bodyPartFromMuscleValue } from '@/lib/exercises';
 
 type ItemRow = {
   exerciseId?: string;
@@ -91,7 +98,7 @@ export default function NewWorkoutPage() {
   const [openInstr, setOpenInstr] = useState(false);
   const [instrTitle, setInstrTitle] = useState<string>('');
   const [instrBody, setInstrBody] = useState<string>('');
-  const [workoutStartTime] = useState<Date>(new Date());
+  const [workoutStartTime, setWorkoutStartTime] = useState<Date>(new Date());
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
@@ -100,6 +107,64 @@ export default function NewWorkoutPage() {
   const { data: preferences } = useUserPreferences(); // Fetch user preferences for rest timer
   const createCustomExercise = useCreateCustomExercise();
   const addingSetRef = useRef<Record<number, boolean>>({});
+  const { getSavedWorkout, saveWorkout, clearSavedWorkout } =
+    useWorkoutPersistence();
+
+  // Restore saved workout state on mount (only once)
+  useEffect(() => {
+    const saved = getSavedWorkout();
+    if (saved) {
+      setTitle(saved.title);
+      setNotes(saved.notes);
+      setItems(saved.items);
+      // Restore workout start time
+      setWorkoutStartTime(new Date(saved.workoutStartTime));
+      // Restore elapsed time (continue from where we left off)
+      const savedTime = new Date(saved.workoutStartTime);
+      const now = new Date();
+      const diffSeconds = Math.floor(
+        (now.getTime() - savedTime.getTime()) / 1000
+      );
+      setElapsedSeconds(saved.elapsedSeconds + diffSeconds);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
+
+  // Save workout state whenever it changes (debounced)
+  useEffect(() => {
+    // Don't save if workout is empty
+    if (items.length === 0 && !title && !notes) return;
+
+    const timeoutId = setTimeout(() => {
+      saveWorkout({
+        title,
+        notes,
+        items: items.map((it) => ({
+          exerciseId: it.exerciseId,
+          customId: it.customId,
+          name: it.name,
+          bodyPart: it.bodyPart,
+          equipment: it.equipment,
+          sets: it.sets.map((s) => ({
+            setNumber: s.setNumber,
+            weightKg: s.weightKg,
+            reps:
+              typeof s.reps === 'string'
+                ? s.reps === ''
+                  ? 1
+                  : Number(s.reps) || 1
+                : s.reps,
+            rpe: s.rpe,
+            notes: s.notes,
+          })),
+        })),
+        workoutStartTime: workoutStartTime.toISOString(),
+        elapsedSeconds,
+      });
+    }, 500); // Debounce saves by 500ms
+
+    return () => clearTimeout(timeoutId);
+  }, [title, notes, items, workoutStartTime, elapsedSeconds, saveWorkout]);
 
   // Workout timer
   useEffect(() => {
@@ -108,38 +173,6 @@ export default function NewWorkoutPage() {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
-
-  // Format elapsed time as M:SS
-  const formatElapsedTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const MUSCLE_OPTIONS = [
-    { value: 'all', label: 'All muscles' },
-    { value: 'abdominals', label: 'Abdominals', bodyPart: 'Core' },
-    { value: 'obliques', label: 'Obliques', bodyPart: 'Core' },
-    { value: 'lower_back', label: 'Lower Back', bodyPart: 'Back' },
-    { value: 'lats', label: 'Lats', bodyPart: 'Back' },
-    { value: 'middle_back', label: 'Middle Back', bodyPart: 'Back' },
-    { value: 'upper_back', label: 'Upper Back', bodyPart: 'Back' },
-    { value: 'quadriceps', label: 'Quadriceps', bodyPart: 'Legs' },
-    { value: 'hamstrings', label: 'Hamstrings', bodyPart: 'Legs' },
-    { value: 'glutes', label: 'Glutes', bodyPart: 'Legs' },
-    { value: 'calves', label: 'Calves', bodyPart: 'Legs' },
-    { value: 'chest', label: 'Chest', bodyPart: 'Chest' },
-    { value: 'shoulders', label: 'Shoulders', bodyPart: 'Shoulders' },
-    { value: 'biceps', label: 'Biceps', bodyPart: 'Arms' },
-    { value: 'triceps', label: 'Triceps', bodyPart: 'Arms' },
-    { value: 'forearms', label: 'Forearms', bodyPart: 'Arms' },
-  ];
-
-  function bodyPartFromMuscleValue(val: string): string | null {
-    if (val === 'all') return null;
-    const found = MUSCLE_OPTIONS.find((o) => o.value === val);
-    return found?.bodyPart ?? null;
-  }
 
   const selectedBodyPart = bodyPartFromMuscleValue(muscleFilter);
 
@@ -153,7 +186,10 @@ export default function NewWorkoutPage() {
    * Find the last performance for an exercise from workout history
    * Returns a formatted string like "Last: 100 kg x 5 @ 8 on Nov 2" or "Last: no previous data logged"
    */
-  const getLastPerformance = (exerciseId?: string, customId?: string): string => {
+  const getLastPerformance = (
+    exerciseId?: string,
+    customId?: string
+  ): string => {
     if (!historyData?.items || historyData.items.length === 0) {
       return 'Last: no previous data logged';
     }
@@ -165,7 +201,8 @@ export default function NewWorkoutPage() {
       // Find the exercise in this workout
       const item = workout.items.find(
         (it: any) =>
-          (exerciseId && it.exerciseId === exerciseId) || (customId && it.customId === customId)
+          (exerciseId && it.exerciseId === exerciseId) ||
+          (customId && it.customId === customId)
       );
 
       if (item && item.sets && item.sets.length > 0) {
@@ -190,9 +227,18 @@ export default function NewWorkoutPage() {
     return 'Last: no previous data logged';
   };
 
-  const addExercise = (ex: { id: string; name: string; bodyPart?: string; equipment?: string }, isCustom = false) => {
-    const lastPerf = getLastPerformance(isCustom ? undefined : ex.id, isCustom ? ex.id : undefined);
-    const lastSet = findLastSetForExercise(isCustom ? undefined : ex.id, isCustom ? ex.id : undefined);
+  const addExercise = (
+    ex: { id: string; name: string; bodyPart?: string; equipment?: string },
+    isCustom = false
+  ) => {
+    const lastPerf = getLastPerformance(
+      isCustom ? undefined : ex.id,
+      isCustom ? ex.id : undefined
+    );
+    const lastSet = findLastSetForExercise(
+      isCustom ? undefined : ex.id,
+      isCustom ? ex.id : undefined
+    );
 
     if (isCustom) {
       setItems((prev) => [
@@ -223,14 +269,18 @@ export default function NewWorkoutPage() {
   /**
    * Find the last set values for an exercise to use as defaults when adding a new set
    */
-  const findLastSetForExercise = (exerciseId?: string, customId?: string): SetRow | null => {
+  const findLastSetForExercise = (
+    exerciseId?: string,
+    customId?: string
+  ): SetRow | null => {
     if (!historyData?.items) return null;
 
     for (const workout of historyData.items) {
       if (!workout.items) continue;
       const item = workout.items.find(
         (it: any) =>
-          (exerciseId && it.exerciseId === exerciseId) || (customId && it.customId === customId)
+          (exerciseId && it.exerciseId === exerciseId) ||
+          (customId && it.customId === customId)
       );
       if (item && item.sets && item.sets.length > 0) {
         const lastSet = item.sets[item.sets.length - 1];
@@ -239,7 +289,9 @@ export default function NewWorkoutPage() {
           weightKg: lastSet.weightKg ? Number(lastSet.weightKg) : undefined,
           reps: lastSet.reps,
           notes: lastSet.notes || undefined,
-          previousWeight: lastSet.weightKg ? Number(lastSet.weightKg) : undefined,
+          previousWeight: lastSet.weightKg
+            ? Number(lastSet.weightKg)
+            : undefined,
           previousReps: lastSet.reps,
         };
       }
@@ -322,14 +374,24 @@ export default function NewWorkoutPage() {
     });
   };
 
-  const onChangeSet = (itemIndex: number, setIndex: number, field: keyof SetRow, value: any) => {
+  const onChangeSet = (
+    itemIndex: number,
+    setIndex: number,
+    field: keyof SetRow,
+    value: any
+  ) => {
     setItems((prev) => {
       const copy = [...prev];
       const currentSet = copy[itemIndex].sets[setIndex];
-      
+
       // Handle reps specially - allow empty string during editing, but store as number
       if (field === 'reps') {
-        const numValue = value === '' ? 1 : (typeof value === 'number' ? value : Number(value) || 1);
+        const numValue =
+          value === ''
+            ? 1
+            : typeof value === 'number'
+              ? value
+              : Number(value) || 1;
         copy[itemIndex].sets[setIndex] = {
           ...currentSet,
           reps: numValue,
@@ -383,11 +445,18 @@ export default function NewWorkoutPage() {
         sets: it.sets.map((s) => ({
           setNumber: s.setNumber,
           weightKg: s.weightKg,
-          reps: typeof s.reps === 'string' ? (s.reps === '' ? 1 : Number(s.reps) || 1) : s.reps,
+          reps:
+            typeof s.reps === 'string'
+              ? s.reps === ''
+                ? 1
+                : Number(s.reps) || 1
+              : s.reps,
           notes: s.notes,
         })),
       })),
     });
+    // Clear saved workout when finished
+    clearSavedWorkout();
     setSuccessOpen(true);
     setTimeout(() => {
       router.push('/workouts');
@@ -399,6 +468,8 @@ export default function NewWorkoutPage() {
   };
 
   const handleCancelConfirm = () => {
+    // Clear saved workout when cancelled
+    clearSavedWorkout();
     router.push('/workouts');
   };
 
@@ -429,11 +500,39 @@ export default function NewWorkoutPage() {
 
         {/* Workout Info */}
         <Stack spacing={1} sx={{ mb: 3 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="h4">{title || 'New Workout'}</Typography>
-            <IconButton size="small" aria-label="Workout options">
-              <MoreVertIcon fontSize="small" />
-            </IconButton>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            spacing={1}
+          >
+            <TextField
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Workout Name"
+              variant="standard"
+              sx={{
+                flex: 1,
+                '& .MuiInput-underline:before': {
+                  borderBottom: 'none',
+                },
+                '& .MuiInput-underline:hover:before': {
+                  borderBottom: 'none',
+                },
+                '& .MuiInput-underline:after': {
+                  borderBottom: '2px solid',
+                  borderColor: 'primary.main',
+                },
+                '& .MuiInputBase-input': {
+                  fontSize: '2rem',
+                  fontWeight: 600,
+                  py: 0.5,
+                },
+              }}
+              InputProps={{
+                disableUnderline: false,
+              }}
+            />
           </Stack>
           <Stack direction="row" spacing={2} alignItems="center">
             <Stack direction="row" spacing={0.5} alignItems="center">
@@ -451,13 +550,13 @@ export default function NewWorkoutPage() {
           </Stack>
         </Stack>
 
-        {/* Action Buttons at Bottom */}
+        {/* Action Buttons */}
         <Stack direction="row" spacing={2} sx={{ mt: 3, mb: 2 }}>
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => setPickerOpen(true)}
-            sx={{ flex: 1 }}
+            sx={{ flex: 1, textTransform: 'none', fontWeight: 600 }}
           >
             Add Exercises
           </Button>
@@ -465,7 +564,7 @@ export default function NewWorkoutPage() {
             variant="outlined"
             color="error"
             onClick={handleCancel}
-            sx={{ flex: 1 }}
+            sx={{ flex: 1, textTransform: 'none', fontWeight: 600 }}
           >
             Cancel Workout
           </Button>
@@ -473,13 +572,33 @@ export default function NewWorkoutPage() {
 
         {/* Exercise Cards */}
         {items.length === 0 ? (
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography color="text.secondary">
-              No exercises added yet. Click "Add Exercise" to get started.
+          <Paper
+            elevation={0}
+            sx={{
+              p: 6,
+              textAlign: 'center',
+              border: '2px dashed',
+              borderColor: 'divider',
+              borderRadius: 2,
+            }}
+          >
+            <AddIcon
+              sx={{
+                fontSize: 48,
+                color: 'text.secondary',
+                mb: 2,
+                opacity: 0.5,
+              }}
+            />
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              No exercises added yet
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Click "Add Exercises" to start building your workout
             </Typography>
           </Paper>
         ) : (
-          <Stack spacing={0}>
+          <Stack spacing={2} sx={{ mt: 2 }}>
             {items.map((item, itemIndex) => (
               <ExerciseCard
                 key={itemIndex}
@@ -491,13 +610,20 @@ export default function NewWorkoutPage() {
                   equipment: item.equipment,
                 }}
                 sets={item.sets}
-                lastPerformance={getLastPerformance(item.exerciseId, item.customId)}
+                lastPerformance={getLastPerformance(
+                  item.exerciseId,
+                  item.customId
+                )}
                 defaultRestSeconds={preferences?.defaultRestSeconds}
                 onRemoveExercise={() => removeItem(itemIndex)}
-                onChangeSet={(setIndex, field, value) => onChangeSet(itemIndex, setIndex, field, value)}
+                onChangeSet={(setIndex, field, value) =>
+                  onChangeSet(itemIndex, setIndex, field, value)
+                }
                 onRemoveSet={(setIndex) => removeSet(itemIndex, setIndex)}
                 onAddSet={() => addSet(itemIndex)}
-                onToggleSetComplete={(setIndex) => handleToggleSetComplete(itemIndex, setIndex)}
+                onToggleSetComplete={(setIndex) =>
+                  handleToggleSetComplete(itemIndex, setIndex)
+                }
               />
             ))}
           </Stack>
@@ -508,34 +634,77 @@ export default function NewWorkoutPage() {
           open={pickerOpen}
           onClose={() => setPickerOpen(false)}
           fullWidth
-          maxWidth="sm"
+          maxWidth="md"
           PaperProps={{
             sx: {
               m: { xs: 1, sm: 2 },
-              maxWidth: { xs: 'calc(100% - 16px)', sm: '600px' },
+              maxWidth: { xs: 'calc(100% - 16px)', sm: '700px' },
+              maxHeight: { xs: 'calc(100% - 32px)', sm: '80vh' },
+              display: 'flex',
+              flexDirection: 'column',
             },
           }}
         >
-          <DialogTitle>Select Exercise</DialogTitle>
-          <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
+          <DialogTitle sx={{ pb: 1 }}>
+            <Typography variant="h6" fontWeight={600}>
+              Add Exercise
+            </Typography>
+          </DialogTitle>
+          <DialogContent
+            sx={{
+              px: { xs: 2, sm: 3 },
+              flex: 1,
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
             <TextField
               autoFocus
               fullWidth
               placeholder="Search exercises..."
               value={exerciseQuery}
               onChange={(e) => setExerciseQuery(e.target.value)}
-              sx={{ my: 1 }}
+              sx={{ mb: 2 }}
+              variant="outlined"
             />
-            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 1 }}>
-              <Tab label={`Catalog (${exData?.catalog?.length ?? 0})`} value="catalog" />
-              <Tab label={`My Custom (${exData?.custom?.length ?? 0})`} value="custom" />
+            <Tabs
+              value={tab}
+              onChange={(_, v) => setTab(v)}
+              sx={{
+                mb: 2,
+                borderBottom: 1,
+                borderColor: 'divider',
+              }}
+            >
+              <Tab
+                label={`Catalog (${exData?.catalog?.length ?? 0})`}
+                value="catalog"
+                sx={{ textTransform: 'none', fontWeight: 500 }}
+              />
+              <Tab
+                label={`My Custom (${exData?.custom?.length ?? 0})`}
+                value="custom"
+                sx={{ textTransform: 'none', fontWeight: 500 }}
+              />
             </Tabs>
             {tab === 'catalog' && (
               <>
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2, flexWrap: 'wrap' }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    gap: 2,
+                    alignItems: 'center',
+                    mb: 2,
+                    flexWrap: 'wrap',
+                  }}
+                >
                   <FormControl
                     size="small"
-                    sx={{ minWidth: { xs: '100%', sm: 200 }, width: { xs: '100%', sm: 'auto' } }}
+                    sx={{
+                      minWidth: { xs: '100%', sm: 200 },
+                      width: { xs: '100%', sm: 'auto' },
+                    }}
                   >
                     <InputLabel id="muscle-filter-label">Muscle</InputLabel>
                     <Select
@@ -552,56 +721,93 @@ export default function NewWorkoutPage() {
                     </Select>
                   </FormControl>
                 </Box>
-                <Stack spacing={1} sx={{ maxHeight: 360, overflowY: 'auto' }}>
-                  {filteredCatalog.map((ex) => (
-                    <Paper
-                      key={ex.id}
-                      sx={{
-                        p: 1,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        minWidth: 0,
-                      }}
-                      onClick={() => addExercise(ex, false)}
-                    >
-                      <ExerciseThumb name={ex.name} mediaUrl={ex.mediaUrl} size={40} />
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                          {ex.name}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
-                        >
-                          {[ex.bodyPart, ex.equipment].filter(Boolean).join(' • ')}
+                <Box sx={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+                  <Stack spacing={1.5}>
+                    {filteredCatalog.map((ex) => (
+                      <Paper
+                        key={ex.id}
+                        elevation={0}
+                        sx={{
+                          p: 1.5,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 2,
+                          minWidth: 0,
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          transition: 'all 0.2s ease-in-out',
+                          '&:hover': {
+                            borderColor: 'primary.main',
+                            bgcolor: 'action.hover',
+                            transform: 'translateX(4px)',
+                          },
+                        }}
+                        onClick={() => addExercise(ex, false)}
+                      >
+                        <ExerciseThumb
+                          name={ex.name}
+                          mediaUrl={ex.mediaUrl}
+                          size={48}
+                        />
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography
+                            variant="subtitle1"
+                            fontWeight={500}
+                            sx={{
+                              wordBreak: 'break-word',
+                              overflowWrap: 'break-word',
+                              mb: 0.5,
+                            }}
+                          >
+                            {ex.name}
+                          </Typography>
+                          <Stack direction="row" spacing={1} flexWrap="wrap">
+                            {ex.bodyPart && (
+                              <Chip
+                                label={ex.bodyPart}
+                                size="small"
+                                variant="outlined"
+                                sx={{ height: 20, fontSize: '0.7rem' }}
+                              />
+                            )}
+                            {ex.equipment && (
+                              <Chip
+                                label={ex.equipment}
+                                size="small"
+                                variant="outlined"
+                                sx={{ height: 20, fontSize: '0.7rem' }}
+                              />
+                            )}
+                          </Stack>
+                        </Box>
+                        {ex.instructions ? (
+                          <IconButton
+                            aria-label="Instructions"
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setInstrTitle(ex.name);
+                              setInstrBody(ex.instructions!);
+                              setOpenInstr(true);
+                            }}
+                            sx={{ flexShrink: 0 }}
+                          >
+                            <InfoOutlinedIcon fontSize="small" />
+                          </IconButton>
+                        ) : null}
+                      </Paper>
+                    ))}
+                    {filteredCatalog.length === 0 && (
+                      <Box sx={{ textAlign: 'center', py: 4 }}>
+                        <Typography color="text.secondary" variant="body2">
+                          No exercises found. Try adjusting your search or
+                          filter.
                         </Typography>
                       </Box>
-                      {ex.instructions ? (
-                        <IconButton
-                          aria-label="Instructions"
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setInstrTitle(ex.name);
-                            setInstrBody(ex.instructions!);
-                            setOpenInstr(true);
-                          }}
-                          sx={{ flexShrink: 0 }}
-                        >
-                          <InfoOutlinedIcon fontSize="small" />
-                        </IconButton>
-                      ) : null}
-                    </Paper>
-                  ))}
-                  {filteredCatalog.length === 0 && (
-                    <Typography color="text.secondary" sx={{ mt: 1 }}>
-                      No catalog exercises found. Try seeding or changing your search.
-                    </Typography>
-                  )}
-                </Stack>
+                    )}
+                  </Stack>
+                </Box>
               </>
             )}
             {tab === 'custom' && (
@@ -611,50 +817,97 @@ export default function NewWorkoutPage() {
                   startIcon={<AddIcon />}
                   onClick={() => setCreateCustomOpen(true)}
                   fullWidth
-                  sx={{ mb: 1 }}
+                  sx={{
+                    mb: 2,
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    py: 1.5,
+                  }}
                 >
                   Create Custom Exercise
                 </Button>
-                <Stack spacing={1} sx={{ maxHeight: 360, overflowY: 'auto' }}>
-                  {(exData?.custom ?? []).map((ex) => (
-                    <Paper
-                      key={ex.id}
-                      sx={{
-                        p: 1,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        minWidth: 0,
-                      }}
-                      onClick={() => addExercise(ex, true)}
-                    >
-                      <ExerciseThumb name={ex.name} mediaUrl={ex.mediaUrl} size={40} />
-                      <Box sx={{ flex: 1, minWidth: 0 }}>
-                        <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
-                          {ex.name}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
-                        >
-                          {[ex.bodyPart, ex.equipment].filter(Boolean).join(' • ')}
+                <Box sx={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+                  <Stack spacing={1.5}>
+                    {(exData?.custom ?? []).map((ex) => (
+                      <Paper
+                        key={ex.id}
+                        elevation={0}
+                        sx={{
+                          p: 1.5,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 2,
+                          minWidth: 0,
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          transition: 'all 0.2s ease-in-out',
+                          '&:hover': {
+                            borderColor: 'primary.main',
+                            bgcolor: 'action.hover',
+                            transform: 'translateX(4px)',
+                          },
+                        }}
+                        onClick={() => addExercise(ex, true)}
+                      >
+                        <ExerciseThumb
+                          name={ex.name}
+                          mediaUrl={ex.mediaUrl}
+                          size={48}
+                        />
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography
+                            variant="subtitle1"
+                            fontWeight={500}
+                            sx={{
+                              wordBreak: 'break-word',
+                              overflowWrap: 'break-word',
+                              mb: 0.5,
+                            }}
+                          >
+                            {ex.name}
+                          </Typography>
+                          <Stack direction="row" spacing={1} flexWrap="wrap">
+                            {ex.bodyPart && (
+                              <Chip
+                                label={ex.bodyPart}
+                                size="small"
+                                variant="outlined"
+                                sx={{ height: 20, fontSize: '0.7rem' }}
+                              />
+                            )}
+                            {ex.equipment && (
+                              <Chip
+                                label={ex.equipment}
+                                size="small"
+                                variant="outlined"
+                                sx={{ height: 20, fontSize: '0.7rem' }}
+                              />
+                            )}
+                          </Stack>
+                        </Box>
+                      </Paper>
+                    ))}
+                    {(exData?.custom?.length ?? 0) === 0 && (
+                      <Box sx={{ textAlign: 'center', py: 4 }}>
+                        <Typography color="text.secondary" variant="body2">
+                          You haven't created any custom exercises yet.
                         </Typography>
                       </Box>
-                    </Paper>
-                  ))}
-                  {(exData?.custom?.length ?? 0) === 0 && (
-                    <Typography color="text.secondary" sx={{ mt: 1 }}>
-                      You haven't created any custom exercises yet.
-                    </Typography>
-                  )}
-                </Stack>
+                    )}
+                  </Stack>
+                </Box>
               </>
             )}
           </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setPickerOpen(false)}>Close</Button>
+          <DialogActions sx={{ px: { xs: 2, sm: 3 }, pb: 2 }}>
+            <Button
+              onClick={() => setPickerOpen(false)}
+              variant="outlined"
+              sx={{ textTransform: 'none', fontWeight: 500 }}
+            >
+              Close
+            </Button>
           </DialogActions>
         </Dialog>
 
@@ -742,23 +995,41 @@ export default function NewWorkoutPage() {
         </Dialog>
 
         {/* Cancel Workout Dialog */}
-        <Dialog open={cancelDialogOpen} onClose={() => setCancelDialogOpen(false)}>
+        <Dialog
+          open={cancelDialogOpen}
+          onClose={() => setCancelDialogOpen(false)}
+        >
           <DialogTitle>Cancel Workout</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to cancel this workout? All progress will be lost.
+              Are you sure you want to cancel this workout? All progress will be
+              lost.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setCancelDialogOpen(false)}>Keep Working Out</Button>
-            <Button onClick={handleCancelConfirm} color="error" variant="contained">
+            <Button onClick={() => setCancelDialogOpen(false)}>
+              Keep Working Out
+            </Button>
+            <Button
+              onClick={handleCancelConfirm}
+              color="error"
+              variant="contained"
+            >
               Cancel Workout
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Snackbar open={successOpen} autoHideDuration={2000} onClose={() => setSuccessOpen(false)}>
-          <Alert onClose={() => setSuccessOpen(false)} severity="success" sx={{ width: '100%' }}>
+        <Snackbar
+          open={successOpen}
+          autoHideDuration={2000}
+          onClose={() => setSuccessOpen(false)}
+        >
+          <Alert
+            onClose={() => setSuccessOpen(false)}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
             Workout saved successfully!
           </Alert>
         </Snackbar>

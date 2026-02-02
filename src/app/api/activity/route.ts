@@ -5,6 +5,7 @@ import { activitySchema } from '@/lib/validators';
 import { getRangeBounds } from '@/lib/date';
 import { prisma } from '@/lib/prisma';
 import { toNumber } from '@/lib/serialize';
+import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,15 +34,21 @@ export async function GET(request: NextRequest) {
   if (dateParam) {
     anchorDate = new Date(dateParam);
     if (isNaN(anchorDate.getTime())) {
-      return NextResponse.json({ error: 'Invalid date format' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid date format' },
+        { status: 400 }
+      );
     }
   }
 
   // Get date bounds
-  const { start, end } = getRangeBounds(range as 'day' | 'week' | 'month', anchorDate);
+  const { start, end } = getRangeBounds(
+    range as 'day' | 'week' | 'month',
+    anchorDate
+  );
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -51,7 +58,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Fetch entries
-    const entries = await prisma.activityEntry.findMany({
+    const entries = await prisma.activity_entries.findMany({
       where: {
         userId: user.id,
         date: {
@@ -97,7 +104,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -107,13 +114,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    
+
     // Validate input
     const validated = activitySchema.parse(body);
 
     // Create activity entry
-    const entry = await prisma.activityEntry.create({
+    const entry = await prisma.activity_entries.create({
       data: {
+        id: randomUUID(),
         userId: user.id,
         date: new Date(validated.date),
         steps: validated.steps,
@@ -121,6 +129,7 @@ export async function POST(request: NextRequest) {
         calories: validated.calories,
         heartRateAvg: validated.heartRateAvg,
         workouts: validated.workouts,
+        updatedAt: new Date(),
       },
     });
 
@@ -151,4 +160,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

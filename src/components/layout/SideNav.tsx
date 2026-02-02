@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import {
   Drawer,
   List,
@@ -89,4 +88,3 @@ export function SideNav({ open, onClose }: SideNavProps) {
     </Drawer>
   );
 }
-

@@ -15,7 +15,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, padding: 0, overflowX: 'hidden', maxWidth: '100vw' }}>
+      <body
+        style={{
+          margin: 0,
+          padding: 0,
+          overflowX: 'hidden',
+          maxWidth: '100vw',
+        }}
+      >
         <SessionProvider>
           <QueryProvider>
             <ThemeProvider>{children}</ThemeProvider>
@@ -25,4 +32,3 @@ export default function RootLayout({
     </html>
   );
 }
-

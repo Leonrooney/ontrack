@@ -59,3 +59,12 @@ export function sum(numbers: number[]): number {
   return numbers.reduce((a, b) => a + b, 0);
 }
 
+/**
+ * Format elapsed time as M:SS (e.g., 5:30 for 5 minutes 30 seconds)
+ * Used for workout timers and rest timers
+ */
+export function formatElapsedTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}

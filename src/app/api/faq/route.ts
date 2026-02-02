@@ -9,13 +9,17 @@ export async function GET(req: Request) {
   const tag = (url.searchParams.get('tag') || '').trim().toLowerCase();
 
   // Fetch all, we'll filter in-memory for fuzziness
-  const faqs = await prisma.faq.findMany({ orderBy: { createdAt: 'desc' } });
+  const faqs = await prisma.faqs.findMany({ orderBy: { createdAt: 'desc' } });
 
   const normalized = faqs.map((f) => ({
     id: f.id,
     question: f.question,
     answer: f.answer,
-    tags: Array.isArray(f.tags) ? f.tags : typeof f.tags === 'string' ? JSON.parse(f.tags) : [],
+    tags: Array.isArray(f.tags)
+      ? f.tags
+      : typeof f.tags === 'string'
+        ? JSON.parse(f.tags)
+        : [],
     slug: f.question
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
@@ -24,13 +28,23 @@ export async function GET(req: Request) {
       .slice(0, 80),
   }));
 
-  const byTag = tag ? normalized.filter((f) => f.tags.some((t: string) => t.toLowerCase() === tag)) : normalized;
+  const byTag = tag
+    ? normalized.filter((f) =>
+        f.tags.some((t: string) => t.toLowerCase() === tag)
+      )
+    : normalized;
 
   if (!q) return NextResponse.json({ items: byTag }, { status: 200 });
 
   // Simple fuzzy scoring: contains > word match > char subsequence
-  function score(item: typeof normalized[number]): number {
-    const text = (item.question + ' ' + item.answer + ' ' + item.tags.join(' ')).toLowerCase();
+  function score(item: (typeof normalized)[number]): number {
+    const text = (
+      item.question +
+      ' ' +
+      item.answer +
+      ' ' +
+      item.tags.join(' ')
+    ).toLowerCase();
     if (text.includes(q)) return 3;
 
     const words = q.split(/\s+/);
@@ -52,4 +66,3 @@ export async function GET(req: Request) {
 
   return NextResponse.json({ items: filtered }, { status: 200 });
 }
-

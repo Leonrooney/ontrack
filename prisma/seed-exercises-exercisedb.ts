@@ -47,11 +47,24 @@ function normalizeBodyPart(bp?: string) {
   const s = bp.toLowerCase();
   if (s.includes('chest')) return 'Chest';
   if (s.includes('back') || s.includes('lats')) return 'Back';
-  if (s.includes('leg') || s.includes('quad') || s.includes('hamstring') || s.includes('calf') || s.includes('glute'))
+  if (
+    s.includes('leg') ||
+    s.includes('quad') ||
+    s.includes('hamstring') ||
+    s.includes('calf') ||
+    s.includes('glute')
+  )
     return 'Legs';
   if (s.includes('shoulder') || s.includes('deltoid')) return 'Shoulders';
-  if (s.includes('arm') || s.includes('bicep') || s.includes('tricep') || s.includes('forearm')) return 'Arms';
-  if (s.includes('core') || s.includes('ab') || s.includes('oblique')) return 'Core';
+  if (
+    s.includes('arm') ||
+    s.includes('bicep') ||
+    s.includes('tricep') ||
+    s.includes('forearm')
+  )
+    return 'Arms';
+  if (s.includes('core') || s.includes('ab') || s.includes('oblique'))
+    return 'Core';
   return bp;
 }
 
@@ -62,12 +75,15 @@ async function main() {
   }
 
   if (MODE === 'rapidapi' && !RAPID_KEY) {
-    console.error('EXDB_RAPID_KEY environment variable is required for RapidAPI mode');
+    console.error(
+      'EXDB_RAPID_KEY environment variable is required for RapidAPI mode'
+    );
     process.exit(1);
   }
 
   console.log(`Fetching exercises from ExerciseDB (mode: ${MODE})...`);
-  const items = MODE === 'selfhost' ? await fetchAllSelfHost() : await fetchAllRapid();
+  const items =
+    MODE === 'selfhost' ? await fetchAllSelfHost() : await fetchAllRapid();
 
   console.log(`Received ${items.length} exercises from ExerciseDB`);
 
@@ -83,32 +99,48 @@ async function main() {
     }
 
     const bodyPart = normalizeBodyPart(e.bodyPart ?? e.bodyParts?.[0]);
-    const equipment = e.equipment ?? (Array.isArray(e.equipments) ? e.equipments[0] : null);
+    const equipment =
+      e.equipment ?? (Array.isArray(e.equipments) ? e.equipments[0] : null);
     const mediaUrl = e.gifUrl ?? e.imageUrl ?? null;
-    const instructions = Array.isArray(e.instructions) ? e.instructions.join('\n') : e.instructions ?? null;
+    const instructions = Array.isArray(e.instructions)
+      ? e.instructions.join('\n')
+      : (e.instructions ?? null);
 
     try {
       const existing = await findExerciseCaseInsensitive(name);
       if (existing) {
-        await prisma.exercise.update({
-          where: { id: existing.id },
-          data: {
-            bodyPart,
-            equipment,
-            instructions,
-            isActive: true,
-            ...(mediaUrl && (FORCE_MEDIA_OVERWRITE || !existing.mediaUrl) ? { mediaUrl } : {}),
-          },
-        }).catch((err) => {
-          console.error(`Failed update for "${name}":`, err.message);
-        });
+        await prisma.exercise
+          .update({
+            where: { id: existing.id },
+            data: {
+              bodyPart,
+              equipment,
+              instructions,
+              isActive: true,
+              ...(mediaUrl && (FORCE_MEDIA_OVERWRITE || !existing.mediaUrl)
+                ? { mediaUrl }
+                : {}),
+            },
+          })
+          .catch((err) => {
+            console.error(`Failed update for "${name}":`, err.message);
+          });
         updated++;
       } else {
-        await prisma.exercise.create({
-          data: { name, bodyPart, equipment, instructions, mediaUrl, isActive: true },
-        }).catch((err) => {
-          console.error(`Failed create for "${name}":`, err.message);
-        });
+        await prisma.exercise
+          .create({
+            data: {
+              name,
+              bodyPart,
+              equipment,
+              instructions,
+              mediaUrl,
+              isActive: true,
+            },
+          })
+          .catch((err) => {
+            console.error(`Failed create for "${name}":`, err.message);
+          });
         created++;
       }
     } catch (err: any) {
@@ -118,7 +150,9 @@ async function main() {
     }
   }
 
-  console.log(`ExerciseDB import complete: created=${created}, updated=${updated}, skipped=${skipped}`);
+  console.log(
+    `ExerciseDB import complete: created=${created}, updated=${updated}, skipped=${skipped}`
+  );
 }
 
 main()
@@ -128,4 +162,3 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
-

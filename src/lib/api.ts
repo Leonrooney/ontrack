@@ -1,8 +1,20 @@
 /**
- * Client-side API helper for making authenticated requests
- * Ensures cookies are sent with same-origin requests
+ * Client-side API helper functions for making authenticated requests
+ * All functions ensure cookies are sent with same-origin requests
  */
-export async function apiGet<T>(path: string, init: RequestInit = {}): Promise<T> {
+
+/**
+ * Make a GET request to an API endpoint
+ *
+ * @param path - API endpoint path (e.g., '/api/workouts')
+ * @param init - Optional fetch init options
+ * @returns Parsed JSON response
+ * @throws Error if response is not ok
+ */
+export async function apiGet<T>(
+  path: string,
+  init: RequestInit = {}
+): Promise<T> {
   const res = await fetch(path, {
     credentials: 'same-origin',
     ...init,
@@ -15,6 +27,15 @@ export async function apiGet<T>(path: string, init: RequestInit = {}): Promise<T
   return res.json();
 }
 
+/**
+ * Make a POST request to an API endpoint
+ *
+ * @param path - API endpoint path
+ * @param body - Request body (will be JSON stringified)
+ * @param init - Optional fetch init options
+ * @returns Parsed JSON response
+ * @throws Error if response is not ok
+ */
 export async function apiPost<T>(
   path: string,
   body: any,
@@ -38,6 +59,15 @@ export async function apiPost<T>(
   return res.json();
 }
 
+/**
+ * Make a PATCH request to an API endpoint
+ *
+ * @param path - API endpoint path
+ * @param body - Request body (will be JSON stringified)
+ * @param init - Optional fetch init options
+ * @returns Parsed JSON response
+ * @throws Error if response is not ok
+ */
 export async function apiPatch<T>(
   path: string,
   body: any,
@@ -61,6 +91,15 @@ export async function apiPatch<T>(
   return res.json();
 }
 
+/**
+ * Make a PUT request to an API endpoint
+ *
+ * @param path - API endpoint path
+ * @param body - Request body (will be JSON stringified)
+ * @param init - Optional fetch init options
+ * @returns Parsed JSON response
+ * @throws Error if response is not ok
+ */
 export async function apiPut<T>(
   path: string,
   body: any,
@@ -84,7 +123,18 @@ export async function apiPut<T>(
   return res.json();
 }
 
-export async function apiDelete<T>(path: string, init: RequestInit = {}): Promise<T> {
+/**
+ * Make a DELETE request to an API endpoint
+ *
+ * @param path - API endpoint path
+ * @param init - Optional fetch init options
+ * @returns Parsed JSON response
+ * @throws Error if response is not ok
+ */
+export async function apiDelete<T>(
+  path: string,
+  init: RequestInit = {}
+): Promise<T> {
   const res = await fetch(path, {
     method: 'DELETE',
     credentials: 'same-origin',
@@ -97,4 +147,3 @@ export async function apiDelete<T>(path: string, init: RequestInit = {}): Promis
 
   return res.json();
 }
-

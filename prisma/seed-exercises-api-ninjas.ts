@@ -3,8 +3,11 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-const BASE = process.env.NINJAS_BASE_URL || 'https://exercises-by-api-ninjas.p.rapidapi.com/v1';
-const HOST = process.env.NINJAS_RAPID_HOST || 'exercises-by-api-ninjas.p.rapidapi.com';
+const BASE =
+  process.env.NINJAS_BASE_URL ||
+  'https://exercises-by-api-ninjas.p.rapidapi.com/v1';
+const HOST =
+  process.env.NINJAS_RAPID_HOST || 'exercises-by-api-ninjas.p.rapidapi.com';
 const KEY = process.env.NINJAS_RAPID_KEY;
 
 if (!KEY) {
@@ -26,7 +29,10 @@ function mapMuscleToBodyPart(muscle?: string): string {
   const m = muscle.toLowerCase();
   if (/^(ab|abs|abdom)/.test(m)) return 'Core';
   if (/oblique/.test(m)) return 'Core';
-  if (/lower_back|lats|traps?|levator|spine|middle_back|upper_back|back/.test(m)) return 'Back';
+  if (
+    /lower_back|lats|traps?|levator|spine|middle_back|upper_back|back/.test(m)
+  )
+    return 'Back';
   if (/quad|hamstring|glute|calf|adductor|abductor|leg/.test(m)) return 'Legs';
   if (/pec|chest/.test(m)) return 'Chest';
   if (/deltoid|shoulder/.test(m)) return 'Shoulders';
@@ -39,7 +45,9 @@ function normalizeName(name: string) {
 }
 
 async function findCaseInsensitive(name: string) {
-  return prisma.exercise.findFirst({ where: { name: { equals: name, mode: 'insensitive' } } });
+  return prisma.exercise.findFirst({
+    where: { name: { equals: name, mode: 'insensitive' } },
+  });
 }
 
 async function fetchAllFromNinjas(): Promise<NinjasExercise[]> {
@@ -72,7 +80,9 @@ async function fetchAllFromNinjas(): Promise<NinjasExercise[]> {
     const url = `${BASE.replace(/\/$/, '')}/exercises?muscle=${encodeURIComponent(musc)}&offset=0`;
     const res = await fetch(url, { headers });
     if (!res.ok) {
-      console.warn(`Failed fetch for muscle=${musc}: ${res.status} ${res.statusText}`);
+      console.warn(
+        `Failed fetch for muscle=${musc}: ${res.status} ${res.statusText}`
+      );
       continue;
     }
     const arr = (await res.json()) as NinjasExercise[];
@@ -156,7 +166,9 @@ async function main() {
     }
   }
 
-  console.log(`Done. Created: ${created}, Updated: ${updated}, Skipped: ${skipped}`);
+  console.log(
+    `Done. Created: ${created}, Updated: ${updated}, Skipped: ${skipped}`
+  );
 }
 
 main()

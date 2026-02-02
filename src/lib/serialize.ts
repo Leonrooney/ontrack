@@ -13,12 +13,19 @@ export function toPlain<T extends Record<string, any>>(data: T): T {
 
   for (const [key, val] of Object.entries(data)) {
     if (val instanceof Decimal) out[key] = Number(val.toString());
-    else if (Array.isArray(val)) out[key] = val.map((v) => (v instanceof Decimal ? Number(v.toString()) : v));
-    else if (val && typeof val === 'object' && !(val instanceof Date) && !(val === null)) {
+    else if (Array.isArray(val))
+      out[key] = val.map((v) =>
+        v instanceof Decimal ? Number(v.toString()) : v
+      );
+    else if (
+      val &&
+      typeof val === 'object' &&
+      !(val instanceof Date) &&
+      !(val === null)
+    ) {
       out[key] = toPlain(val);
     } else out[key] = val;
   }
 
   return out;
 }
-

@@ -24,7 +24,12 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { Add, Edit, Delete, LocalFireDepartment } from '@mui/icons-material';
-import { useGoals, useCreateGoal, useUpdateGoal, useDeleteGoal } from '@/hooks/goals';
+import {
+  useGoals,
+  useCreateGoal,
+  useUpdateGoal,
+  useDeleteGoal,
+} from '@/hooks/goals';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Snackbar, Alert as MuiAlert } from '@mui/material';
@@ -45,8 +50,14 @@ const periodOptions = [
 ];
 
 const goalSchema = yup.object({
-  type: yup.string().oneOf(['STEPS', 'CALORIES', 'WORKOUTS', 'DISTANCE']).required('Type is required'),
-  period: yup.string().oneOf(['DAILY', 'WEEKLY', 'MONTHLY']).required('Period is required'),
+  type: yup
+    .string()
+    .oneOf(['STEPS', 'CALORIES', 'WORKOUTS', 'DISTANCE'])
+    .required('Type is required'),
+  period: yup
+    .string()
+    .oneOf(['DAILY', 'WEEKLY', 'MONTHLY'])
+    .required('Period is required'),
   targetInt: yup
     .number()
     .transform((value, originalValue) => {
@@ -160,15 +171,24 @@ export default function GoalsPage() {
         };
 
         if (['STEPS', 'WORKOUTS'].includes(values.type)) {
-          const num = typeof values.targetInt === 'string' ? parseFloat(values.targetInt) : values.targetInt;
+          const num =
+            typeof values.targetInt === 'string'
+              ? parseFloat(values.targetInt)
+              : values.targetInt;
           payload.targetInt = isNaN(num) ? undefined : num;
         } else {
-          const num = typeof values.targetDec === 'string' ? parseFloat(values.targetDec) : values.targetDec;
+          const num =
+            typeof values.targetDec === 'string'
+              ? parseFloat(values.targetDec)
+              : values.targetDec;
           payload.targetDec = isNaN(num) ? undefined : num;
         }
 
         if (editingGoal) {
-          await updateMutation.mutateAsync({ id: editingGoal.id, input: payload });
+          await updateMutation.mutateAsync({
+            id: editingGoal.id,
+            input: payload,
+          });
         } else {
           await createMutation.mutateAsync(payload);
         }
@@ -184,8 +204,10 @@ export default function GoalsPage() {
   });
 
   const getGoalTitle = (goal: any) => {
-    const typeLabel = goalTypeOptions.find(o => o.value === goal.type)?.label || goal.type;
-    const periodLabel = periodOptions.find(o => o.value === goal.period)?.label || goal.period;
+    const typeLabel =
+      goalTypeOptions.find((o) => o.value === goal.type)?.label || goal.type;
+    const periodLabel =
+      periodOptions.find((o) => o.value === goal.period)?.label || goal.period;
     return `${typeLabel} — ${periodLabel}`;
   };
 
@@ -209,11 +231,30 @@ export default function GoalsPage() {
   return (
     <MainLayout>
       <Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
-          <Typography variant="h4" component="h1" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 3,
+            flexWrap: 'wrap',
+            gap: 1,
+          }}
+        >
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}
+          >
             Goals
           </Typography>
-          <Button variant="contained" startIcon={<Add />} onClick={handleAdd} size="small" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={handleAdd}
+            size="small"
+            sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' } }}
+          >
             Create Goal
           </Button>
         </Box>
@@ -225,7 +266,10 @@ export default function GoalsPage() {
             <Skeleton variant="rectangular" height={150} sx={{ mb: 2 }} />
           </Box>
         ) : error ? (
-          <Alert severity="error" action={<Button onClick={() => refetch()}>Retry</Button>}>
+          <Alert
+            severity="error"
+            action={<Button onClick={() => refetch()}>Retry</Button>}
+          >
             Failed to load goals
           </Alert>
         ) : goals.length === 0 ? (
@@ -233,7 +277,12 @@ export default function GoalsPage() {
             <Typography variant="body1" color="text.secondary" gutterBottom>
               No goals yet. Create your first goal to start tracking!
             </Typography>
-            <Button variant="contained" startIcon={<Add />} onClick={handleAdd} sx={{ mt: 2 }}>
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={handleAdd}
+              sx={{ mt: 2 }}
+            >
               Create Goal
             </Button>
           </Paper>
@@ -242,9 +291,33 @@ export default function GoalsPage() {
             {goals.map((goal) => (
               <Card key={goal.id} sx={{ opacity: goal.isActive ? 1 : 0.6 }}>
                 <CardContent>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-                    <Typography variant="h6" sx={{ flex: { xs: '1 1 100%', sm: '0 1 auto' }, wordBreak: 'break-word' }}>{getGoalTitle(goal)}</Typography>
-                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      mb: 2,
+                      flexWrap: 'wrap',
+                      gap: 1,
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        flex: { xs: '1 1 100%', sm: '0 1 auto' },
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {getGoalTitle(goal)}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        gap: 1,
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                      }}
+                    >
                       {goal.progress && goal.progress.streakCount > 0 && (
                         <Chip
                           icon={<LocalFireDepartment />}
@@ -270,9 +343,18 @@ export default function GoalsPage() {
                   {goal.progress && (
                     <>
                       <Box sx={{ mb: 2 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            mb: 0.5,
+                          }}
+                        >
                           <Typography variant="body2" color="text.secondary">
-                            {formatCurrentValue(goal)} / {formatTarget(goal)} {goal.type === 'DISTANCE' ? '' : goal.type?.toLowerCase()}
+                            {formatCurrentValue(goal)} / {formatTarget(goal)}{' '}
+                            {goal.type === 'DISTANCE'
+                              ? ''
+                              : goal.type?.toLowerCase()}
                           </Typography>
                           <Typography variant="body2" fontWeight="bold">
                             {goal.progress.pct.toFixed(1)}%
@@ -281,7 +363,11 @@ export default function GoalsPage() {
                         <LinearProgress
                           variant="determinate"
                           value={goal.progress.pct}
-                          color={goal.progress.isMetThisPeriod ? 'success' : 'primary'}
+                          color={
+                            goal.progress.isMetThisPeriod
+                              ? 'success'
+                              : 'primary'
+                          }
                           sx={{ height: 8, borderRadius: 1 }}
                         />
                       </Box>
@@ -295,7 +381,11 @@ export default function GoalsPage() {
                   )}
 
                   <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-                    <Button size="small" startIcon={<Edit />} onClick={() => handleEdit(goal)}>
+                    <Button
+                      size="small"
+                      startIcon={<Edit />}
+                      onClick={() => handleEdit(goal)}
+                    >
                       Edit
                     </Button>
                     <Button
@@ -314,16 +404,16 @@ export default function GoalsPage() {
         )}
 
         {/* Add/Edit Dialog */}
-        <Dialog 
-          open={isAddDialogOpen} 
-          onClose={handleCloseDialog} 
-          maxWidth="sm" 
+        <Dialog
+          open={isAddDialogOpen}
+          onClose={handleCloseDialog}
+          maxWidth="sm"
           fullWidth
           PaperProps={{
             sx: {
               m: { xs: 1, sm: 2 },
               maxWidth: { xs: 'calc(100% - 16px)', sm: '600px' },
-            }
+            },
           }}
         >
           <DialogTitle>{editingGoal ? 'Edit Goal' : 'Create Goal'}</DialogTitle>
@@ -342,7 +432,9 @@ export default function GoalsPage() {
                   formik.setFieldValue('targetDec', '');
                 }}
                 error={formik.touched.type && Boolean(formik.errors.type)}
-                helperText={(formik.touched.type && formik.errors.type) as string}
+                helperText={
+                  (formik.touched.type && formik.errors.type) as string
+                }
               >
                 {goalTypeOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -358,7 +450,9 @@ export default function GoalsPage() {
                 label="Period"
                 {...formik.getFieldProps('period')}
                 error={formik.touched.period && Boolean(formik.errors.period)}
-                helperText={(formik.touched.period && formik.errors.period) as string}
+                helperText={
+                  (formik.touched.period && formik.errors.period) as string
+                }
               >
                 {periodOptions.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -374,8 +468,13 @@ export default function GoalsPage() {
                   label={`Target ${formik.values.type === 'STEPS' ? 'Steps' : 'Workouts'}`}
                   type="number"
                   {...formik.getFieldProps('targetInt')}
-                  error={formik.touched.targetInt && Boolean(formik.errors.targetInt)}
-                  helperText={(formik.touched.targetInt && formik.errors.targetInt) as string}
+                  error={
+                    formik.touched.targetInt && Boolean(formik.errors.targetInt)
+                  }
+                  helperText={
+                    (formik.touched.targetInt &&
+                      formik.errors.targetInt) as string
+                  }
                 />
               )}
 
@@ -387,8 +486,13 @@ export default function GoalsPage() {
                   type="number"
                   inputProps={{ step: 0.1 }}
                   {...formik.getFieldProps('targetDec')}
-                  error={formik.touched.targetDec && Boolean(formik.errors.targetDec)}
-                  helperText={(formik.touched.targetDec && formik.errors.targetDec) as string}
+                  error={
+                    formik.touched.targetDec && Boolean(formik.errors.targetDec)
+                  }
+                  helperText={
+                    (formik.touched.targetDec &&
+                      formik.errors.targetDec) as string
+                  }
                 />
               )}
 
@@ -398,8 +502,13 @@ export default function GoalsPage() {
                 label="Start Date"
                 type="date"
                 {...formik.getFieldProps('startDate')}
-                error={formik.touched.startDate && Boolean(formik.errors.startDate)}
-                helperText={(formik.touched.startDate && formik.errors.startDate) as string}
+                error={
+                  formik.touched.startDate && Boolean(formik.errors.startDate)
+                }
+                helperText={
+                  (formik.touched.startDate &&
+                    formik.errors.startDate) as string
+                }
                 InputLabelProps={{ shrink: true }}
               />
 
@@ -416,13 +525,22 @@ export default function GoalsPage() {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleCloseDialog} disabled={formik.isSubmitting}>Cancel</Button>
+              <Button
+                onClick={handleCloseDialog}
+                disabled={formik.isSubmitting}
+              >
+                Cancel
+              </Button>
               <Button
                 type="submit"
                 variant="contained"
                 disabled={formik.isSubmitting}
               >
-                {formik.isSubmitting ? 'Saving...' : editingGoal ? 'Update' : 'Create'}
+                {formik.isSubmitting
+                  ? 'Saving...'
+                  : editingGoal
+                    ? 'Update'
+                    : 'Create'}
               </Button>
             </DialogActions>
           </form>

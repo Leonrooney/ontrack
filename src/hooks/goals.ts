@@ -15,7 +15,10 @@ async function createGoal(input: GoalInput): Promise<Goal> {
   return apiPost<Goal>('/api/goals', input);
 }
 
-async function updateGoal(id: string, input: Partial<GoalInput>): Promise<Goal> {
+async function updateGoal(
+  id: string,
+  input: Partial<GoalInput>
+): Promise<Goal> {
   return apiPatch<Goal>(`/api/goals/${id}`, input);
 }
 
@@ -44,10 +47,18 @@ export function useCreateGoal() {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
       queryClient.invalidateQueries({ queryKey: ['activity'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      setSnackbar({ open: true, message: 'Goal created successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Goal created successfully',
+        severity: 'success',
+      });
     },
     onError: () => {
-      setSnackbar({ open: true, message: 'Failed to create goal', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to create goal',
+        severity: 'error',
+      });
     },
   });
 
@@ -73,10 +84,18 @@ export function useUpdateGoal() {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
       queryClient.invalidateQueries({ queryKey: ['activity'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      setSnackbar({ open: true, message: 'Goal updated successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Goal updated successfully',
+        severity: 'success',
+      });
     },
     onError: () => {
-      setSnackbar({ open: true, message: 'Failed to update goal', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to update goal',
+        severity: 'error',
+      });
     },
   });
 
@@ -101,10 +120,18 @@ export function useDeleteGoal() {
       queryClient.invalidateQueries({ queryKey: ['goals'] });
       queryClient.invalidateQueries({ queryKey: ['activity'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      setSnackbar({ open: true, message: 'Goal deleted successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Goal deleted successfully',
+        severity: 'success',
+      });
     },
     onError: () => {
-      setSnackbar({ open: true, message: 'Failed to delete goal', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to delete goal',
+        severity: 'error',
+      });
     },
   });
 
@@ -114,4 +141,3 @@ export function useDeleteGoal() {
     closeSnackbar: () => setSnackbar({ ...snackbar, open: false }),
   };
 }
-

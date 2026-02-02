@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { randomUUID } from 'crypto';
 
 export interface PersonalBestResult {
   setId: string;
@@ -19,7 +20,7 @@ export async function detectPersonalBests(
   customId: string | null,
   setId: string,
   weightKg: number | null,
-  reps: number,
+  reps: number
 ): Promise<PersonalBestResult[]> {
   const results: PersonalBestResult[] = [];
 
@@ -28,10 +29,10 @@ export async function detectPersonalBests(
   }
 
   // Find all previous sets for this exercise
-  const previousSets = await prisma.workoutSet.findMany({
+  const previousSets = await prisma.workout_sets.findMany({
     where: {
-      item: {
-        workout: {
+      workout_items: {
+        workout_sessions: {
           userId,
         },
         ...(exerciseId ? { exerciseId } : { customId }),
@@ -97,12 +98,12 @@ export async function storePersonalBests(
   userId: string,
   exerciseId: string | null,
   customId: string | null,
-  pbs: PersonalBestResult[],
+  pbs: PersonalBestResult[]
 ): Promise<void> {
   for (const pb of pbs) {
     if (pb.type === 'weight') {
       // For weight PB: find the max weight PB for this exercise
-      const existing = await prisma.personalBest.findFirst({
+      const existing = await prisma.personal_bests.findFirst({
         where: {
           userId,
           ...(exerciseId ? { exerciseId } : { customId }),
@@ -114,7 +115,7 @@ export async function storePersonalBests(
       if (existing) {
         // Update if this is a better weight PB
         if (pb.value > Number(existing.value)) {
-          await prisma.personalBest.update({
+          await prisma.personal_bests.update({
             where: { id: existing.id },
             data: {
               setId: pb.setId,
@@ -127,8 +128,9 @@ export async function storePersonalBests(
         }
       } else {
         // Create new weight PB record
-        await prisma.personalBest.create({
+        await prisma.personal_bests.create({
           data: {
+            id: randomUUID(),
             userId,
             exerciseId: exerciseId || null,
             customId: customId || null,
@@ -143,7 +145,7 @@ export async function storePersonalBests(
     } else if (pb.type === 'reps' && pb.weightKg) {
       // For reps PB: find existing PB at this exact weight (with tolerance)
       const weightTolerance = 0.01;
-      const existing = await prisma.personalBest.findFirst({
+      const existing = await prisma.personal_bests.findFirst({
         where: {
           userId,
           ...(exerciseId ? { exerciseId } : { customId }),
@@ -158,7 +160,7 @@ export async function storePersonalBests(
       if (existing) {
         // Update if this is more reps at the same weight
         if (pb.value > Number(existing.value)) {
-          await prisma.personalBest.update({
+          await prisma.personal_bests.update({
             where: { id: existing.id },
             data: {
               setId: pb.setId,
@@ -171,8 +173,9 @@ export async function storePersonalBests(
         }
       } else {
         // Create new reps PB record at this weight
-        await prisma.personalBest.create({
+        await prisma.personal_bests.create({
           data: {
+            id: randomUUID(),
             userId,
             exerciseId: exerciseId || null,
             customId: customId || null,
@@ -194,21 +197,21 @@ export async function storePersonalBests(
  */
 export async function getPersonalBestSetIds(
   userId: string,
-  workoutIds?: string[],
+  workoutIds?: string[]
 ): Promise<Set<string>> {
   const where: any = {
     userId,
   };
 
   if (workoutIds && workoutIds.length > 0) {
-    where.set = {
-      item: {
+    where.workout_sets = {
+      workout_items: {
         workoutId: { in: workoutIds },
       },
     };
   }
 
-  const pbs = await prisma.personalBest.findMany({
+  const pbs = await prisma.personal_bests.findMany({
     where,
     select: {
       setId: true,
@@ -217,4 +220,3 @@ export async function getPersonalBestSetIds(
 
   return new Set(pbs.map((pb) => pb.setId));
 }
-

@@ -36,24 +36,23 @@ export default function ForecastPage() {
 
   const { data, isLoading, error } = useForecast(metric, method, horizon);
 
-  const chartData =
-    !data
-      ? []
-      : [
-          ...data.history.map((p: any) => ({
-            date: p.date,
-            actual: p.actual,
-            predicted: p.predicted,
-            lower: p.lower,
-            upper: p.upper,
-          })),
-          ...data.future.map((p: any) => ({
-            date: p.date,
-            predicted: p.predicted,
-            lower: p.lower,
-            upper: p.upper,
-          })),
-        ];
+  const chartData = !data
+    ? []
+    : [
+        ...data.history.map((p: any) => ({
+          date: p.date,
+          actual: p.actual,
+          predicted: p.predicted,
+          lower: p.lower,
+          upper: p.upper,
+        })),
+        ...data.future.map((p: any) => ({
+          date: p.date,
+          predicted: p.predicted,
+          lower: p.lower,
+          upper: p.upper,
+        })),
+      ];
 
   // Find the split point between history and future for the reference line
   const historyLength = data?.history.length ?? 0;
@@ -128,8 +127,8 @@ export default function ForecastPage() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="date" 
+                  <XAxis
+                    dataKey="date"
                     angle={-45}
                     textAnchor="end"
                     height={60}
@@ -152,7 +151,13 @@ export default function ForecastPage() {
                     opacity={0.15}
                     fill="url(#colorLower)"
                   />
-                  <Line type="monotone" dataKey="actual" name="Actual" stroke="#82ca9d" strokeWidth={2} />
+                  <Line
+                    type="monotone"
+                    dataKey="actual"
+                    name="Actual"
+                    stroke="#82ca9d"
+                    strokeWidth={2}
+                  />
                   <Line
                     type="monotone"
                     dataKey="predicted"
@@ -162,7 +167,11 @@ export default function ForecastPage() {
                     strokeDasharray="5 5"
                   />
                   {data && historyLength > 0 && (
-                    <ReferenceLine x={chartData[historyLength - 1]?.date} stroke="red" strokeDasharray="3 3" />
+                    <ReferenceLine
+                      x={chartData[historyLength - 1]?.date}
+                      stroke="red"
+                      strokeDasharray="3 3"
+                    />
                   )}
                 </AreaChart>
               </ResponsiveContainer>
@@ -173,8 +182,11 @@ export default function ForecastPage() {
         {data && !isLoading && !error && (
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2" color="text.secondary">
-              Showing {data.method === 'ma' ? 'Moving Average' : 'Exponential Smoothing'} forecast for{' '}
-              {data.metric} over the next {data.horizon} days
+              Showing{' '}
+              {data.method === 'ma'
+                ? 'Moving Average'
+                : 'Exponential Smoothing'}{' '}
+              forecast for {data.metric} over the next {data.horizon} days
             </Typography>
           </Box>
         )}

@@ -6,14 +6,16 @@ import { toPlain, toNumber } from '@/lib/serialize';
 
 export const dynamic = 'force-dynamic';
 
-const updateGoalSchema = z.object({
-  type: z.enum(['STEPS', 'CALORIES', 'WORKOUTS', 'DISTANCE']).optional(),
-  period: z.enum(['DAILY', 'WEEKLY', 'MONTHLY']).optional(),
-  targetInt: z.number().min(0).optional(),
-  targetDec: z.number().min(0).optional(),
-  startDate: z.string().optional(),
-  isActive: z.boolean().optional(),
-}).partial();
+const updateGoalSchema = z
+  .object({
+    type: z.enum(['STEPS', 'CALORIES', 'WORKOUTS', 'DISTANCE']).optional(),
+    period: z.enum(['DAILY', 'WEEKLY', 'MONTHLY']).optional(),
+    targetInt: z.number().min(0).optional(),
+    targetDec: z.number().min(0).optional(),
+    startDate: z.string().optional(),
+    isActive: z.boolean().optional(),
+  })
+  .partial();
 
 /**
  * PATCH /api/goals/:id
@@ -33,7 +35,7 @@ export async function PATCH(
   const { id } = await params;
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -46,7 +48,7 @@ export async function PATCH(
     const validated = updateGoalSchema.parse(body);
 
     // Check ownership
-    const existing = await prisma.goal.findUnique({
+    const existing = await prisma.goals.findUnique({
       where: { id },
     });
 
@@ -59,15 +61,23 @@ export async function PATCH(
     }
 
     // Update
-    const goal = await prisma.goal.update({
+    const goal = await prisma.goals.update({
       where: { id },
       data: {
         ...(validated.type && { type: validated.type }),
         ...(validated.period && { period: validated.period }),
-        ...(validated.targetInt !== undefined && { targetInt: validated.targetInt }),
-        ...(validated.targetDec !== undefined && { targetDec: validated.targetDec }),
-        ...(validated.startDate && { startDate: new Date(validated.startDate) }),
-        ...(validated.isActive !== undefined && { isActive: validated.isActive }),
+        ...(validated.targetInt !== undefined && {
+          targetInt: validated.targetInt,
+        }),
+        ...(validated.targetDec !== undefined && {
+          targetDec: validated.targetDec,
+        }),
+        ...(validated.startDate && {
+          startDate: new Date(validated.startDate),
+        }),
+        ...(validated.isActive !== undefined && {
+          isActive: validated.isActive,
+        }),
       },
     });
 
@@ -119,7 +129,7 @@ export async function DELETE(
   const { id } = await params;
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
       select: { id: true },
     });
@@ -129,7 +139,7 @@ export async function DELETE(
     }
 
     // Check ownership
-    const existing = await prisma.goal.findUnique({
+    const existing = await prisma.goals.findUnique({
       where: { id },
     });
 
@@ -142,7 +152,7 @@ export async function DELETE(
     }
 
     // Delete
-    await prisma.goal.delete({
+    await prisma.goals.delete({
       where: { id },
     });
 
@@ -155,4 +165,3 @@ export async function DELETE(
     );
   }
 }
-

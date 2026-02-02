@@ -131,16 +131,3 @@ ontrack/
 - `GET /api/forecast` - Forecast predictions
 - `GET /api/faq` - FAQ search
 
-## Documentation
-
-- [LOCAL_SETUP.md](LOCAL_SETUP.md) - Local development setup with local PostgreSQL
-- [DEPLOYMENT.md](DEPLOYMENT.md) - Production deployment guide for Render
-
-## License
-
-MIT
-
-## Contributing
-
-Contributions welcome! Please open an issue or submit a PR.
-

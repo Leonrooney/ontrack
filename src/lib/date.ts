@@ -1,4 +1,17 @@
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, addDays, subWeeks, addWeeks, subMonths, addMonths } from 'date-fns';
+import {
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  subDays,
+  addDays,
+  subWeeks,
+  addWeeks,
+  subMonths,
+  addMonths,
+} from 'date-fns';
 
 export type DateRange = 'day' | 'week' | 'month';
 
@@ -10,7 +23,10 @@ export interface RangeBounds {
 /**
  * Get start and end dates for a given range and anchor date
  */
-export function getRangeBounds(range: DateRange, anchorDate: Date = new Date()): RangeBounds {
+export function getRangeBounds(
+  range: DateRange,
+  anchorDate: Date = new Date()
+): RangeBounds {
   const baseDate = startOfDay(anchorDate);
 
   switch (range) {
@@ -19,19 +35,19 @@ export function getRangeBounds(range: DateRange, anchorDate: Date = new Date()):
         start: startOfDay(baseDate),
         end: endOfDay(baseDate),
       };
-    
+
     case 'week':
       return {
         start: startOfWeek(baseDate, { weekStartsOn: 1 }), // Monday
         end: endOfWeek(baseDate, { weekStartsOn: 1 }), // Sunday
       };
-    
+
     case 'month':
       return {
         start: startOfMonth(baseDate),
         end: endOfMonth(baseDate),
       };
-    
+
     default:
       return { start: baseDate, end: baseDate };
   }
@@ -77,4 +93,3 @@ export function isToday(date: Date): boolean {
   const checkDate = startOfDay(date);
   return today.getTime() === checkDate.getTime();
 }
-

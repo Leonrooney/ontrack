@@ -1,7 +1,13 @@
 'use client';
 
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Box, Typography, CircularProgress, Alert, Snackbar } from '@mui/material';
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Alert,
+  Snackbar,
+} from '@mui/material';
 import { useWorkout, useUpdateWorkout } from '@/hooks/workouts';
 import { WorkoutEditor } from '@/components/workouts/WorkoutEditor';
 import { useRouter, useParams } from 'next/navigation';
@@ -51,7 +57,17 @@ export default function EditWorkoutPage() {
   if (isLoading) {
     return (
       <MainLayout>
-        <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: '100%',
+            overflowX: 'hidden',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 400,
+          }}
+        >
           <CircularProgress />
         </Box>
       </MainLayout>
@@ -101,7 +117,3 @@ export default function EditWorkoutPage() {
     </MainLayout>
   );
 }
-
-
-
-

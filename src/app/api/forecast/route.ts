@@ -16,11 +16,17 @@ export async function GET(req: Request) {
   }
 
   const url = new URL(req.url);
-  const metric = (url.searchParams.get('metric') ?? 'steps') as 'steps' | 'calories' | 'distance';
+  const metric = (url.searchParams.get('metric') ?? 'steps') as
+    | 'steps'
+    | 'calories'
+    | 'distance';
   const method = (url.searchParams.get('method') ?? 'ma') as ForecastMethod;
   const horizon = Number(url.searchParams.get('horizon') ?? 14);
 
-  const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+  const user = await prisma.users.findUnique({
+    where: { email },
+    select: { id: true },
+  });
 
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -30,7 +36,7 @@ export async function GET(req: Request) {
   const end = startOfDay(new Date());
   const start = startOfDay(subDays(end, 59));
 
-  const entries = await prisma.activityEntry.findMany({
+  const entries = await prisma.activity_entries.findMany({
     where: { userId: user.id, date: { gte: start, lte: end } },
     orderBy: { date: 'asc' },
   });
@@ -44,6 +50,8 @@ export async function GET(req: Request) {
 
   const { history, future } = forecastSeries(dates, series, horizon, method);
 
-  return NextResponse.json({ metric, method, horizon, history, future }, { status: 200 });
+  return NextResponse.json(
+    { metric, method, horizon, history, future },
+    { status: 200 }
+  );
 }
-

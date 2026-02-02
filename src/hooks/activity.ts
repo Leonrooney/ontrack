@@ -3,7 +3,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Snackbar, Alert } from '@mui/material';
-import { ActivityEntry, ActivityResponse, ActivityInput, DateRange } from '@/types/activity';
+import {
+  ActivityEntry,
+  ActivityResponse,
+  ActivityInput,
+  DateRange,
+} from '@/types/activity';
 import { formatDateISO } from '@/lib/format';
 import { apiGet, apiPost, apiPatch, apiDelete } from '@/lib/api';
 
@@ -56,7 +61,9 @@ export function useCreateActivity() {
       await queryClient.cancelQueries({ queryKey: ['activity'] });
 
       // Snapshot previous values
-      const previousQueries = queryClient.getQueriesData({ queryKey: ['activity'] });
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: ['activity'],
+      });
 
       // Optimistically update
       queryClient.setQueriesData<ActivityEntry[]>(
@@ -73,12 +80,20 @@ export function useCreateActivity() {
           queryClient.setQueryData(queryKey, data);
         });
       }
-      setSnackbar({ open: true, message: 'Failed to create activity', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to create activity',
+        severity: 'error',
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activity'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      setSnackbar({ open: true, message: 'Activity created successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Activity created successfully',
+        severity: 'success',
+      });
     },
   });
 
@@ -98,15 +113,23 @@ export function useUpdateActivity() {
   }>({ open: false, message: '', severity: 'success' });
 
   const mutation = useMutation({
-    mutationFn: ({ id, input }: { id: string; input: Partial<ActivityInput> }) =>
-      updateActivity(id, input),
+    mutationFn: ({
+      id,
+      input,
+    }: {
+      id: string;
+      input: Partial<ActivityInput>;
+    }) => updateActivity(id, input),
     onMutate: async ({ id, input }) => {
       await queryClient.cancelQueries({ queryKey: ['activity'] });
-      const previousQueries = queryClient.getQueriesData({ queryKey: ['activity'] });
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: ['activity'],
+      });
 
       queryClient.setQueriesData<ActivityEntry[]>(
         { queryKey: ['activity'] },
-        (old = []) => old.map((entry) => (entry.id === id ? { ...entry, ...input } : entry))
+        (old = []) =>
+          old.map((entry) => (entry.id === id ? { ...entry, ...input } : entry))
       );
 
       return { previousQueries };
@@ -117,12 +140,20 @@ export function useUpdateActivity() {
           queryClient.setQueryData(queryKey, data);
         });
       }
-      setSnackbar({ open: true, message: 'Failed to update activity', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to update activity',
+        severity: 'error',
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activity'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      setSnackbar({ open: true, message: 'Activity updated successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Activity updated successfully',
+        severity: 'success',
+      });
     },
   });
 
@@ -145,7 +176,9 @@ export function useDeleteActivity() {
     mutationFn: deleteActivity,
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ['activity'] });
-      const previousQueries = queryClient.getQueriesData({ queryKey: ['activity'] });
+      const previousQueries = queryClient.getQueriesData({
+        queryKey: ['activity'],
+      });
 
       queryClient.setQueriesData<ActivityEntry[]>(
         { queryKey: ['activity'] },
@@ -160,12 +193,20 @@ export function useDeleteActivity() {
           queryClient.setQueryData(queryKey, data);
         });
       }
-      setSnackbar({ open: true, message: 'Failed to delete activity', severity: 'error' });
+      setSnackbar({
+        open: true,
+        message: 'Failed to delete activity',
+        severity: 'error',
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['activity'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      setSnackbar({ open: true, message: 'Activity deleted successfully', severity: 'success' });
+      setSnackbar({
+        open: true,
+        message: 'Activity deleted successfully',
+        severity: 'success',
+      });
     },
   });
 
@@ -175,4 +216,3 @@ export function useDeleteActivity() {
     closeSnackbar: () => setSnackbar({ ...snackbar, open: false }),
   };
 }
-

@@ -15,7 +15,11 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        email: { label: 'Email', type: 'email', placeholder: 'you@example.com' },
+        email: {
+          label: 'Email',
+          type: 'email',
+          placeholder: 'you@example.com',
+        },
         password: { label: 'Password', type: 'password' },
       },
       async authorize(raw) {
@@ -24,7 +28,7 @@ export const authOptions: NextAuthOptions = {
 
         const { email, password } = parsed.data;
 
-        const user = await prisma.user.findUnique({ where: { email } });
+        const user = await prisma.users.findUnique({ where: { email } });
         if (!user?.passwordHash) return null;
 
         const ok = await bcrypt.compare(password, user.passwordHash);
@@ -61,4 +65,3 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
-
