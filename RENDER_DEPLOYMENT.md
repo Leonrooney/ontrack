@@ -5,7 +5,7 @@ This guide explains how to deploy OnTrack to Render and fix common deployment is
 ## Prerequisites
 
 1. A Render account
-2. A PostgreSQL database on Render (or external)
+2. A PostgreSQL database (Supabase, Render PostgreSQL, or external)
 3. GitHub repository connected to Render
 
 ## Deployment Steps
@@ -47,8 +47,14 @@ This guide explains how to deploy OnTrack to Render and fix common deployment is
 Set the following environment variables in Render:
 
 - `DATABASE_URL` - Your PostgreSQL connection string
-  - For Render PostgreSQL: Use the **Internal Database URL** (not external)
-  - Format: `postgresql://user:password@host:5432/database`
+  - **For Supabase:** Use the Connection Pooling URL (recommended for serverless)
+    - Go to Supabase Dashboard → Settings → Database → Connection Pooling
+    - Use the "Session" or "Transaction" mode connection string
+    - Format: `postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true`
+    - Or Direct Connection: `postgresql://postgres:[password]@db.[project-ref].supabase.co:5432/postgres`
+  - **For Render PostgreSQL:** Use the **Internal Database URL** (not external)
+    - Format: `postgresql://user:password@host:5432/database`
+  - **For External PostgreSQL:** Use your database connection string
   
 - `NEXTAUTH_URL` - Your app's URL (e.g., `https://ontrack.onrender.com`)
 - `NEXTAUTH_SECRET` - A random secret string (generate with `openssl rand -base64 32`)
@@ -86,32 +92,57 @@ If migrations fail but the database is already up-to-date, the script will conti
 
 **Solutions:**
 
+#### For Supabase:
+
 1. **Verify DATABASE_URL is set correctly:**
    - Go to Render Dashboard → Your Service → Environment
    - Check that `DATABASE_URL` is set
-   - For Render PostgreSQL, use the **Internal Database URL** (not External)
+   - **Use Connection Pooling URL** (port 6543) for serverless/Render deployments
+   - Format: `postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true`
+   - Get it from: Supabase Dashboard → Settings → Database → Connection Pooling
+
+2. **Check Supabase database:**
+   - Ensure your Supabase project is active
+   - Verify the password is correct (use database password, not API key)
+   - Check that connection pooling is enabled
+   - Supabase automatically handles SSL, so no additional SSL config needed
+
+3. **Connection string tips:**
+   - Use **pooler URL** (port 6543) for better performance with serverless
+   - Direct connection (port 5432) works but may have connection limits
+   - Ensure `?pgbouncer=true` is in the pooler URL
+
+#### For Render PostgreSQL:
+
+1. **Verify DATABASE_URL is set correctly:**
+   - Go to Render Dashboard → Your Service → Environment
+   - Check that `DATABASE_URL` is set
+   - Use the **Internal Database URL** (not External)
    - Format should be: `postgresql://user:password@host:5432/database`
 
-2. **Check database status:**
-   - Ensure the database is not paused
-   - Verify database is in the same region as your web service
-   - Check database is running and accessible
-
-3. **Use Internal Database URL:**
+2. **Use Internal Database URL:**
    - In Render Dashboard → Your Database → Info
    - Copy the **Internal Database URL** (starts with `postgresql://`)
    - This URL is only accessible from other Render services in the same region
    - The External URL won't work for internal connections
 
-4. **If database is external:**
+3. **Check database status:**
+   - Ensure the database is not paused
+   - Verify database is in the same region as your web service
+   - Check database is running and accessible
+
+#### For External Databases:
+
+1. **Network connectivity:**
    - Ensure firewall rules allow connections from Render's IP ranges
    - Verify the connection string format is correct
-   - Check network connectivity
+   - Check network connectivity and port accessibility
 
-5. **Temporary workaround (not recommended):**
+2. **General troubleshooting:**
    - The startup script will continue even if migrations fail
    - However, your app may not work correctly without database access
    - Fix the DATABASE_URL issue as soon as possible
+   - Check deployment logs for specific error messages
 
 ### Issue: Build fails with memory errors
 
@@ -156,3 +187,15 @@ After deployment:
 - Migrations run automatically on every deployment via the `start:prod` script
 - The build process no longer requires database access
 - If migrations fail, the app will still start (this is intentional to handle already-applied migrations)
+
+## Supabase-Specific Notes
+
+- **Connection Pooling:** Highly recommended for serverless deployments (Render)
+  - Use the pooler URL with port 6543
+  - Better connection management and performance
+  - Reduces connection limit issues
+
+- **SSL:** Supabase requires SSL connections, but Prisma handles this automatically
+- **Schema:** Supabase uses the `public` schema by default (matches Prisma setup)
+- **Migrations:** Run via Prisma as usual - Supabase is standard PostgreSQL
+- **Password:** Use your database password (found in Supabase Dashboard → Settings → Database)
