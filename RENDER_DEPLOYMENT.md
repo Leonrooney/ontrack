@@ -78,12 +78,40 @@ If you want to use `render.yaml`:
 
 If migrations fail but the database is already up-to-date, the script will continue. If you need strict migration enforcement, remove the error handling in `scripts/start.sh`.
 
-### Issue: Database connection errors
+### Issue: Database connection errors during startup
 
-1. Verify `DATABASE_URL` is set correctly
-2. For Render PostgreSQL, use the **Internal Database URL**
-3. Ensure the database is in the same region as your web service
-4. Check that the database is not paused
+**Symptoms:** 
+- Error: `P1001: Can't reach database server at ...`
+- Deployment fails at startup with migration errors
+
+**Solutions:**
+
+1. **Verify DATABASE_URL is set correctly:**
+   - Go to Render Dashboard → Your Service → Environment
+   - Check that `DATABASE_URL` is set
+   - For Render PostgreSQL, use the **Internal Database URL** (not External)
+   - Format should be: `postgresql://user:password@host:5432/database`
+
+2. **Check database status:**
+   - Ensure the database is not paused
+   - Verify database is in the same region as your web service
+   - Check database is running and accessible
+
+3. **Use Internal Database URL:**
+   - In Render Dashboard → Your Database → Info
+   - Copy the **Internal Database URL** (starts with `postgresql://`)
+   - This URL is only accessible from other Render services in the same region
+   - The External URL won't work for internal connections
+
+4. **If database is external:**
+   - Ensure firewall rules allow connections from Render's IP ranges
+   - Verify the connection string format is correct
+   - Check network connectivity
+
+5. **Temporary workaround (not recommended):**
+   - The startup script will continue even if migrations fail
+   - However, your app may not work correctly without database access
+   - Fix the DATABASE_URL issue as soon as possible
 
 ### Issue: Build fails with memory errors
 
