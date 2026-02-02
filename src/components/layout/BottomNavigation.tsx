@@ -98,7 +98,6 @@ export function BottomNavigation() {
           left: 0,
           right: 0,
           zIndex: 1000,
-          borderTop: (theme) => `1px solid ${theme.palette.divider}`,
           transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           backdropFilter: 'blur(10px)',
           backgroundColor: (theme) =>
