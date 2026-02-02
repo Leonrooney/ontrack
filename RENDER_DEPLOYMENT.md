@@ -94,23 +94,32 @@ If migrations fail but the database is already up-to-date, the script will conti
 
 #### For Supabase:
 
-1. **Verify DATABASE_URL is set correctly:**
-   - Go to Render Dashboard → Your Service → Environment
-   - Check that `DATABASE_URL` is set
-   - **Use Connection Pooling URL** (port 6543) for serverless/Render deployments
+1. **⚠️ CRITICAL: Use Connection Pooling URL (port 6543)**
+   - **Direct connection (port 5432) will NOT work** for Render/serverless deployments
+   - You MUST use the Connection Pooling URL
+   - Go to Supabase Dashboard → Settings → Database → Connection Pooling
+   - Copy the connection string from "Session" or "Transaction" mode
    - Format: `postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true`
-   - Get it from: Supabase Dashboard → Settings → Database → Connection Pooling
+   - **Key differences:**
+     - Pooler: `pooler.supabase.com:6543` (✅ Use this)
+     - Direct: `db.[project-ref].supabase.co:5432` (❌ Don't use for Render)
 
-2. **Check Supabase database:**
+2. **Update DATABASE_URL in Render:**
+   - Go to Render Dashboard → Your Service → Environment
+   - Update `DATABASE_URL` with the pooler connection string
+   - Save and trigger a new deployment
+
+3. **Check Supabase database:**
    - Ensure your Supabase project is active
    - Verify the password is correct (use database password, not API key)
-   - Check that connection pooling is enabled
+   - Connection pooling is enabled by default on Supabase
    - Supabase automatically handles SSL, so no additional SSL config needed
 
-3. **Connection string tips:**
-   - Use **pooler URL** (port 6543) for better performance with serverless
-   - Direct connection (port 5432) works but may have connection limits
-   - Ensure `?pgbouncer=true` is in the pooler URL
+4. **Why pooler is required:**
+   - Serverless functions (like Render) have connection limits
+   - Direct connections (5432) may be blocked or rate-limited
+   - Pooler (6543) manages connections efficiently for serverless
+   - Better performance and reliability
 
 #### For Render PostgreSQL:
 
