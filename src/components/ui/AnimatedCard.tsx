@@ -54,19 +54,6 @@ export function AnimatedCard({
     }
   };
 
-  const baseSx = {
-    transition:
-      'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    transformOrigin: 'center',
-    willChange: 'transform',
-    position: 'relative',
-    // Ensure card doesn't overflow when scaled
-    overflow: 'hidden',
-    // Add margin to prevent overlap when scaling
-    margin: 'auto',
-    ...sx,
-  };
-
   if (href) {
     // When using href, component is already extracted, so just use props
     return (
@@ -77,13 +64,24 @@ export function AnimatedCard({
         component={Link}
         href={href}
         {...(props as any)}
-        sx={{
-          ...baseSx,
-          '&:hover': {
-            cursor: 'pointer',
+        sx={[
+          {
+            transition:
+              'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            transformOrigin: 'center',
+            willChange: 'transform',
+            position: 'relative',
+            overflow: 'hidden',
+            margin: 'auto',
           },
-          textDecoration: 'none',
-        }}
+          {
+            '&:hover': {
+              cursor: 'pointer',
+            },
+            textDecoration: 'none',
+          },
+          ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
+        ]}
       >
         {children}
       </Card>
@@ -97,12 +95,23 @@ export function AnimatedCard({
       onMouseLeave={handleMouseLeave}
       {...(component ? { component } : {})}
       {...props}
-      sx={{
-        ...baseSx,
-        '&:hover': {
-          cursor: 'pointer',
+      sx={[
+        {
+          transition:
+            'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transformOrigin: 'center',
+          willChange: 'transform',
+          position: 'relative',
+          overflow: 'hidden',
+          margin: 'auto',
         },
-      }}
+        {
+          '&:hover': {
+            cursor: 'pointer',
+          },
+        },
+        ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
+      ]}
     >
       {children}
     </Card>
