@@ -17,19 +17,27 @@ This guide explains how to deploy OnTrack to Render and fix common deployment is
 3. Connect your GitHub repository: `Leonrooney/ontrack`
 4. Select the repository
 
-### 2. Configure Build & Start Commands
+### 2. Configure Build & Start Commands ⚠️ IMPORTANT
 
-**Build Command:**
-```
-npm install && npm run build
-```
+**You MUST manually update these in the Render dashboard!**
 
-**Start Command:**
-```
-npm run start:prod
-```
+1. Go to your service in Render dashboard
+2. Click on "Settings" tab
+3. Scroll down to "Build & Deploy" section
+4. Update the **Build Command** to:
+   ```
+   npm install && npm run build
+   ```
+   ⚠️ **Remove** `npx prisma migrate deploy` from the build command!
 
-**OR use the shell script:**
+5. Update the **Start Command** to:
+   ```
+   npm run start:prod
+   ```
+
+6. Click "Save Changes"
+
+**Alternative Start Command (using shell script):**
 ```
 ./scripts/start.sh
 ```
@@ -48,11 +56,13 @@ Set the following environment variables in Render:
 
 ### 4. Using render.yaml (Optional)
 
-If you prefer configuration as code, the `render.yaml` file is included. Render will automatically detect and use it.
+⚠️ **Note:** `render.yaml` is only used for Blueprint deployments (new services created from the YAML file). If you created your service manually in the dashboard, you must update the build/start commands manually as described in step 2 above.
 
-To use it:
-1. Ensure `render.yaml` is in your repository root
-2. Render will automatically apply the configuration
+If you want to use `render.yaml`:
+1. Delete your existing service (or create a new one)
+2. Use "New +" → "Blueprint" instead of "Web Service"
+3. Connect your repository
+4. Render will automatically use the `render.yaml` configuration
 
 ## Troubleshooting
 
@@ -82,22 +92,27 @@ If your build fails due to memory limits:
 2. Optimize your build (remove unnecessary dependencies)
 3. Use build caching if available
 
-## Manual Configuration (if not using render.yaml)
+## Manual Configuration (REQUIRED if service was created manually)
 
-If you're configuring manually in the Render dashboard:
+**⚠️ CRITICAL: If your Render service was created manually (not from Blueprint), you MUST update these settings manually in the dashboard. The render.yaml file will NOT automatically override manual settings.**
 
-1. **Build Command:**
+1. **Go to your service → Settings → Build & Deploy**
+
+2. **Build Command:**
    ```
    npm install && npm run build
    ```
+   ⚠️ **Make sure this does NOT include `npx prisma migrate deploy`**
 
-2. **Start Command:**
+3. **Start Command:**
    ```
    npm run start:prod
    ```
 
-3. **Node Version:**
+4. **Node Version:**
    - Set to `20` (or use `NODE_VERSION` environment variable)
+
+5. **Click "Save Changes"** and trigger a new deployment
 
 ## Verification
 

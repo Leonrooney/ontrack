@@ -144,26 +144,28 @@ export function AnimatedButton({
     <Button
       ref={buttonRef}
       onClick={handleClick}
-      sx={{
-        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-        position: 'relative',
-        overflow: 'visible', // Allow ripple to show
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          boxShadow: 4,
+      sx={[
+        {
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          position: 'relative',
+          overflow: 'visible', // Allow ripple to show
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: 4,
+          },
+          '&:active': {
+            transform: 'translateY(0)',
+          },
+          // Ensure button doesn't overflow container
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            inset: '-2px',
+            zIndex: -1,
+          },
         },
-        '&:active': {
-          transform: 'translateY(0)',
-        },
-        // Ensure button doesn't overflow container
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          inset: '-2px',
-          zIndex: -1,
-        },
-        ...sx,
-      }}
+        ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
+      ]}
       {...props}
     >
       {children}

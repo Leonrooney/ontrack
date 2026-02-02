@@ -82,6 +82,7 @@ export const lightTheme = createTheme({
     '0 72px 144px rgba(0, 0, 0, 0.44)',
     '0 76px 152px rgba(0, 0, 0, 0.46)',
     '0 80px 160px rgba(0, 0, 0, 0.48)',
+    '0 84px 168px rgba(0, 0, 0, 0.5)',
   ],
   components: {
     MuiCard: {

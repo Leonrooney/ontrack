@@ -33,7 +33,8 @@ export const MUSCLE_OPTIONS = [
 export function bodyPartFromMuscleValue(val: string): string | null {
   if (val === 'all') return null;
   const found = MUSCLE_OPTIONS.find((o) => o.value === val);
-  return found?.bodyPart ?? null;
+  // Type guard: check if the option has a bodyPart property
+  return found && 'bodyPart' in found ? found.bodyPart : null;
 }
 
 /**

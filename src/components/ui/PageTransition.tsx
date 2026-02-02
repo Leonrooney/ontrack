@@ -28,10 +28,12 @@ export function PageTransition({
   return (
     <Box
       ref={containerRef}
-      sx={{
-        opacity: 0,
-        ...sx,
-      }}
+      sx={[
+        {
+          opacity: 0,
+        },
+        ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
+      ]}
       {...props}
     >
       {children}
