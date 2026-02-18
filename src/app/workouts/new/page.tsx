@@ -43,7 +43,7 @@ import {
   formatDateLong,
   formatElapsedTime,
 } from '@/lib/format';
-import { MUSCLE_OPTIONS, bodyPartFromMuscleValue } from '@/lib/exercises';
+import { MUSCLE_OPTIONS, bodyPartFromMuscleValue, exerciseNamesMatch } from '@/lib/exercises';
 
 type ItemRow = {
   exerciseId?: string;
@@ -107,6 +107,7 @@ export default function NewWorkoutPage() {
   const { data: preferences } = useUserPreferences(); // Fetch user preferences for rest timer
   const createCustomExercise = useCreateCustomExercise();
   const addingSetRef = useRef<Record<number, boolean>>({});
+  const workoutFinishedRef = useRef(false); // Prevents auto-save from re-writing after Finish
   const { getSavedWorkout, saveWorkout, clearSavedWorkout } =
     useWorkoutPersistence();
 
@@ -132,6 +133,8 @@ export default function NewWorkoutPage() {
 
   // Save workout state whenever it changes (debounced)
   useEffect(() => {
+    // Never save again after user has finished the workout (stops resume FAB reappearing)
+    if (workoutFinishedRef.current) return;
     // Don't save if workout is empty
     if (items.length === 0 && !title && !notes) return;
 
@@ -181,6 +184,14 @@ export default function NewWorkoutPage() {
     if (!selectedBodyPart) return exData.catalog;
     return exData.catalog.filter((ex) => ex.bodyPart === selectedBodyPart);
   }, [exData?.catalog, selectedBodyPart]);
+
+  // Hide custom exercises that match a catalog exercise by normalized name (e.g. "Bench Press (Barbell)" = "Barbell Bench Press").
+  const filteredCustomList = useMemo(() => {
+    const catalog = exData?.catalog ?? [];
+    return (exData?.custom ?? []).filter(
+      (customEx) => !catalog.some((catEx) => exerciseNamesMatch(catEx.name, customEx.name))
+    );
+  }, [exData?.catalog, exData?.custom]);
 
   /**
    * Find the last performance for an exercise from workout history
@@ -436,6 +447,7 @@ export default function NewWorkoutPage() {
   const canSave = items.length > 0 && !createWorkout.isPending;
 
   const handleFinish = async () => {
+    workoutFinishedRef.current = true; // Stop auto-save from re-writing to localStorage
     await createWorkout.mutateAsync({
       title: title || undefined,
       notes: notes || undefined,
@@ -476,26 +488,11 @@ export default function NewWorkoutPage() {
   return (
     <MainLayout>
       <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
-        {/* Header with Finish button */}
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          spacing={2}
-          sx={{ mb: 2 }}
-        >
+        {/* Header */}
+        <Stack direction="row" justifyContent="flex-end" alignItems="center" sx={{ mb: 2 }}>
           <IconButton size="small" aria-label="Refresh">
             <RefreshIcon fontSize="small" />
           </IconButton>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleFinish}
-            disabled={!canSave || createWorkout.isPending}
-            sx={{ minWidth: '100px' }}
-          >
-            {createWorkout.isPending ? 'Saving...' : 'Finish'}
-          </Button>
         </Stack>
 
         {/* Workout Info */}
@@ -629,6 +626,27 @@ export default function NewWorkoutPage() {
           </Stack>
         )}
 
+        {/* Finish bar: in-flow so it sits below all exercises and scrolls with content */}
+        <Box sx={{ mt: 4, mb: 2 }}>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleFinish}
+            disabled={!canSave || createWorkout.isPending}
+            fullWidth
+            sx={{
+              py: 1.5,
+              fontSize: '1rem',
+              fontWeight: 700,
+              textTransform: 'none',
+              borderRadius: 2,
+              boxShadow: 2,
+            }}
+          >
+            {createWorkout.isPending ? 'Saving...' : 'Finish workout'}
+          </Button>
+        </Box>
+
         {/* Exercise Picker Dialog */}
         <Dialog
           open={pickerOpen}
@@ -683,7 +701,7 @@ export default function NewWorkoutPage() {
                 sx={{ textTransform: 'none', fontWeight: 500 }}
               />
               <Tab
-                label={`My Custom (${exData?.custom?.length ?? 0})`}
+                label={`My Custom (${filteredCustomList.length})`}
                 value="custom"
                 sx={{ textTransform: 'none', fontWeight: 500 }}
               />
@@ -828,7 +846,7 @@ export default function NewWorkoutPage() {
                 </Button>
                 <Box sx={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
                   <Stack spacing={1.5}>
-                    {(exData?.custom ?? []).map((ex) => (
+                    {filteredCustomList.map((ex) => (
                       <Paper
                         key={ex.id}
                         elevation={0}
@@ -888,7 +906,7 @@ export default function NewWorkoutPage() {
                         </Box>
                       </Paper>
                     ))}
-                    {(exData?.custom?.length ?? 0) === 0 && (
+                    {filteredCustomList.length === 0 && (
                       <Box sx={{ textAlign: 'center', py: 4 }}>
                         <Typography color="text.secondary" variant="body2">
                           You haven't created any custom exercises yet.

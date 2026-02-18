@@ -232,6 +232,28 @@ export function useDailyWorkoutStats(weekOffset = 0) {
   });
 }
 
+/** Past N weeks: one bar per week, height = workout count. For dashboard frequency chart. */
+export function useWeeklyWorkoutStats(weeks = 10) {
+  return useQuery({
+    queryKey: ['workouts', 'stats', 'weekly', { weeks }],
+    queryFn: async () => {
+      const res = await fetch(`/api/workouts/stats/weekly?weeks=${weeks}`, {
+        credentials: 'same-origin',
+      });
+      if (!res.ok) throw new Error('Failed to load weekly workout stats');
+      return res.json() as Promise<{
+        stats: Array<{
+          weekLabel: string;
+          count: number;
+          weekStart: string;
+          weekEnd: string;
+        }>;
+      }>;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 export function useMonthlyWorkoutStats(monthOffset = 0) {
   return useQuery({
     queryKey: ['workouts', 'stats', 'monthly', { monthOffset }],

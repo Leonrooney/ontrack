@@ -959,11 +959,57 @@ This document tracks the development process, features, and code changes through
 
 ---
 
+### February 6, 2025 - User Sign-Up and Post-Sign-Up Import Prompt
+**Feature**: New user registration and onboarding
+**Code Reference**:
+- `src/app/api/auth/register/route.ts`
+- `src/app/signup/page.tsx`
+- `src/app/welcome/import/page.tsx`
+- `src/app/login/page.tsx`
+- `src/middleware.ts`
+- `src/components/layout/MainLayout.tsx`
+
+**What was done**:
+- Added `POST /api/auth/register` for new user registration:
+  - Validates name (required, max 100 chars), email, and password (min 8 chars, uppercase, lowercase, number)
+  - Uses bcrypt for password hashing; creates user with `passwordHash` and `updatedAt`
+  - Returns 409 if email already exists
+- Created sign-up page (`/signup`):
+  - Full name, email, password, confirm password, and terms/privacy checkbox
+  - Client-side validation and inline error messages; password visibility toggles
+  - Link to sign in; after success, user is signed in and redirected to welcome/import
+- Created welcome/import page (`/welcome/import`) shown after sign-up:
+  - Prompts user to import workout data from other apps (Hevy, Strong, CSV)
+  - "Import workouts from CSV" links to Profile; "Skip for now" goes to dashboard
+- Login page: added "New to OnTrack? Create an account" link to `/signup`
+- Middleware: allowed unauthenticated access to `/signup`
+- MainLayout: hide bottom nav on `/signup` and `/welcome/*` for focused auth/onboarding flow
+
+**Impact**: New users can create accounts with acceptable criteria and are prompted to import existing data, improving onboarding and data portability.
+
+---
+
+### February 6, 2025 - Workout Frequency Widget (Weekly Tab) Mobile Fix
+**Feature**: Dashboard workout frequency chart – weekly view on mobile
+**Code Reference**:
+- `src/app/dashboard/page.tsx`
+
+**What was done**:
+- Fixed overlapping date labels on the Workout Frequency widget when the weekly tab is viewed on mobile
+- Used MUI `useMediaQuery(theme.breakpoints.down('sm'))` to detect mobile viewport
+- On mobile: rotated X-axis labels (`angle={-40}`, `textAnchor="end"`) so week labels no longer overlap
+- Increased chart bottom margin on mobile (56px) to accommodate rotated labels
+- Slightly reduced axis font size and increased tick margin on mobile for readability
+
+**Impact**: Weekly frequency chart is readable on small screens without label overlap.
+
+---
+
 ## Last Updated
 
-**Date**: January 2025
+**Date**: February 2025
 **Status**: Active Development
-**Current Focus**: UI/UX polish, workout persistence, and user experience improvements
+**Current Focus**: User onboarding (sign-up, import prompt), UI/UX polish, and mobile responsiveness
 
 ---
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Typography,
@@ -19,6 +20,7 @@ import {
   Select,
   FormControl,
   useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { AnimatedCard } from '@/components/ui/AnimatedCard';
 import { AnimatedButton } from '@/components/ui/AnimatedButton';
@@ -26,10 +28,11 @@ import { useEffect, useRef, useState } from 'react';
 import { FitnessCenter, ChevronLeft, ChevronRight } from '@mui/icons-material';
 import {
   useRecentWorkout,
-  useDailyWorkoutStats,
+  useWeeklyWorkoutStats,
   useMonthlyWorkoutStats,
   useMuscleGroupStats,
 } from '@/hooks/workouts';
+import { useExercises } from '@/hooks/exercises';
 import { formatDateLong } from '@/lib/format';
 import {
   BarChart,
@@ -48,52 +51,46 @@ import {
 } from 'recharts';
 import Link from 'next/link';
 import { ExerciseThumb } from '@/components/ExerciseThumb';
-import {
-  format,
-  startOfWeek,
-  addWeeks,
-  subWeeks,
-  startOfMonth,
-  addMonths,
-  subMonths,
-} from 'date-fns';
+import { startOfMonth, addMonths, subMonths } from 'date-fns';
 
 export default function DashboardPage() {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { data: recentWorkout, isLoading: isLoadingRecent } =
     useRecentWorkout();
+  const { data: exercisesData } = useExercises('', 'all');
   const [frequencyView, setFrequencyView] = useState<'week' | 'month'>('week');
-  const [weekOffset, setWeekOffset] = useState(0);
+
+  // Map exercise name -> mediaUrl for correct thumbnails in recent workout
+  const mediaUrlByName = useMemo(() => {
+    const map = new Map<string, string>();
+    if (exercisesData?.catalog) {
+      for (const ex of exercisesData.catalog) {
+        if (ex.name && ex.mediaUrl) map.set(ex.name, ex.mediaUrl);
+      }
+    }
+    if (exercisesData?.custom) {
+      for (const ex of exercisesData.custom) {
+        if (ex.name && ex.mediaUrl) map.set(ex.name, ex.mediaUrl);
+      }
+    }
+    return map;
+  }, [exercisesData]);
   const [monthOffset, setMonthOffset] = useState(0);
   const [muscleGroupRange, setMuscleGroupRange] = useState(30);
-  const { data: dailyData, isLoading: isLoadingDaily } =
-    useDailyWorkoutStats(weekOffset);
+  const { data: weeklyData, isLoading: isLoadingWeekly } =
+    useWeeklyWorkoutStats(10);
   const { data: monthlyData, isLoading: isLoadingMonthly } =
     useMonthlyWorkoutStats(monthOffset);
   const { data: muscleGroupData, isLoading: isLoadingMuscleGroups } =
     useMuscleGroupStats(muscleGroupRange);
-
-  const handleWeekChange = (direction: 'prev' | 'next') => {
-    setWeekOffset((prev) => (direction === 'prev' ? prev - 1 : prev + 1));
-  };
 
   const handleMonthChange = (direction: 'prev' | 'next') => {
     setMonthOffset((prev) => (direction === 'prev' ? prev - 1 : prev + 1));
   };
 
   const resetToCurrent = () => {
-    setWeekOffset(0);
     setMonthOffset(0);
-  };
-
-  // Get week label
-  const getWeekLabel = () => {
-    if (!dailyData) return 'This Week';
-    const weekStart = new Date(dailyData.weekStart);
-    const weekEnd = new Date(dailyData.weekEnd);
-    if (weekOffset === 0) return 'This Week';
-    if (weekOffset === -1) return 'Last Week';
-    return `${format(weekStart, 'MMM d')} - ${format(weekEnd, 'MMM d')}`;
   };
 
   // Get month label
@@ -104,7 +101,7 @@ export default function DashboardPage() {
     return monthlyData.month;
   };
 
-  // Prepare calendar grid for month view
+  // Prepare calendar grid for month view (7 columns; pad only so last row is full — no empty bottom row)
   const getCalendarGrid = () => {
     if (!monthlyData) return [];
     const calendar = monthlyData.calendar;
@@ -112,7 +109,6 @@ export default function DashboardPage() {
     const startDayOfWeek = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
     const adjustedStart = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1; // Convert to Monday = 0
 
-    // Add empty cells for days before month starts
     const grid: Array<{
       day: number;
       date: string;
@@ -120,14 +116,15 @@ export default function DashboardPage() {
       isCurrentMonth: boolean;
       workoutTitle?: string;
     } | null> = [];
+
+    // Empty cells for days before month starts
     for (let i = 0; i < adjustedStart; i++) {
       grid.push(null);
     }
-
-    // Add all days of the month
-    calendar.forEach((day) => {
-      grid.push(day);
-    });
+    // All days of the month
+    calendar.forEach((day) => grid.push(day));
+    // Pad only to complete the last row so every row has 7 cells (no stretched or empty full row)
+    while (grid.length % 7 !== 0) grid.push(null);
 
     return grid;
   };
@@ -262,6 +259,7 @@ export default function DashboardPage() {
                         const exerciseMediaUrl =
                           it.exercise?.mediaUrl ??
                           it.custom?.mediaUrl ??
+                          mediaUrlByName.get(exerciseName) ??
                           undefined;
                         return (
                           <Box key={it.id}>
@@ -380,11 +378,11 @@ export default function DashboardPage() {
 
                 {frequencyView === 'week' ? (
                   <>
-                    {isLoadingDaily ? (
+                    {isLoadingWeekly ? (
                       <Box sx={{ py: 2 }}>
                         <Skeleton variant="rectangular" height={250} />
                       </Box>
-                    ) : !dailyData?.stats || dailyData.stats.length === 0 ? (
+                    ) : !weeklyData?.stats || weeklyData.stats.length === 0 ? (
                       <Box sx={{ textAlign: 'center', py: 4 }}>
                         <Typography variant="body2" color="text.secondary">
                           No workout data available
@@ -392,46 +390,42 @@ export default function DashboardPage() {
                       </Box>
                     ) : (
                       <Box>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            mb: 1,
-                          }}
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mb: 1 }}
                         >
-                          <IconButton
-                            size="small"
-                            onClick={() => handleWeekChange('prev')}
-                          >
-                            <ChevronLeft />
-                          </IconButton>
-                          <Typography variant="body2" fontWeight="medium">
-                            {getWeekLabel()}
-                          </Typography>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleWeekChange('next')}
-                            disabled={weekOffset >= 0}
-                          >
-                            <ChevronRight />
-                          </IconButton>
-                        </Box>
+                          Workouts per week (past {weeklyData.stats.length}{' '}
+                          weeks)
+                        </Typography>
                         <Box sx={{ width: '100%', height: 250, mt: 1 }}>
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={dailyData.stats}>
+                            <BarChart
+                              data={weeklyData.stats}
+                              margin={{
+                                top: 8,
+                                right: 8,
+                                left: 0,
+                                bottom: isMobile ? 56 : 4,
+                              }}
+                            >
                               <CartesianGrid
                                 strokeDasharray="3 3"
                                 stroke="rgba(255, 255, 255, 0.1)"
                               />
                               <XAxis
-                                dataKey="day"
+                                dataKey="weekLabel"
                                 stroke={
                                   theme.palette.mode === 'dark'
                                     ? 'rgba(255, 255, 255, 0.7)'
                                     : 'rgba(0, 0, 0, 0.6)'
                                 }
-                                fontSize={12}
+                                fontSize={isMobile ? 10 : 11}
+                                interval={0}
+                                angle={isMobile ? -40 : 0}
+                                textAnchor={isMobile ? 'end' : 'middle'}
+                                tickMargin={isMobile ? 8 : 4}
+                                tick={{ fill: theme.palette.text.secondary }}
                               />
                               <YAxis
                                 allowDecimals={false}
@@ -440,6 +434,8 @@ export default function DashboardPage() {
                                     ? 'rgba(255, 255, 255, 0.7)'
                                     : 'rgba(0, 0, 0, 0.6)'
                                 }
+                                width={24}
+                                tick={{ fontSize: 11 }}
                               />
                               <Tooltip
                                 contentStyle={{
@@ -452,6 +448,11 @@ export default function DashboardPage() {
                                   borderRadius: '8px',
                                   color: theme.palette.text.primary,
                                 }}
+                                formatter={(value: number) => [
+                                  `${value} workout${value !== 1 ? 's' : ''}`,
+                                  '',
+                                ]}
+                                labelFormatter={(label) => label}
                               />
                               <Bar
                                 dataKey="count"
@@ -461,20 +462,6 @@ export default function DashboardPage() {
                             </BarChart>
                           </ResponsiveContainer>
                         </Box>
-                        {weekOffset !== 0 && (
-                          <Button
-                            size="small"
-                            onClick={resetToCurrent}
-                            variant="outlined"
-                            sx={{
-                              mt: 1,
-                              textTransform: 'none',
-                              fontWeight: 500,
-                            }}
-                          >
-                            Back to Current Week
-                          </Button>
-                        )}
                       </Box>
                     )}
                   </>
@@ -549,54 +536,60 @@ export default function DashboardPage() {
                               </Grid>
                             ))}
                           </Grid>
-                          {/* Calendar grid */}
+                          {/* Calendar grid: full rows only (4–6 rows), equal cell size */}
                           <Box>
-                            {Array.from({
-                              length: Math.ceil(getCalendarGrid().length / 7),
-                            }).map((_, weekIndex) => {
-                              const weekDays = getCalendarGrid().slice(
-                                weekIndex * 7,
-                                (weekIndex + 1) * 7
-                              );
-                              return (
-                                <Box key={weekIndex}>
-                                  <Grid container spacing={0}>
-                                    {weekDays.map((day, dayIndex) => (
+                            {(() => {
+                              const gridData = getCalendarGrid();
+                              const rowCount = Math.ceil(gridData.length / 7);
+                              return Array.from({
+                                length: rowCount,
+                              }).map((_, weekIndex) => {
+                                const weekDays = gridData.slice(
+                                  weekIndex * 7,
+                                  (weekIndex + 1) * 7
+                                );
+                                return (
+                                  <Box key={weekIndex}>
+                                    <Grid container spacing={0}>
+                                      {weekDays.map((day, dayIndex) => (
                                       <Grid
                                         item
                                         xs
                                         key={dayIndex}
                                         sx={{
                                           borderBottom:
-                                            weekIndex <
-                                            Math.ceil(
-                                              getCalendarGrid().length / 7
-                                            ) -
-                                              1
+                                            weekIndex < rowCount - 1
                                               ? `1px solid ${theme.palette.divider}`
                                               : 'none',
                                           borderRight:
                                             dayIndex < 6
                                               ? `1px solid ${theme.palette.divider}`
                                               : 'none',
-                                          minHeight: { xs: 60, sm: 70 },
+                                          height: { xs: 52, sm: 58 },
+                                          minHeight: 0,
                                           display: 'flex',
                                           alignItems: 'flex-start',
                                           justifyContent: 'flex-start',
                                           p: 1,
+                                          boxSizing: 'border-box',
+                                          overflow: 'hidden',
                                         }}
                                       >
                                         {day ? (
                                           <Box
                                             sx={{
                                               width: '100%',
+                                              minWidth: 0,
+                                              height: '100%',
                                               display: 'flex',
                                               flexDirection: 'column',
                                               gap: 0.5,
+                                              overflow: 'hidden',
                                             }}
                                           >
                                             <Box
                                               sx={{
+                                                flexShrink: 0,
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
@@ -623,16 +616,15 @@ export default function DashboardPage() {
                                               <Typography
                                                 variant="caption"
                                                 sx={{
+                                                  flex: '1 1 0',
+                                                  minHeight: 0,
                                                   color: 'text.secondary',
-                                                  fontSize: {
-                                                    xs: '0.65rem',
-                                                    sm: '0.7rem',
-                                                  },
+                                                  fontSize: '0.65rem',
                                                   lineHeight: 1.2,
                                                   overflow: 'hidden',
                                                   textOverflow: 'ellipsis',
                                                   display: '-webkit-box',
-                                                  WebkitLineClamp: 2,
+                                                  WebkitLineClamp: 1,
                                                   WebkitBoxOrient: 'vertical',
                                                 }}
                                               >
@@ -644,11 +636,12 @@ export default function DashboardPage() {
                                           <Box />
                                         )}
                                       </Grid>
-                                    ))}
-                                  </Grid>
-                                </Box>
-                              );
-                            })}
+                                        ))}
+                                    </Grid>
+                                  </Box>
+                                );
+                              });
+                            })()}
                           </Box>
                         </Box>
                         {monthOffset !== 0 && (

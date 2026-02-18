@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Box, useMediaQuery, useTheme } from '@mui/material';
-import { TopAppBar } from './TopAppBar';
-import { SideNav } from './SideNav';
+import { usePathname } from 'next/navigation';
+import { Box, IconButton } from '@mui/material';
+import { Brightness4, Brightness7 } from '@mui/icons-material';
+import { useTheme as useThemeContext } from '@/contexts/ThemeContext';
 import { BottomNavigation } from './BottomNavigation';
 import { PageTransition } from '@/components/ui/PageTransition';
 
@@ -12,12 +12,20 @@ interface MainLayoutProps {
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const pathname = usePathname();
+  const { resolvedMode, mode, setMode } = useThemeContext();
+  const isAuthPage =
+    pathname === '/login' ||
+    pathname === '/signup' ||
+    pathname?.startsWith('/welcome/');
+  const showBottomNav = !isAuthPage;
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
+  const toggleTheme = () => {
+    if (mode === 'system') {
+      setMode(resolvedMode === 'dark' ? 'light' : 'dark');
+    } else {
+      setMode(mode === 'dark' ? 'light' : 'dark');
+    }
   };
 
   return (
@@ -45,6 +53,40 @@ export function MainLayout({ children }: MainLayoutProps) {
         },
       }}
     >
+      {/* Top bar: theme toggle only (always visible, including login) */}
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1100,
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center',
+          py: 1,
+          px: 2,
+          background: (theme) =>
+            theme.palette.mode === 'dark'
+              ? 'rgba(18, 18, 18, 0.8)'
+              : 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: (theme) =>
+            theme.palette.mode === 'dark'
+              ? '1px solid rgba(255, 255, 255, 0.1)'
+              : `1px solid ${theme.palette.divider}`,
+        }}
+      >
+        <IconButton
+          color="inherit"
+          onClick={toggleTheme}
+          aria-label={resolvedMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          sx={{ color: 'text.primary' }}
+        >
+          {resolvedMode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+        </IconButton>
+      </Box>
+
       <Box
         sx={{
           position: 'relative',
@@ -54,9 +96,6 @@ export function MainLayout({ children }: MainLayoutProps) {
           flex: 1,
         }}
       >
-        {/* Only show TopAppBar and SideNav on mobile */}
-        {isMobile && <TopAppBar onMenuClick={handleDrawerToggle} />}
-        {isMobile && <SideNav open={mobileOpen} onClose={handleDrawerToggle} />}
         <Box
           component="main"
           sx={{
@@ -65,7 +104,7 @@ export function MainLayout({ children }: MainLayoutProps) {
             width: '100%',
             maxWidth: '100%',
             overflowX: 'hidden',
-            pb: { xs: 8, sm: 8, md: 10 }, // Add bottom padding for bottom nav on all screens
+            pb: showBottomNav ? { xs: 8, sm: 8, md: 10 } : 2,
             transition: 'padding 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             position: 'relative',
             zIndex: 1,
@@ -73,8 +112,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         >
           <PageTransition>{children}</PageTransition>
         </Box>
-        {/* Show BottomNavigation on all screen sizes */}
-        <BottomNavigation />
+        {showBottomNav && <BottomNavigation />}
       </Box>
     </Box>
   );

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   Box,
   Button,
@@ -131,6 +132,20 @@ export default function LoginPage() {
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
+
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 2 }}>
+                New to OnTrack?{' '}
+                <Link
+                  href="/signup"
+                  style={{
+                    fontWeight: 600,
+                    color: 'inherit',
+                    textDecoration: 'underline',
+                  }}
+                >
+                  Create an account
+                </Link>
+              </Typography>
             </form>
 
             <Box

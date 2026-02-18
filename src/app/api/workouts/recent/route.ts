@@ -25,8 +25,12 @@ export async function GET(req: Request) {
       workout_items: {
         orderBy: { orderIndex: 'asc' },
         include: {
-          exercises: true,
-          custom_exercises: true,
+          exercises: {
+            select: { id: true, name: true, mediaUrl: true },
+          },
+          custom_exercises: {
+            select: { id: true, name: true, mediaUrl: true },
+          },
           workout_sets: {
             orderBy: { setNumber: 'asc' },
           },

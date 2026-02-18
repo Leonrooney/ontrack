@@ -42,5 +42,4 @@ prisma/**/*.db-journal
 *.tsbuildinfo
 next-env.d.ts
 
-# thesis documentation
-THESIS_LOG.mdREADME.md
+THESIS_LOG.md

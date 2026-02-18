@@ -115,43 +115,110 @@ export function ExerciseCard({
     onRemoveExercise();
   };
 
-  // Per-set rest timers (not per-exercise)
+  // Per-set rest timers: smooth progress via startedAt; support paused to show actual rest time
+  type RestTimerState = {
+    total: number;
+    startedAt: number;
+    paused?: boolean;
+    elapsedWhenPaused?: number;
+  };
   const [setRestTimers, setSetRestTimers] = useState<
-    Record<number, { seconds: number; total: number }>
+    Record<number, RestTimerState>
   >({});
-  const intervalRefs = useRef<Record<number, number | null>>({});
+  const [smoothTick, setSmoothTick] = useState(0);
+  const intervalRefs = useRef<Record<number, ReturnType<typeof setInterval> | null>>({});
+  const smoothIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prevSetsLengthRef = useRef(sets.length);
+
+  // When a set is removed, clear all rest timers for this exercise so we don't keep a rest
+  // that belonged to the deleted set (or show it on the wrong set after re-indexing).
+  useEffect(() => {
+    const prevLen = prevSetsLengthRef.current;
+    if (sets.length < prevLen) {
+      Object.keys(intervalRefs.current).forEach((key) => {
+        const id = intervalRefs.current[Number(key)];
+        if (id) {
+          clearInterval(id);
+        }
+      });
+      intervalRefs.current = {};
+      setSetRestTimers({});
+    }
+    prevSetsLengthRef.current = sets.length;
+  }, [sets.length]);
 
   // Cleanup intervals on unmount
   useEffect(() => {
     return () => {
-      Object.values(intervalRefs.current).forEach((interval) => {
-        if (interval) {
-          clearInterval(interval);
-        }
+      Object.values(intervalRefs.current).forEach((id) => {
+        if (id) clearInterval(id);
       });
+      if (smoothIntervalRef.current) clearInterval(smoothIntervalRef.current);
     };
   }, []);
 
-  // Start rest timer for a specific set
+  // Smooth progress: re-render every 100ms when any timer is running (so bar fills smoothly)
+  useEffect(() => {
+    const hasActive = Object.entries(setRestTimers).some(
+      ([_, t]) => t && !t.paused
+    );
+    if (!hasActive) {
+      if (smoothIntervalRef.current) {
+        clearInterval(smoothIntervalRef.current);
+        smoothIntervalRef.current = null;
+      }
+      return;
+    }
+    smoothIntervalRef.current = setInterval(() => {
+      setSmoothTick((t) => t + 1);
+    }, 100);
+    return () => {
+      if (smoothIntervalRef.current) {
+        clearInterval(smoothIntervalRef.current);
+        smoothIntervalRef.current = null;
+      }
+    };
+  }, [setRestTimers]);
+
+  // Start rest timer for a specific set; pause any other running timers so user sees actual rest time
   const startSetRest = (setIndex: number) => {
     const duration = restDuration;
+    const now = Date.now();
 
-    // Clear any existing timer for this set
+    // Clear existing interval for this set
     if (intervalRefs.current[setIndex]) {
       clearInterval(intervalRefs.current[setIndex]!);
+      intervalRefs.current[setIndex] = null;
     }
 
-    // Initialize timer state
-    setSetRestTimers((prev) => ({
-      ...prev,
-      [setIndex]: { seconds: duration, total: duration },
-    }));
+    setSetRestTimers((prev) => {
+      const next: Record<number, RestTimerState> = { ...prev };
 
-    // Start countdown
+      // Pause any other running timers and record how long they actually rested
+      Object.keys(next).forEach((key) => {
+        const i = Number(key);
+        if (i === setIndex) return;
+        const t = next[i]!;
+        if (t.paused) return;
+        const elapsed = Math.floor((now - t.startedAt) / 1000);
+        next[i] = {
+          ...t,
+          paused: true,
+          elapsedWhenPaused: Math.min(elapsed, t.total),
+        };
+      });
+
+      next[setIndex] = { total: duration, startedAt: now };
+      return next;
+    });
+
+    // Single interval to remove this set's timer when countdown ends
     intervalRefs.current[setIndex] = setInterval(() => {
       setSetRestTimers((prev) => {
         const timer = prev[setIndex];
-        if (!timer || timer.seconds <= 1) {
+        if (!timer || timer.paused) return prev;
+        const elapsed = (Date.now() - timer.startedAt) / 1000;
+        if (elapsed >= timer.total) {
           if (intervalRefs.current[setIndex]) {
             clearInterval(intervalRefs.current[setIndex]!);
             intervalRefs.current[setIndex] = null;
@@ -160,19 +227,35 @@ export function ExerciseCard({
           delete newState[setIndex];
           return newState;
         }
-        return {
-          ...prev,
-          [setIndex]: { ...timer, seconds: timer.seconds - 1 },
-        };
+        return prev;
       });
-    }, 1000) as unknown as number;
+    }, 1000);
   };
 
-  // Calculate progress bar value for a set (0-100)
+  // Progress for bar (0–100): smooth when running, 100 or frozen when paused)
   const getSetProgress = (setIndex: number): number => {
     const timer = setRestTimers[setIndex];
     if (!timer || timer.total === 0) return 0;
-    return ((timer.total - timer.seconds) / timer.total) * 100;
+    if (timer.paused && timer.elapsedWhenPaused !== undefined) {
+      return (timer.elapsedWhenPaused / timer.total) * 100;
+    }
+    const elapsed = (Date.now() - timer.startedAt) / 1000;
+    return Math.min(100, (elapsed / timer.total) * 100);
+  };
+
+  // Remaining seconds for display (running) or elapsed when paused
+  const getSetRestDisplay = (setIndex: number): { label: string; seconds: number } => {
+    const timer = setRestTimers[setIndex];
+    if (!timer) return { label: '', seconds: 0 };
+    if (timer.paused && timer.elapsedWhenPaused !== undefined) {
+      return {
+        label: 'Rested',
+        seconds: timer.elapsedWhenPaused,
+      };
+    }
+    const elapsed = (Date.now() - timer.startedAt) / 1000;
+    const remaining = Math.max(0, Math.ceil(timer.total - elapsed));
+    return { label: 'Rest', seconds: remaining };
   };
 
   // Handle set completion toggle
@@ -321,7 +404,13 @@ export function ExerciseCard({
             <TableBody>
               {sets.map((set, idx) => {
                 const timer = setRestTimers[idx];
-                const isResting = timer && timer.seconds > 0;
+                const isRunning =
+                  timer &&
+                  !timer.paused &&
+                  (Date.now() - timer.startedAt) / 1000 < timer.total;
+                const isPaused = timer?.paused;
+                const showRestRow = timer && (isRunning || isPaused);
+                const restDisplay = getSetRestDisplay(idx);
                 return (
                   <Fragment key={idx}>
                     <TableRow>
@@ -525,8 +614,8 @@ export function ExerciseCard({
                         </Box>
                       </TableCell>
                     </TableRow>
-                    {/* Rest Timer Bar for this set */}
-                    {isResting && timer && (
+                    {/* Rest Timer Bar for this set (smooth progress; shows "Rested: X:XX" when paused) */}
+                    {showRestRow && (
                       <TableRow>
                         <TableCell
                           colSpan={5}
@@ -535,10 +624,10 @@ export function ExerciseCard({
                           <Box>
                             <Typography
                               variant="caption"
-                              color="primary.main"
+                              color={isPaused ? 'text.secondary' : 'primary.main'}
                               sx={{ display: 'block', mb: 0.5 }}
                             >
-                              {formatElapsedTime(timer.seconds)}
+                              {restDisplay.label}: {formatElapsedTime(restDisplay.seconds)}
                             </Typography>
                             <LinearProgress
                               variant="determinate"
@@ -548,7 +637,10 @@ export function ExerciseCard({
                                 borderRadius: 1,
                                 backgroundColor: 'action.disabledBackground',
                                 '& .MuiLinearProgress-bar': {
-                                  backgroundColor: 'primary.main',
+                                  backgroundColor: isPaused
+                                    ? 'action.disabled'
+                                    : 'primary.main',
+                                  transition: 'transform 0.1s linear',
                                 },
                               }}
                             />

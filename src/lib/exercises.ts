@@ -3,6 +3,27 @@
  */
 
 /**
+ * Normalize exercise name for matching (e.g. "Bench Press (Barbell)" and "Barbell Bench Press").
+ * Lowercases, pulls words out of parentheses, sorts words, joins so equivalent names match.
+ */
+export function normalizeExerciseNameForMatch(name: string): string {
+  const expanded = name.replace(/\(([^)]*)\)/g, ' $1 ');
+  const words = expanded
+    .replace(/[^a-zA-Z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w.toLowerCase());
+  return [...new Set(words)].sort().join(' ');
+}
+
+/**
+ * Returns true if two exercise names refer to the same exercise (e.g. "Bench Press (Barbell)" vs "Barbell Bench Press").
+ */
+export function exerciseNamesMatch(nameA: string, nameB: string): boolean {
+  return normalizeExerciseNameForMatch(nameA) === normalizeExerciseNameForMatch(nameB);
+}
+
+/**
  * Muscle group filter options for exercise filtering
  * Maps muscle values to their corresponding body part categories
  */

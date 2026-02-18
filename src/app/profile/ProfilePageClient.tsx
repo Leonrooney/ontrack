@@ -19,11 +19,15 @@ import {
 import { useProfile, useUpdateProfile } from '@/hooks/profile';
 import { useUserPreferences, useUpdatePreferences } from '@/hooks/preferences';
 import { useWorkoutHistory } from '@/hooks/workouts';
+import { useWeightLogs, useLogWeight } from '@/hooks/weight';
 import { exportWorkoutsToCSV } from '@/lib/workout-csv';
 import { useState, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { format } from 'date-fns';
 
 export function ProfilePageClient() {
   const { data: profile, isLoading, error } = useProfile();
@@ -32,7 +36,17 @@ export function ProfilePageClient() {
   const updatePreferencesMutation = useUpdatePreferences();
   const { data: workoutData, isLoading: workoutsLoading } =
     useWorkoutHistory(1000); // Get all workouts for export
+  const { data: weightData } = useWeightLogs(10);
+  const logWeightMutation = useLogWeight();
   const queryClient = useQueryClient();
+  const [weightSnackbar, setWeightSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success' as 'success' | 'error',
+  });
+
+  const [weightInput, setWeightInput] = useState('');
+  const [weightNote, setWeightNote] = useState('');
 
   const [name, setName] = useState('');
   const [unitPreference, setUnitPreference] = useState<'metric' | 'imperial'>(
@@ -85,6 +99,33 @@ export function ProfilePageClient() {
     updatePreferencesMutation.mutate({
       defaultRestSeconds,
     });
+  };
+
+  const handleLogWeight = (e: React.FormEvent) => {
+    e.preventDefault();
+    const kg = Number(weightInput.replace(',', '.'));
+    if (!Number.isFinite(kg) || kg <= 0) return;
+    logWeightMutation.mutate(
+      { weightKg: kg, note: weightNote.trim() || undefined },
+      {
+        onSuccess: () => {
+          setWeightInput('');
+          setWeightNote('');
+          setWeightSnackbar({
+            open: true,
+            message: 'Weight logged successfully',
+            severity: 'success',
+          });
+        },
+        onError: (err: Error) => {
+          setWeightSnackbar({
+            open: true,
+            message: err.message || 'Failed to log weight',
+            severity: 'error',
+          });
+        },
+      }
+    );
   };
 
   const handleExportWorkouts = () => {
@@ -311,6 +352,73 @@ export function ProfilePageClient() {
           </form>
         </Paper>
 
+        {/* Weight check-in Section */}
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 3 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Weight check-in
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Log your current weight to track progress over time. View history and
+            graphs in Tracking.
+          </Typography>
+          <form onSubmit={handleLogWeight}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                <TextField
+                  type="number"
+                  label="Weight (kg)"
+                  value={weightInput}
+                  onChange={(e) => setWeightInput(e.target.value)}
+                  inputProps={{ min: 20, max: 500, step: 0.1 }}
+                  required
+                  sx={{ width: 140 }}
+                />
+                <TextField
+                  label="Note (optional)"
+                  value={weightNote}
+                  onChange={(e) => setWeightNote(e.target.value)}
+                  placeholder="e.g. Morning, post-workout"
+                  sx={{ flex: 1, minWidth: 160 }}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={logWeightMutation.isPending || !weightInput.trim()}
+                >
+                  {logWeightMutation.isPending ? 'Logging...' : 'Log weight'}
+                </Button>
+              </Box>
+              {weightData?.entries?.length ? (
+                <Typography variant="body2" color="text.secondary">
+                  Last logged: {Number(weightData.entries[0].weightKg)} kg
+                  {weightData.entries[0].loggedAt
+                    ? ` on ${format(new Date(weightData.entries[0].loggedAt), 'MMM d, yyyy')}`
+                    : ''}
+                </Typography>
+              ) : null}
+            </Box>
+          </form>
+        </Paper>
+
+        {/* Tracking Section */}
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 3 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Tracking
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            View graphs of your weight over time or your progress on a specific
+            exercise (max weight or max reps).
+          </Typography>
+          <Button
+            component={Link}
+            href="/profile/tracking"
+            variant="outlined"
+            startIcon={<TrendingUpIcon />}
+          >
+            View tracking
+          </Button>
+        </Paper>
+
         {/* Data Import/Export Section */}
         <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 3 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>
@@ -434,6 +542,21 @@ export function ProfilePageClient() {
             sx={{ width: '100%' }}
           >
             {importMessage.message}
+          </Alert>
+        </Snackbar>
+
+        {/* Snackbar for weight log */}
+        <Snackbar
+          open={weightSnackbar.open}
+          autoHideDuration={5000}
+          onClose={() => setWeightSnackbar((s) => ({ ...s, open: false }))}
+        >
+          <Alert
+            onClose={() => setWeightSnackbar((s) => ({ ...s, open: false }))}
+            severity={weightSnackbar.severity}
+            sx={{ width: '100%' }}
+          >
+            {weightSnackbar.message}
           </Alert>
         </Snackbar>
       </Box>

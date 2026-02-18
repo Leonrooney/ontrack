@@ -66,8 +66,12 @@ export async function GET(
       workout_items: {
         orderBy: { orderIndex: 'asc' },
         include: {
-          exercises: true,
-          custom_exercises: true,
+          exercises: {
+            select: { id: true, name: true, mediaUrl: true },
+          },
+          custom_exercises: {
+            select: { id: true, name: true, mediaUrl: true },
+          },
           workout_sets: { orderBy: { setNumber: 'asc' } },
         },
       },
@@ -231,8 +235,12 @@ export async function PATCH(
       workout_items: {
         orderBy: { orderIndex: 'asc' },
         include: {
-          exercises: true,
-          custom_exercises: true,
+          exercises: {
+            select: { id: true, name: true, mediaUrl: true },
+          },
+          custom_exercises: {
+            select: { id: true, name: true, mediaUrl: true },
+          },
           workout_sets: { orderBy: { setNumber: 'asc' } },
         },
       },

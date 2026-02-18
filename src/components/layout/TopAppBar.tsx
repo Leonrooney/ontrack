@@ -10,11 +10,7 @@ import {
   Box,
   Link as MuiLink,
 } from '@mui/material';
-import {
-  Brightness4,
-  Brightness7,
-  Menu as MenuIcon,
-} from '@mui/icons-material';
+import { Brightness4, Brightness7 } from '@mui/icons-material';
 import { useTheme as useThemeContext } from '@/contexts/ThemeContext';
 import Link from 'next/link';
 
@@ -28,11 +24,7 @@ const navLinks = [
   { href: '/faq', label: 'FAQ' },
 ];
 
-interface TopAppBarProps {
-  onMenuClick?: () => void;
-}
-
-export function TopAppBar({ onMenuClick }: TopAppBarProps) {
+export function TopAppBar() {
   const { resolvedMode, mode, setMode } = useThemeContext();
   const muiTheme = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
@@ -65,16 +57,6 @@ export function TopAppBar({ onMenuClick }: TopAppBarProps) {
       }}
     >
       <Toolbar>
-        {isMobile && (
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={onMenuClick}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-        )}
         <Typography
           variant="h6"
           component="div"

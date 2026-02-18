@@ -29,6 +29,7 @@ export interface SavedWorkoutState {
 }
 
 const STORAGE_KEY = 'ontrack_in_progress_workout';
+const WORKOUT_CLEARED_EVENT = 'ontrack-workout-cleared';
 
 /**
  * Hook for persisting in-progress workout state to localStorage
@@ -81,10 +82,11 @@ export function useWorkoutPersistence() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
   };
 
-  // Clear saved workout
+  // Clear saved workout (and notify other hook instances so FAB hides immediately)
   const clearSavedWorkout = () => {
     if (typeof window === 'undefined') return;
     localStorage.removeItem(STORAGE_KEY);
+    window.dispatchEvent(new CustomEvent(WORKOUT_CLEARED_EVENT));
   };
 
   // Hook to check if there's a saved workout (reactive)
@@ -98,7 +100,13 @@ export function useWorkoutPersistence() {
       setHasWorkout(hasSavedWorkout());
     };
 
+    // Listen for same-tab clear (e.g. user finished workout) so FAB hides immediately
+    const handleWorkoutCleared = () => {
+      setHasWorkout(false);
+    };
+
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener(WORKOUT_CLEARED_EVENT, handleWorkoutCleared);
 
     // Also check periodically (for same-tab updates)
     const interval = setInterval(() => {
@@ -107,6 +115,7 @@ export function useWorkoutPersistence() {
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener(WORKOUT_CLEARED_EVENT, handleWorkoutCleared);
       clearInterval(interval);
     };
   }, [pathname]);
