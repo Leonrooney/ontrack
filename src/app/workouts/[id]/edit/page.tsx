@@ -95,7 +95,7 @@ export default function EditWorkoutPage() {
 
         <WorkoutEditor
           mode="edit"
-          initialWorkout={workout}
+          initialWorkout={{ ...workout, items: workout.items ?? [] }}
           onSave={handleSave}
           isSaving={updateMutation.isPending}
         />

@@ -1,25 +1,17 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { toPlain } from '@/lib/serialize';
 import { getPersonalBestSetIds } from '@/lib/personal-best';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const recent = await prisma.workout_sessions.findFirst({
-    where: { userId: user.id },
+    where: { userId: auth.userId },
     orderBy: { date: 'desc' },
     include: {
       workout_items: {
@@ -50,7 +42,7 @@ export async function GET(req: Request) {
   );
 
   // Get PB set IDs for this workout
-  const pbSetIds = await getPersonalBestSetIds(user.id, [recent.id]);
+  const pbSetIds = await getPersonalBestSetIds(auth.userId, [recent.id]);
 
   // Add isPersonalBest flag to each set
   const plain: any = toPlain(recent);

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { subDays } from 'date-fns';
 
 export const dynamic = 'force-dynamic';
@@ -34,16 +34,8 @@ interface MuscleGroupData {
  * - maxValue: Maximum value used for normalization
  */
 export async function GET(req: Request) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(req.url);
   const rangeDays = Number(url.searchParams.get('range') ?? 30);
@@ -289,7 +281,7 @@ export async function GET(req: Request) {
     const workoutItems = await prisma.workout_items.findMany({
       where: {
         workout_sessions: {
-          userId: user.id,
+          userId: auth.userId,
           date: {
             gte: startDate,
             lte: endDate,

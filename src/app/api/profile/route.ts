@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { profileUpdateSchema } from '@/lib/validators';
 
@@ -10,16 +10,12 @@ export const dynamic = 'force-dynamic';
  * Returns the current user's profile/settings
  */
 export async function GET(request: NextRequest) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     const user = await prisma.users.findUnique({
-      where: { email },
+      where: { id: auth.userId },
       select: {
         id: true,
         email: true,
@@ -54,12 +50,8 @@ export async function GET(request: NextRequest) {
  * Updates the current user's profile/settings
  */
 export async function PUT(request: NextRequest) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     const body = await request.json();
@@ -70,15 +62,6 @@ export async function PUT(request: NextRequest) {
         { error: 'Invalid input', details: validated.error.errors },
         { status: 400 }
       );
-    }
-
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     const updateData: {
@@ -99,7 +82,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const updatedUser = await prisma.users.update({
-      where: { id: user.id },
+      where: { id: auth.userId },
       data: updateData,
       select: {
         id: true,

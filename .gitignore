@@ -42,4 +42,29 @@ prisma/**/*.db-journal
 *.tsbuildinfo
 next-env.d.ts
 
+# thesis/capstone development log (local tracking only)
 THESIS_LOG.md
+
+# IDE and editors
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# logs and caches
+*.log
+logs/
+.turbo
+.eslintcache
+
+# env variants (keep .env.example if you add one)
+.env.development
+.env.production
+.env.test

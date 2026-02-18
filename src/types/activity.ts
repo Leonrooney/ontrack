@@ -21,4 +21,4 @@ export interface ActivityInput {
   workouts: number;
 }
 
-export type DateRange = 'day' | 'week' | 'month';
+export type { DateRange } from '@/lib/validators';

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { z } from 'zod';
 import { placeholderForBodyPart } from '@/lib/media/enrich';
 import { randomUUID } from 'crypto';
@@ -52,25 +52,18 @@ export async function GET(req: Request) {
 
   let custom: any[] = [];
   if (includeCustom) {
-    const session = await getSessionSafe();
-    const email = session?.user?.email;
-    if (email) {
-      const user = await prisma.users.findUnique({
-        where: { email },
-        select: { id: true },
-      });
-      if (user) {
-        const customWhere: any = { userId: user.id, isActive: true };
+    const auth = await requireAuth();
+    if (auth) {
+      const customWhere: any = { userId: auth.userId, isActive: true };
         if (q) customWhere.name = { contains: q, mode: 'insensitive' };
         if (bodyPart && bodyPart !== 'all') {
           const possibleValues = getBodyPartFilterValues(bodyPart);
           customWhere.bodyPart = { in: possibleValues };
         }
-        custom = await prisma.custom_exercises.findMany({
-          where: customWhere,
-          orderBy: [{ bodyPart: 'asc' }, { name: 'asc' }],
-        });
-      }
+      custom = await prisma.custom_exercises.findMany({
+        where: customWhere,
+        orderBy: [{ bodyPart: 'asc' }, { name: 'asc' }],
+      });
     }
   }
 
@@ -98,16 +91,8 @@ const CreateCustom = z.object({
 });
 
 export async function POST(req: Request) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const json = await req.json();
   const parsed = CreateCustom.safeParse(json);
@@ -123,7 +108,7 @@ export async function POST(req: Request) {
   }
 
   const created = await prisma.custom_exercises.create({
-    data: { id: randomUUID(), userId: user.id, ...payload },
+    data: { id: randomUUID(), userId: auth.userId, ...payload },
   });
 
   return NextResponse.json(created, { status: 201 });

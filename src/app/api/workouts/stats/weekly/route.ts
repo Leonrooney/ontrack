@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { startOfWeek, endOfWeek, format, subWeeks } from 'date-fns';
 
 export const dynamic = 'force-dynamic';
@@ -27,16 +27,8 @@ interface WeeklyStat {
  * - stats: Array of { weekLabel, count, weekStart, weekEnd } oldest to newest
  */
 export async function GET(req: Request) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(req.url);
   const numWeeks = Math.min(
@@ -55,7 +47,7 @@ export async function GET(req: Request) {
 
     const count = await prisma.workout_sessions.count({
       where: {
-        userId: user.id,
+        userId: auth.userId,
         date: {
           gte: weekStart,
           lte: weekEnd,

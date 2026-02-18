@@ -99,96 +99,15 @@ export function staggerFadeIn(
 }
 
 /**
- * Scale in animation
- */
-export function scaleIn(
-  targets: string | HTMLElement | NodeList | null,
-  options: { duration?: number; delay?: number; scale?: [number, number] } = {}
-): void {
-  const { duration = 400, delay = 0, scale = [0.9, 1] } = options;
-
-  if (typeof window === 'undefined' || !targets) {
-    return;
-  }
-
-  const elements =
-    typeof targets === 'string'
-      ? Array.from(document.querySelectorAll(targets))
-      : targets instanceof NodeList
-        ? Array.from(targets)
-        : [targets];
-
-  elements.forEach((el: any) => {
-    if (el && el.style) {
-      el.style.opacity = '0';
-      el.style.transform = `scale(${scale[0]})`;
-      el.style.transition = `opacity ${duration}ms cubic-bezier(0.4, 0, 0.2, 1), transform ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-      setTimeout(() => {
-        if (el && el.style) {
-          el.style.opacity = '1';
-          el.style.transform = `scale(${scale[1]})`;
-        }
-      }, delay);
-    }
-  });
-}
-
-/**
- * Number counter animation
- */
-export function countUp(
-  target: HTMLElement,
-  from: number,
-  to: number,
-  options: {
-    duration?: number;
-    delay?: number;
-    format?: (value: number) => string;
-  } = {}
-): void {
-  const {
-    duration = 1000,
-    delay = 0,
-    format = (val) => Math.round(val).toString(),
-  } = options;
-
-  if (typeof window === 'undefined' || !target) {
-    return;
-  }
-
-  // Use requestAnimationFrame for smooth counting
-  let startTime: number | null = null;
-  const animate = (currentTime: number) => {
-    if (!startTime) startTime = currentTime;
-    const elapsed = currentTime - startTime;
-    const progress = Math.min((elapsed - delay) / duration, 1);
-
-    if (progress >= 0) {
-      const current = from + (to - from) * progress;
-      if (target) {
-        target.textContent = format(current);
-      }
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    } else {
-      requestAnimationFrame(animate);
-    }
-  };
-
-  requestAnimationFrame(animate);
-}
-
-/**
  * Card hover animation
+ * @param isDark - Pass true for dark mode (lighter hover shadow). Use MUI theme.palette.mode === 'dark'.
  */
 export function cardHover(
   card: HTMLElement,
   isHovering: boolean,
-  options: { scale?: number; shadow?: boolean } = {}
+  options: { scale?: number; shadow?: boolean; isDark?: boolean } = {}
 ): void {
-  const { scale = 1.02, shadow = true } = options;
+  const { scale = 1.02, shadow = true, isDark = false } = options;
 
   if (typeof window === 'undefined' || !card) {
     return;
@@ -205,11 +124,10 @@ export function cardHover(
     card.style.transform = `scale(${scale})`;
     card.style.zIndex = '10'; // Bring to front on hover
     if (shadow) {
-      const shadowColor =
-        window.getComputedStyle(card).color === 'rgb(0, 0, 0)' ||
-        document.documentElement.classList.contains('dark')
-          ? 'rgba(0, 0, 0, 0.3)'
-          : 'rgba(0, 0, 0, 0.15)';
+      // Light mode: softer shadow (0.12). Dark mode: stronger shadow (0.25) for visibility.
+      const shadowColor = isDark
+        ? 'rgba(0, 0, 0, 0.25)'
+        : 'rgba(0, 0, 0, 0.12)';
       card.style.boxShadow = `0 8px 24px ${shadowColor}`;
     }
   } else {

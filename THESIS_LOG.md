@@ -1005,11 +1005,91 @@ This document tracks the development process, features, and code changes through
 
 ---
 
+### February 2025 - Routines Feature
+**Feature**: Save and reuse workout routines as templates
+**Code Reference**:
+- `prisma/schema.prisma` (routines, routine_items models)
+- `prisma/migrations/20260218000000_add_routines/`
+- `src/app/api/routines/route.ts`
+- `src/app/api/routines/[id]/route.ts`
+- `src/hooks/routines.ts`
+- `src/app/workouts/routines/new/page.tsx`
+- `src/app/workouts/routines/explore/page.tsx`
+- `src/app/workouts/new/page.tsx` (routine selection integration)
+- `src/lib/validators.ts` (routineItemSchema, createRoutineSchema, updateRoutineSchema)
+
+**What was done**:
+- Created `routines` and `routine_items` database models
+- Implemented full CRUD API for routines (GET, POST, PATCH, DELETE)
+- New Routine page: create routines with name and exercises (exercise + set count only)
+- Explore Routines page: list saved routines, start workout from routine, delete routine
+- New Workout integration: "Use Routine" button and `?routine=id` URL param to pre-fill exercises
+- When starting a workout from a routine, exercises are pre-populated; user only enters reps and weight
+- Exercise picker supports both catalog and custom exercises for routine creation
+
+**Impact**: Users can save favourite workout templates and quickly start sessions with exercises pre-filled.
+
+---
+
+### February 2025 - Code Quality Refactors (Auth, API, Validators)
+**Feature**: Centralized auth, API helpers, and validation
+**Code Reference**:
+- `src/lib/auth.ts` (requireAuth helper)
+- `src/lib/api.ts` (apiGet, apiPost, apiPatch, apiDelete)
+- `src/lib/validators.ts` (workout schemas, password validation, DateRange)
+- `src/app/api/*` (all routes refactored to use requireAuth)
+- `src/hooks/workouts.ts`, `src/hooks/exercises.ts` (standardized to lib/api)
+
+**What was done**:
+- Added `requireAuth()` helper: returns `{ userId, email }` or null; used across all protected API routes
+- Standardized workout and exercise hooks to use `apiGet`, `apiPost`, `apiPatch`, `apiDelete`
+- Consolidated workout validation schemas in validators (workoutSetSchema, createWorkoutSchema, etc.)
+- Moved password validation to shared lib (validatePassword, PASSWORD_MIN, PASSWORD_REGEX)
+- Consolidated DateRange type in validators; re-exported from types/activity
+- Removed dead code: TopAppBar, unused hooks (useWorkoutFrequency, useDailyWorkoutStats), unused imports, removed countUp/scaleIn from animations
+
+**Impact**: Cleaner, more maintainable API layer and validation logic.
+
+---
+
+### February 2025 - Light Mode Shadow and Border Fixes
+**Feature**: Fixed shadow/border stacking issues in light theme
+**Code Reference**:
+- `src/theme/theme.ts` (MuiCard, MuiPaper)
+- `src/lib/animations.ts` (cardHover)
+- `src/components/ui/AnimatedCard.tsx`
+- `src/components/layout/BottomNavigation.tsx`
+- `src/components/workouts/ExerciseCard.tsx`
+
+**What was done**:
+- Simplified MuiCard in light theme: single shadow instead of border + shadow to avoid double outline
+- Fixed cardHover dark-mode detection: added `isDark` param, uses MUI theme.palette.mode
+- Bottom navigation: removed elevation, use border-only to avoid stacking
+- ExerciseCard: base boxShadow none, lighter hover shadow when nested in Paper
+- Softened MuiPaper elevation shadows (single shadows, lower opacity)
+
+**Impact**: Cleaner visual appearance in light mode without overlapping shadows and borders.
+
+---
+
+### February 2025 - Prisma Direct URL for Supabase Migrations
+**Feature**: Support for running migrations on Supabase
+**Code Reference**:
+- `prisma/schema.prisma` (directUrl in datasource)
+
+**What was done**:
+- Added `directUrl = env("DIRECT_URL")` to datasource for migrations
+- Direct connection (port 5432) required for schema changes; pooler (port 6543) used for app queries
+
+**Impact**: Migrations run correctly against Supabase; avoids PgBouncer DDL limitations.
+
+---
+
 ## Last Updated
 
 **Date**: February 2025
 **Status**: Active Development
-**Current Focus**: User onboarding (sign-up, import prompt), UI/UX polish, and mobile responsiveness
+**Current Focus**: Routines feature, light mode polish, Supabase deployment
 
 ---
 

@@ -2,7 +2,6 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Snackbar, Alert } from '@mui/material';
 import { Goal, GoalsResponse, GoalInput } from '@/types/goals';
 import { apiGet, apiPost, apiPatch, apiDelete } from '@/lib/api';
 

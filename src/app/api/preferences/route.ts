@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { preferencesUpdateSchema } from '@/lib/validators';
 import { randomUUID } from 'crypto';
@@ -11,26 +11,13 @@ export const dynamic = 'force-dynamic';
  * Returns the current user's preferences, creating defaults if they don't exist
  */
 export async function GET(request: NextRequest) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
     // Find or create preferences
     let preferences = await prisma.user_preferences.findUnique({
-      where: { userId: user.id },
+      where: { userId: auth.userId },
     });
 
     // If no preferences exist, create with defaults
@@ -38,7 +25,7 @@ export async function GET(request: NextRequest) {
       preferences = await prisma.user_preferences.create({
         data: {
           id: randomUUID(),
-          userId: user.id,
+          userId: auth.userId,
           defaultRestSeconds: 90,
           updatedAt: new Date(),
         },
@@ -64,12 +51,8 @@ export async function GET(request: NextRequest) {
  * Updates the current user's preferences
  */
 export async function PUT(request: NextRequest) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     const body = await request.json();
@@ -82,25 +65,16 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
     // Upsert preferences (create if doesn't exist, update if it does)
     const preferences = await prisma.user_preferences.upsert({
-      where: { userId: user.id },
+      where: { userId: auth.userId },
       update: {
         defaultRestSeconds: validated.data.defaultRestSeconds,
         updatedAt: new Date(),
       },
       create: {
         id: randomUUID(),
-        userId: user.id,
+        userId: auth.userId,
         defaultRestSeconds: validated.data.defaultRestSeconds,
         updatedAt: new Date(),
       },

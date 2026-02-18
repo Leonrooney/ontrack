@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { z } from 'zod';
 import { activitySchema } from '@/lib/validators';
 import { prisma } from '@/lib/prisma';
@@ -14,25 +14,12 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
 
   try {
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
 
     // Make all fields optional for update
@@ -51,7 +38,7 @@ export async function PATCH(
       );
     }
 
-    if (existing.userId !== user.id) {
+    if (existing.userId !== auth.userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -108,25 +95,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
 
   try {
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     // Check ownership
     const existing = await prisma.activity_entries.findUnique({
       where: { id },
@@ -139,7 +113,7 @@ export async function DELETE(
       );
     }
 
-    if (existing.userId !== user.id) {
+    if (existing.userId !== auth.userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 

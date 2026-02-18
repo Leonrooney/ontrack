@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSessionSafe } from '@/lib/auth';
-import { z } from 'zod';
+import { requireAuth } from '@/lib/auth';
+import { createWorkoutSchema } from '@/lib/validators';
 import { toPlain } from '@/lib/serialize';
 import {
   detectPersonalBests,
@@ -12,50 +12,16 @@ import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
-const SetSchema = z.object({
-  setNumber: z.number().int().min(1),
-  weightKg: z.number().nonnegative().optional(),
-  reps: z.number().int().min(1).max(100),
-  rpe: z.number().min(1).max(10).optional(),
-  notes: z.string().max(200).optional(),
-});
-
-const ItemSchema = z.union([
-  z.object({
-    exerciseId: z.string().min(1),
-    sets: z.array(SetSchema).min(1),
-  }),
-  z.object({
-    customId: z.string().min(1),
-    sets: z.array(SetSchema).min(1),
-  }),
-]);
-
-const CreateWorkoutSchema = z.object({
-  date: z.string().datetime().optional(),
-  title: z.string().max(80).optional(),
-  notes: z.string().max(500).optional(),
-  items: z.array(ItemSchema).min(1),
-});
-
 export async function GET(req: Request) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(req.url);
   const limit = Number(url.searchParams.get('limit') ?? 20);
   const cursor = url.searchParams.get('cursor') ?? undefined;
 
   const sessions = await prisma.workout_sessions.findMany({
-    where: { userId: user.id },
+    where: { userId: auth.userId },
     orderBy: { date: 'desc' },
     take: limit + 1,
     ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
@@ -80,7 +46,7 @@ export async function GET(req: Request) {
   const workoutIds = sessionsToReturn.map((s) => s.id);
 
   // Get all PB set IDs for these workouts
-  const pbSetIds = await getPersonalBestSetIds(user.id, workoutIds);
+  const pbSetIds = await getPersonalBestSetIds(auth.userId, workoutIds);
 
   // Add isPersonalBest flag to each set
   const data = sessionsToReturn.map((session) => {
@@ -119,19 +85,11 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const json = await req.json();
-  const parsed = CreateWorkoutSchema.safeParse(json);
+  const parsed = createWorkoutSchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.flatten() },
@@ -144,7 +102,7 @@ export async function POST(req: Request) {
   const created = await prisma.workout_sessions.create({
     data: {
       id: randomUUID(),
-      userId: user.id,
+      userId: auth.userId,
       date: date ? new Date(date) : new Date(),
       title,
       notes,
@@ -189,7 +147,7 @@ export async function POST(req: Request) {
 
     for (const set of item.workout_sets) {
       const pbs = await detectPersonalBests(
-        user.id,
+        auth.userId,
         exerciseId,
         customId,
         set.id,
@@ -198,7 +156,7 @@ export async function POST(req: Request) {
       );
 
       if (pbs.length > 0) {
-        await storePersonalBests(user.id, exerciseId, customId, pbs);
+        await storePersonalBests(auth.userId, exerciseId, customId, pbs);
       }
     }
   }

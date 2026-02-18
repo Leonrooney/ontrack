@@ -2,11 +2,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// When using Supabase pooler (port 6543), the app adds ?pgbouncer=true so Prisma
-// does not use prepared statements (avoids "prepared statement does not exist" errors).
+// DATABASE_URL: use pooler (port 6543) for app queries.
+// DIRECT_URL: use direct connection (port 5432) for migrations – required by Supabase/PgBouncer.
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model accounts {
@@ -70,6 +71,7 @@ model custom_exercises {
   mediaUrl       String?
   users          users            @relation(fields: [userId], references: [id], onDelete: Cascade)
   personal_bests personal_bests[]
+  routine_items  routine_items[]
   workout_items  workout_items[]
 
   @@unique([userId, name])
@@ -86,6 +88,7 @@ model exercises {
   mediaUrl       String?
   instructions   String?
   personal_bests personal_bests[]
+  routine_items  routine_items[]
   workout_items  workout_items[]
 }
 
@@ -172,6 +175,32 @@ model user_preferences {
   users              users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model routines {
+  id            String          @id
+  userId        String
+  name          String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  users         users           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  routine_items routine_items[]
+
+  @@index([userId])
+}
+
+model routine_items {
+  id             String   @id
+  routineId      String
+  exerciseId     String?
+  customId       String?
+  orderIndex     Int      @default(0)
+  setCount       Int      @default(1)
+  custom_exercises custom_exercises? @relation(fields: [customId], references: [id], onDelete: Cascade)
+  exercises      exercises?      @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  routines       routines        @relation(fields: [routineId], references: [id], onDelete: Cascade)
+
+  @@index([routineId, orderIndex])
+}
+
 model users {
   id               String             @id
   email            String             @unique
@@ -191,6 +220,7 @@ model users {
   goals            goals[]
   personal_bests   personal_bests[]
   reminders        reminders[]
+  routines         routines[]
   sessions         sessions[]
   user_preferences user_preferences?
   weight_logs      weight_logs[]

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSessionSafe } from '@/lib/auth';
-import { z } from 'zod';
+import { requireAuth } from '@/lib/auth';
+import { updateWorkoutSchema } from '@/lib/validators';
 import { toPlain } from '@/lib/serialize';
 import {
   getPersonalBestSetIds,
@@ -12,32 +12,6 @@ import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
-const SetSchema = z.object({
-  setNumber: z.number().int().min(1),
-  weightKg: z.number().nonnegative().optional(),
-  reps: z.number().int().min(1).max(100),
-  rpe: z.number().min(1).max(10).optional(),
-  notes: z.string().max(200).optional(),
-});
-
-const ItemSchema = z.union([
-  z.object({
-    exerciseId: z.string().min(1),
-    sets: z.array(SetSchema).min(1),
-  }),
-  z.object({
-    customId: z.string().min(1),
-    sets: z.array(SetSchema).min(1),
-  }),
-]);
-
-const UpdateWorkoutSchema = z.object({
-  date: z.string().datetime().optional(),
-  title: z.string().max(80).optional(),
-  notes: z.string().max(500).optional(),
-  items: z.array(ItemSchema).min(1).optional(),
-});
-
 /**
  * GET /api/workouts/[id]
  * Returns a single workout session by id, including items and sets
@@ -46,19 +20,8 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const workout = await prisma.workout_sessions.findUnique({
     where: { id: params.id },
@@ -83,12 +46,12 @@ export async function GET(
   }
 
   // Enforce ownership
-  if (workout.userId !== user.id) {
+  if (workout.userId !== auth.userId) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   // Get PB set IDs for this workout
-  const pbSetIds = await getPersonalBestSetIds(user.id, [workout.id]);
+  const pbSetIds = await getPersonalBestSetIds(auth.userId, [workout.id]);
 
   // Add isPersonalBest flag to each set
   const plain: any = toPlain(workout);
@@ -128,19 +91,8 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   // Check ownership first
   const existing = await prisma.workout_sessions.findUnique({
@@ -152,12 +104,12 @@ export async function PATCH(
     return NextResponse.json({ error: 'Workout not found' }, { status: 404 });
   }
 
-  if (existing.userId !== user.id) {
+  if (existing.userId !== auth.userId) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   const json = await req.json();
-  const parsed = UpdateWorkoutSchema.safeParse(json);
+  const parsed = updateWorkoutSchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.flatten() },
@@ -255,7 +207,7 @@ export async function PATCH(
 
       for (const set of item.workout_sets) {
         const pbs = await detectPersonalBests(
-          user.id,
+          auth.userId,
           exerciseId,
           customId,
           set.id,
@@ -264,14 +216,14 @@ export async function PATCH(
         );
 
         if (pbs.length > 0) {
-          await storePersonalBests(user.id, exerciseId, customId, pbs);
+          await storePersonalBests(auth.userId, exerciseId, customId, pbs);
         }
       }
     }
   }
 
   // Get PB set IDs for this workout
-  const pbSetIds = await getPersonalBestSetIds(user.id, [updated.id]);
+  const pbSetIds = await getPersonalBestSetIds(auth.userId, [updated.id]);
 
   // Add isPersonalBest flag to each set
   const plain: any = toPlain(updated);
@@ -311,19 +263,8 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   // Check ownership
   const existing = await prisma.workout_sessions.findUnique({
@@ -335,7 +276,7 @@ export async function DELETE(
     return NextResponse.json({ error: 'Workout not found' }, { status: 404 });
   }
 
-  if (existing.userId !== user.id) {
+  if (existing.userId !== auth.userId) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

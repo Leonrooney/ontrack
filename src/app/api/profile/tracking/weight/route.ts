@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { toPlain } from '@/lib/serialize';
 import { format } from 'date-fns';
@@ -12,17 +12,8 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(req: NextRequest) {
   try {
-    const session = await getSessionSafe();
-    const email = session?.user?.email;
-    if (!email)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-    if (!user)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const auth = await requireAuth();
+    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const searchParams = req.nextUrl.searchParams;
     const limit = Math.min(
@@ -31,7 +22,7 @@ export async function GET(req: NextRequest) {
     );
 
     const logs = await prisma.weight_logs.findMany({
-      where: { userId: user.id },
+      where: { userId: auth.userId },
       orderBy: { loggedAt: 'asc' },
       take: limit,
     });

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { toNumber } from '@/lib/serialize';
 import { forecastSeries, ForecastMethod } from '@/lib/forecast';
@@ -8,12 +8,8 @@ import { subDays, startOfDay } from 'date-fns';
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: Request) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(req.url);
   const metric = (url.searchParams.get('metric') ?? 'steps') as
@@ -23,21 +19,12 @@ export async function GET(req: Request) {
   const method = (url.searchParams.get('method') ?? 'ma') as ForecastMethod;
   const horizon = Number(url.searchParams.get('horizon') ?? 14);
 
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   // Use the last 60 days for baseline
   const end = startOfDay(new Date());
   const start = startOfDay(subDays(end, 59));
 
   const entries = await prisma.activity_entries.findMany({
-    where: { userId: user.id, date: { gte: start, lte: end } },
+    where: { userId: auth.userId, date: { gte: start, lte: end } },
     orderBy: { date: 'asc' },
   });
 

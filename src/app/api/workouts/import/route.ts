@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSessionSafe } from '@/lib/auth';
-import { z } from 'zod';
+import { requireAuth } from '@/lib/auth';
 import { toPlain } from '@/lib/serialize';
 import { detectPersonalBests, storePersonalBests } from '@/lib/personal-best';
 import { parseCSVToWorkouts } from '@/lib/workout-csv';
@@ -9,46 +8,13 @@ import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
-const SetSchema = z.object({
-  setNumber: z.number().int().min(1),
-  weightKg: z.number().nonnegative().optional(),
-  reps: z.number().int().min(1).max(100),
-  rpe: z.number().min(1).max(10).optional(),
-  notes: z.string().max(200).optional(),
-});
-
-const ItemSchema = z.object({
-  exerciseName: z.string().min(1),
-  sets: z.array(SetSchema).min(1),
-});
-
-const ImportWorkoutSchema = z.object({
-  date: z.string().datetime(),
-  title: z.string().max(80).optional(),
-  notes: z.string().max(500).optional(),
-  items: z.array(ItemSchema).min(1),
-});
-
-const BulkImportSchema = z.object({
-  workouts: z.array(ImportWorkoutSchema).min(1),
-});
-
 /**
  * POST /api/workouts/import
  * Bulk import workouts from CSV data
  */
 export async function POST(req: Request) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     const json = await req.json();
@@ -117,7 +83,7 @@ export async function POST(req: Request) {
             // Check if custom exercise already exists
             let customExercise = await prisma.custom_exercises.findFirst({
               where: {
-                userId: user.id,
+                userId: auth.userId,
                 name: {
                   equals: itemData.exerciseName.trim(),
                   mode: 'insensitive',
@@ -131,7 +97,7 @@ export async function POST(req: Request) {
               customExercise = await prisma.custom_exercises.create({
                 data: {
                   id: randomUUID(),
-                  userId: user.id,
+                  userId: auth.userId,
                   name: itemData.exerciseName.trim(),
                   isActive: true,
                 },
@@ -178,7 +144,7 @@ export async function POST(req: Request) {
         const created = await prisma.workout_sessions.create({
           data: {
             id: randomUUID(),
-            userId: user.id,
+            userId: auth.userId,
             date: new Date(validatedWorkout.date),
             title: validatedWorkout.title,
             notes: validatedWorkout.notes,
@@ -223,7 +189,7 @@ export async function POST(req: Request) {
 
           for (const set of item.workout_sets) {
             const pbs = await detectPersonalBests(
-              user.id,
+              auth.userId,
               exerciseId,
               customId,
               set.id,
@@ -232,7 +198,7 @@ export async function POST(req: Request) {
             );
 
             if (pbs.length > 0) {
-              await storePersonalBests(user.id, exerciseId, customId, pbs);
+              await storePersonalBests(auth.userId, exerciseId, customId, pbs);
             }
           }
         }

@@ -20,17 +20,7 @@ import {
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { MainLayout } from '@/components/layout/MainLayout';
-
-const PASSWORD_MIN = 8;
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
-
-function validatePassword(password: string): string | null {
-  if (password.length < PASSWORD_MIN)
-    return `At least ${PASSWORD_MIN} characters`;
-  if (!PASSWORD_REGEX.test(password))
-    return 'Include uppercase, lowercase, and a number';
-  return null;
-}
+import { validatePassword } from '@/lib/validators';
 
 export default function SignUpPage() {
   const router = useRouter();

@@ -104,12 +104,14 @@ export function BottomNavigation() {
             theme.palette.mode === 'dark'
               ? 'rgba(18, 18, 18, 0.95)'
               : 'rgba(255, 255, 255, 0.9)',
+          // Border only – avoid elevation + border double outline in light mode
           borderTop: (theme) =>
             theme.palette.mode === 'dark'
               ? `1px solid rgba(255, 255, 255, 0.1)`
               : `1px solid ${theme.palette.divider}`,
+          boxShadow: 'none',
         }}
-        elevation={3}
+        elevation={0}
       >
         <MuiBottomNavigation
           value={getCurrentValue()}

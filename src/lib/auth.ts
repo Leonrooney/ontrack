@@ -1,5 +1,6 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-options';
+import { prisma } from '@/lib/prisma';
 
 /**
  * Get session safely in App Router route handlers
@@ -12,11 +13,21 @@ export async function getSessionSafe() {
 }
 
 /**
- * Alias for getSessionSafe() - kept for backward compatibility
- * @deprecated Use getSessionSafe() instead
+ * Require authentication for API routes. Returns user id and email, or null if unauthenticated.
+ * Use: const auth = await requireAuth(); if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
  */
-export async function getSession() {
-  return await getSessionSafe();
+export async function requireAuth(): Promise<
+  { userId: string; email: string } | null
+> {
+  const session = await getSessionSafe();
+  const email = session?.user?.email;
+  if (!email) return null;
+  const user = await prisma.users.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (!user) return null;
+  return { userId: user.id, email };
 }
 
 /**

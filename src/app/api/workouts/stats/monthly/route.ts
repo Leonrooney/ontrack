@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { startOfMonth, endOfMonth, format, eachDayOfInterval } from 'date-fns';
 
 export const dynamic = 'force-dynamic';
@@ -14,6 +14,7 @@ interface CalendarDay {
   hasWorkout: boolean; // Whether user worked out on this day
   isCurrentMonth: boolean; // Always true for this endpoint
   workoutTitle?: string; // Workout title or derived muscle group label
+  workoutId?: string; // Workout session ID for navigation (first workout of day if multiple)
 }
 
 /**
@@ -31,16 +32,8 @@ interface CalendarDay {
  * - monthEnd: ISO date string of month end
  */
 export async function GET(req: Request) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(req.url);
   const monthOffset = Number(url.searchParams.get('month') ?? 0); // 0 = current month, -1 = last month, etc.
@@ -55,13 +48,14 @@ export async function GET(req: Request) {
   // Fetch all workouts in the month with their items
   const workouts = await prisma.workout_sessions.findMany({
     where: {
-      userId: user.id,
+      userId: auth.userId,
       date: {
         gte: targetMonthStart,
         lte: targetMonthEnd,
       },
     },
     select: {
+      id: true,
       date: true,
       title: true,
       workout_items: {
@@ -107,22 +101,23 @@ export async function GET(req: Request) {
     return entries.sort((a, b) => b[1] - a[1])[0][0];
   };
 
-  // Create map of workout dates to titles
-  const workoutMap = new Map<string, string>();
+  // Create map of workout dates to { workoutId, workoutTitle }
+  const workoutMap = new Map<
+    string,
+    { workoutId: string; workoutTitle: string }
+  >();
   workouts.forEach((w) => {
     const dateKey = format(w.date, 'yyyy-MM-dd');
-    // Use title if available
-    if (w.title && w.title.trim()) {
-      workoutMap.set(dateKey, w.title.trim());
-    } else {
-      // Try to derive from primary muscle group
-      const primaryMuscle = getPrimaryMuscleGroup(w.workout_items);
-      if (primaryMuscle) {
-        workoutMap.set(dateKey, primaryMuscle);
+    // Use first workout of the day (workouts ordered by date asc)
+    if (!workoutMap.has(dateKey)) {
+      let workoutTitle: string;
+      if (w.title && w.title.trim()) {
+        workoutTitle = w.title.trim();
       } else {
-        // Fallback to "Workout"
-        workoutMap.set(dateKey, 'Workout');
+        const primaryMuscle = getPrimaryMuscleGroup(w.workout_items);
+        workoutTitle = primaryMuscle ?? 'Workout';
       }
+      workoutMap.set(dateKey, { workoutId: w.id, workoutTitle });
     }
   });
 
@@ -135,13 +130,15 @@ export async function GET(req: Request) {
   // Convert to calendar format
   const calendar: CalendarDay[] = daysInMonth.map((day) => {
     const dateKey = format(day, 'yyyy-MM-dd');
-    const hasWorkout = workoutMap.has(dateKey);
+    const entry = workoutMap.get(dateKey);
+    const hasWorkout = !!entry;
     return {
       date: dateKey,
       day: day.getDate(),
       hasWorkout,
       isCurrentMonth: true,
-      workoutTitle: hasWorkout ? workoutMap.get(dateKey) : undefined,
+      workoutTitle: entry?.workoutTitle,
+      workoutId: entry?.workoutId,
     };
   });
 

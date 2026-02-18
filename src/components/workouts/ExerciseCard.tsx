@@ -301,10 +301,11 @@ export function ExerciseCard({
         border: '1px solid',
         borderColor: 'divider',
         borderRadius: 2,
+        boxShadow: 'none',
         transition: 'all 0.2s ease-in-out',
         '&:hover': {
           borderColor: 'primary.main',
-          boxShadow: 2,
+          boxShadow: 1,
         },
       }}
     >

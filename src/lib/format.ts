@@ -45,21 +45,6 @@ export function formatHeartRate(bpm: number): string {
 }
 
 /**
- * Calculate daily average
- */
-export function average(numbers: number[]): number {
-  if (numbers.length === 0) return 0;
-  return numbers.reduce((a, b) => a + b, 0) / numbers.length;
-}
-
-/**
- * Calculate sum
- */
-export function sum(numbers: number[]): number {
-  return numbers.reduce((a, b) => a + b, 0);
-}
-
-/**
  * Format elapsed time as M:SS (e.g., 5:30 for 5 minutes 30 seconds)
  * Used for workout timers and rest timers
  */

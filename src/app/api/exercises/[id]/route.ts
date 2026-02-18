@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -16,17 +16,8 @@ export async function PUT(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const json = await req.json();
   const parsed = UpdateCustom.safeParse(json);
@@ -37,7 +28,7 @@ export async function PUT(
     );
 
   const updated = await prisma.custom_exercises.update({
-    where: { id: params.id, userId: user.id },
+    where: { id: params.id, userId: auth.userId },
     data: parsed.data,
   });
 
@@ -48,20 +39,11 @@ export async function DELETE(
   _: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   await prisma.custom_exercises.delete({
-    where: { id: params.id, userId: user.id },
+    where: { id: params.id, userId: auth.userId },
   });
 
   return NextResponse.json({ ok: true });

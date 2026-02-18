@@ -13,20 +13,12 @@ interface MainLayoutProps {
 
 export function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname();
-  const { resolvedMode, mode, setMode } = useThemeContext();
+  const { resolvedMode, toggleTheme } = useThemeContext();
   const isAuthPage =
     pathname === '/login' ||
     pathname === '/signup' ||
     pathname?.startsWith('/welcome/');
   const showBottomNav = !isAuthPage;
-
-  const toggleTheme = () => {
-    if (mode === 'system') {
-      setMode(resolvedMode === 'dark' ? 'light' : 'dark');
-    } else {
-      setMode(mode === 'dark' ? 'light' : 'dark');
-    }
-  };
 
   return (
     <Box

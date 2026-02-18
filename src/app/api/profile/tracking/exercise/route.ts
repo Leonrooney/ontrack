@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { format } from 'date-fns';
 import { Decimal } from '@prisma/client/runtime/library';
@@ -20,16 +20,8 @@ function toNum(d: Decimal | null | undefined): number | null {
  */
 export async function GET(req: NextRequest) {
   try {
-    const session = await getSessionSafe();
-    const email = session?.user?.email;
-    if (!email)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const auth = await requireAuth();
+    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const searchParams = req.nextUrl.searchParams;
     const exerciseId = searchParams.get('exerciseId') ?? undefined;
@@ -57,7 +49,12 @@ export async function GET(req: NextRequest) {
 
     // Unify catalog + custom: match by normalized name so "Bench Press (Barbell)" (custom)
     // is treated as the same as "Barbell Bench Press" (catalog).
-    type ItemWhere = { exerciseId?: string; customId?: string | { in: string[] }; OR?: unknown[] };
+    type ItemWhere =
+      | { exerciseId: string }
+      | { customId: string }
+      | { customId: { in: string[] }; exerciseId?: never }
+      | { exerciseId: { in: string[] }; customId?: never }
+      | { OR: Array<{ exerciseId: string } | { customId: { in: string[] } } | { customId: string } | { exerciseId: { in: string[] } }> };
     let itemFilter: ItemWhere;
     let includeItemWhere: ItemWhere;
 
@@ -71,7 +68,7 @@ export async function GET(req: NextRequest) {
       }
       const catalogNormalized = normalizeExerciseNameForMatch(catalog.name);
       const allCustoms = await prisma.custom_exercises.findMany({
-        where: { userId: user.id },
+        where: { userId: auth.userId },
         select: { id: true, name: true },
       });
       const matchingCustomIds = allCustoms
@@ -91,7 +88,7 @@ export async function GET(req: NextRequest) {
       }
     } else {
       const customEx = await prisma.custom_exercises.findFirst({
-        where: { id: customId!, userId: user.id },
+        where: { id: customId!, userId: auth.userId },
         select: { name: true },
       });
       if (!customEx) {
@@ -120,7 +117,7 @@ export async function GET(req: NextRequest) {
 
     const sessions = await prisma.workout_sessions.findMany({
       where: {
-        userId: user.id,
+        userId: auth.userId,
         workout_items: {
           some: itemFilter,
         },

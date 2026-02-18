@@ -11,6 +11,7 @@ interface ThemeContextType {
   mode: ThemeMode;
   setMode: (mode: ThemeMode) => void;
   resolvedMode: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -56,11 +57,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('theme-mode', newMode);
   };
 
+  const toggleTheme = () => {
+    if (mode === 'system') {
+      handleSetMode(resolvedMode === 'dark' ? 'light' : 'dark');
+    } else {
+      handleSetMode(mode === 'dark' ? 'light' : 'dark');
+    }
+  };
+
   const theme = resolvedMode === 'dark' ? darkTheme : lightTheme;
 
   return (
     <ThemeContext.Provider
-      value={{ mode, setMode: handleSetMode, resolvedMode }}
+      value={{ mode, setMode: handleSetMode, resolvedMode, toggleTheme }}
     >
       <MUIThemeProvider theme={theme}>
         <CssBaseline />

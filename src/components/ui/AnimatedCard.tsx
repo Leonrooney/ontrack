@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardProps } from '@mui/material';
+import { Card, CardProps, useTheme } from '@mui/material';
 import { useRef, useEffect, ElementType } from 'react';
 import { cardHover } from '@/lib/animations';
 import Link from 'next/link';
@@ -21,8 +21,10 @@ export function AnimatedCard({
   sx,
   ...props
 }: AnimatedCardProps) {
+  const theme = useTheme();
   const cardRef = useRef<HTMLDivElement>(null);
   const isHoveringRef = useRef(false);
+  const isDark = theme.palette.mode === 'dark';
 
   useEffect(() => {
     if (animateOnMount && cardRef.current) {
@@ -43,14 +45,14 @@ export function AnimatedCard({
   const handleMouseEnter = () => {
     if (cardRef.current && !isHoveringRef.current) {
       isHoveringRef.current = true;
-      cardHover(cardRef.current, true, { scale: hoverScale });
+      cardHover(cardRef.current, true, { scale: hoverScale, isDark });
     }
   };
 
   const handleMouseLeave = () => {
     if (cardRef.current && isHoveringRef.current) {
       isHoveringRef.current = false;
-      cardHover(cardRef.current, false);
+      cardHover(cardRef.current, false, { isDark });
     }
   };
 

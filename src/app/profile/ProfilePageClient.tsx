@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { useProfile, useUpdateProfile } from '@/hooks/profile';
 import { useUserPreferences, useUpdatePreferences } from '@/hooks/preferences';
+import { useTheme } from '@mui/material/styles';
 import { useWorkoutHistory } from '@/hooks/workouts';
 import { useWeightLogs, useLogWeight } from '@/hooks/weight';
 import { exportWorkoutsToCSV } from '@/lib/workout-csv';
@@ -30,6 +31,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { format } from 'date-fns';
 
 export function ProfilePageClient() {
+  const theme = useTheme();
   const { data: profile, isLoading, error } = useProfile();
   const updateMutation = useUpdateProfile();
   const { data: preferences, isLoading: prefsLoading } = useUserPreferences();
@@ -52,9 +54,6 @@ export function ProfilePageClient() {
   const [unitPreference, setUnitPreference] = useState<'metric' | 'imperial'>(
     'metric'
   );
-  const [themePreference, setThemePreference] = useState<
-    'system' | 'light' | 'dark'
-  >('system');
   const [defaultRestSeconds, setDefaultRestSeconds] = useState<number>(90);
   const [importLoading, setImportLoading] = useState(false);
   const [importMessage, setImportMessage] = useState<{
@@ -73,7 +72,6 @@ export function ProfilePageClient() {
     if (profile) {
       setName(profile.name || '');
       setUnitPreference(profile.unitPreference);
-      setThemePreference(profile.themePreference);
     }
   }, [profile]);
 
@@ -89,16 +87,13 @@ export function ProfilePageClient() {
     const trimmedName = name.trim();
     updateMutation.mutate({
       name: trimmedName || undefined,
-      unitPreference,
-      themePreference,
     });
   };
 
   const handlePreferencesSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updatePreferencesMutation.mutate({
-      defaultRestSeconds,
-    });
+    updatePreferencesMutation.mutate({ defaultRestSeconds });
+    updateMutation.mutate({ unitPreference });
   };
 
   const handleLogWeight = (e: React.FormEvent) => {
@@ -240,7 +235,19 @@ export function ProfilePageClient() {
     return (
       <MainLayout>
         <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
-          <Typography variant="h4" component="h1" gutterBottom>
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            sx={{
+              fontWeight: 600,
+              background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              mb: { xs: 2, sm: 3 },
+            }}
+          >
             Profile
           </Typography>
           <Paper
@@ -264,7 +271,19 @@ export function ProfilePageClient() {
     return (
       <MainLayout>
         <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
-          <Typography variant="h4" component="h1" gutterBottom>
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            sx={{
+              fontWeight: 600,
+              background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              mb: { xs: 2, sm: 3 },
+            }}
+          >
             Profile
           </Typography>
           <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 3 }}>
@@ -280,7 +299,19 @@ export function ProfilePageClient() {
   return (
     <MainLayout>
       <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          sx={{
+            fontWeight: 600,
+            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.light} 100%)`,
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            mb: { xs: 2, sm: 3 },
+          }}
+        >
           Profile
         </Typography>
         <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 3 }}>
@@ -294,43 +325,6 @@ export function ProfilePageClient() {
                 placeholder="Enter your display name"
                 helperText="This is how your name will appear in the app"
               />
-
-              <FormControl fullWidth>
-                <InputLabel id="unit-preference-label">
-                  Unit Preference
-                </InputLabel>
-                <Select
-                  labelId="unit-preference-label"
-                  label="Unit Preference"
-                  value={unitPreference}
-                  onChange={(e) =>
-                    setUnitPreference(e.target.value as 'metric' | 'imperial')
-                  }
-                >
-                  <MenuItem value="metric">Metric (kg, km)</MenuItem>
-                  <MenuItem value="imperial">Imperial (lb, mi)</MenuItem>
-                </Select>
-              </FormControl>
-
-              <FormControl fullWidth>
-                <InputLabel id="theme-preference-label">
-                  Theme Preference
-                </InputLabel>
-                <Select
-                  labelId="theme-preference-label"
-                  label="Theme Preference"
-                  value={themePreference}
-                  onChange={(e) =>
-                    setThemePreference(
-                      e.target.value as 'system' | 'light' | 'dark'
-                    )
-                  }
-                >
-                  <MenuItem value="system">System</MenuItem>
-                  <MenuItem value="light">Light</MenuItem>
-                  <MenuItem value="dark">Dark</MenuItem>
-                </Select>
-              </FormControl>
 
               <Box
                 sx={{
@@ -468,6 +462,23 @@ export function ProfilePageClient() {
           </Typography>
           <form onSubmit={handlePreferencesSubmit}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <FormControl fullWidth>
+                <InputLabel id="unit-preference-label">
+                  Unit Preference
+                </InputLabel>
+                <Select
+                  labelId="unit-preference-label"
+                  label="Unit Preference"
+                  value={unitPreference}
+                  onChange={(e) =>
+                    setUnitPreference(e.target.value as 'metric' | 'imperial')
+                  }
+                >
+                  <MenuItem value="metric">Metric (kg, km)</MenuItem>
+                  <MenuItem value="imperial">Imperial (lb, mi)</MenuItem>
+                </Select>
+              </FormControl>
+
               <TextField
                 fullWidth
                 type="number"
@@ -489,9 +500,11 @@ export function ProfilePageClient() {
                 <Button
                   type="submit"
                   variant="contained"
-                  disabled={updatePreferencesMutation.isPending}
+                  disabled={
+                    updatePreferencesMutation.isPending || updateMutation.isPending
+                  }
                 >
-                  {updatePreferencesMutation.isPending
+                  {updatePreferencesMutation.isPending || updateMutation.isPending
                     ? 'Saving...'
                     : 'Save Preferences'}
                 </Button>

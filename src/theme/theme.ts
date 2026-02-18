@@ -89,15 +89,12 @@ export const lightTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#FFFFFF',
-          border: '1px solid rgba(0, 0, 0, 0.04)',
-          boxShadow:
-            '0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)',
-          transition:
-            'box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out',
+          // Single subtle shadow instead of border + shadow to avoid double outline in light mode
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
+          border: 'none',
+          transition: 'box-shadow 0.2s ease-in-out',
           '&:hover': {
-            boxShadow:
-              '0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
-            borderColor: 'rgba(29, 185, 84, 0.2)',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
           },
         },
       },
@@ -109,16 +106,13 @@ export const lightTheme = createTheme({
           backgroundImage: 'none',
         },
         elevation1: {
-          boxShadow:
-            '0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
         },
         elevation2: {
-          boxShadow:
-            '0 2px 6px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04)',
+          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.06)',
         },
         elevation3: {
-          boxShadow:
-            '0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
+          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.07)',
         },
       },
     },
@@ -130,6 +124,8 @@ export const lightTheme = createTheme({
           borderRadius: 8,
           padding: '8px 16px',
           transition: 'all 0.2s ease-in-out',
+          fontSize: '0.875rem',
+          minHeight: 36,
         },
         contained: {
           boxShadow: '0 2px 4px rgba(29, 185, 84, 0.2)',
@@ -292,6 +288,39 @@ export const darkTheme = createTheme({
     '0 88px 176px rgba(0, 0, 0, 1)',
     '0 92px 184px rgba(0, 0, 0, 1)',
   ],
+  components: {
+    // Same structural overrides as light theme – only colors differ between modes
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 600,
+          borderRadius: 8,
+          padding: '8px 16px',
+          transition: 'all 0.2s ease-in-out',
+          fontSize: '0.875rem',
+          minHeight: 36,
+        },
+        contained: {
+          boxShadow: '0 2px 4px rgba(29, 185, 84, 0.2)',
+          '&:hover': {
+            boxShadow: '0 4px 8px rgba(29, 185, 84, 0.3)',
+            transform: 'translateY(-1px)',
+          },
+          '&:active': {
+            transform: 'translateY(0)',
+          },
+        },
+        outlined: {
+          borderWidth: '1.5px',
+          '&:hover': {
+            borderWidth: '1.5px',
+            backgroundColor: 'rgba(29, 185, 84, 0.08)',
+          },
+        },
+      },
+    },
+  },
   transitions: {
     duration: {
       shortest: 150,

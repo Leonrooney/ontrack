@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Box,
@@ -19,7 +18,7 @@ import { AnimatedCard } from '@/components/ui/AnimatedCard';
 import { AnimatedButton } from '@/components/ui/AnimatedButton';
 import { useStaggerFadeIn } from '@/hooks/useAnimation';
 import { useWorkoutHistory, useDeleteWorkout } from '@/hooks/workouts';
-import { useExercises } from '@/hooks/exercises';
+import { useExerciseMediaMap } from '@/hooks/exercises';
 import { formatDateLong } from '@/lib/format';
 import Link from 'next/link';
 import AddIcon from '@mui/icons-material/Add';
@@ -45,26 +44,10 @@ import {
 export default function WorkoutsPage() {
   const theme = useTheme();
   const { data, isLoading, error } = useWorkoutHistory();
-  const { data: exercisesData } = useExercises('', 'all');
+  const mediaUrlByName = useExerciseMediaMap();
   const deleteMutation = useDeleteWorkout();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [workoutToDelete, setWorkoutToDelete] = useState<string | null>(null);
-
-  // Map exercise name -> mediaUrl so we can show correct thumbnails even when workout API omits it
-  const mediaUrlByName = useMemo(() => {
-    const map = new Map<string, string>();
-    if (exercisesData?.catalog) {
-      for (const ex of exercisesData.catalog) {
-        if (ex.name && ex.mediaUrl) map.set(ex.name, ex.mediaUrl);
-      }
-    }
-    if (exercisesData?.custom) {
-      for (const ex of exercisesData.custom) {
-        if (ex.name && ex.mediaUrl) map.set(ex.name, ex.mediaUrl);
-      }
-    }
-    return map;
-  }, [exercisesData]);
 
   const handleDeleteClick = (workoutId: string) => {
     setWorkoutToDelete(workoutId);

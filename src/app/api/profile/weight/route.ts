@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { randomUUID } from 'crypto';
@@ -25,17 +25,8 @@ const postSchema = z.object({
  */
 export async function GET(req: NextRequest) {
   try {
-    const session = await getSessionSafe();
-    const email = session?.user?.email;
-    if (!email)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-    if (!user)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const auth = await requireAuth();
+    if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const searchParams = req.nextUrl.searchParams;
     const limit = Math.min(
@@ -45,7 +36,7 @@ export async function GET(req: NextRequest) {
       order = (searchParams.get('order') ?? 'desc') as 'asc' | 'desc';
 
     const logs = await prisma.weight_logs.findMany({
-      where: { userId: user.id },
+      where: { userId: auth.userId },
       orderBy: { loggedAt: order },
       take: limit,
     });
@@ -66,17 +57,8 @@ export async function GET(req: NextRequest) {
  * Log a weight check-in.
  */
 export async function POST(req: NextRequest) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-  if (!email)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const user = await prisma.users.findUnique({
-    where: { email },
-    select: { id: true },
-  });
-  if (!user)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   let body: unknown;
   try {
@@ -101,7 +83,7 @@ export async function POST(req: NextRequest) {
     const entry = await prisma.weight_logs.create({
       data: {
         id: randomUUID(),
-        userId: user.id,
+        userId: auth.userId,
         weightKg: Number(weightKg),
         note: note ?? null,
       },

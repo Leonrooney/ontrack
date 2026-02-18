@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import {
   Typography,
@@ -32,7 +31,7 @@ import {
   useMonthlyWorkoutStats,
   useMuscleGroupStats,
 } from '@/hooks/workouts';
-import { useExercises } from '@/hooks/exercises';
+import { useExerciseMediaMap } from '@/hooks/exercises';
 import { formatDateLong } from '@/lib/format';
 import {
   BarChart,
@@ -51,31 +50,15 @@ import {
 } from 'recharts';
 import Link from 'next/link';
 import { ExerciseThumb } from '@/components/ExerciseThumb';
-import { startOfMonth, addMonths, subMonths } from 'date-fns';
+import { startOfMonth, subMonths } from 'date-fns';
 
 export default function DashboardPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { data: recentWorkout, isLoading: isLoadingRecent } =
     useRecentWorkout();
-  const { data: exercisesData } = useExercises('', 'all');
+  const mediaUrlByName = useExerciseMediaMap();
   const [frequencyView, setFrequencyView] = useState<'week' | 'month'>('week');
-
-  // Map exercise name -> mediaUrl for correct thumbnails in recent workout
-  const mediaUrlByName = useMemo(() => {
-    const map = new Map<string, string>();
-    if (exercisesData?.catalog) {
-      for (const ex of exercisesData.catalog) {
-        if (ex.name && ex.mediaUrl) map.set(ex.name, ex.mediaUrl);
-      }
-    }
-    if (exercisesData?.custom) {
-      for (const ex of exercisesData.custom) {
-        if (ex.name && ex.mediaUrl) map.set(ex.name, ex.mediaUrl);
-      }
-    }
-    return map;
-  }, [exercisesData]);
   const [monthOffset, setMonthOffset] = useState(0);
   const [muscleGroupRange, setMuscleGroupRange] = useState(30);
   const { data: weeklyData, isLoading: isLoadingWeekly } =
@@ -115,6 +98,7 @@ export default function DashboardPage() {
       hasWorkout: boolean;
       isCurrentMonth: boolean;
       workoutTitle?: string;
+      workoutId?: string;
     } | null> = [];
 
     // Empty cells for days before month starts
@@ -288,14 +272,14 @@ export default function DashboardPage() {
                           </Box>
                         );
                       })}
-                      {recentWorkout.items?.length > 3 && (
+                      {(recentWorkout.items?.length ?? 0) > 3 && (
                         <Typography
                           variant="caption"
                           color="text.secondary"
                           sx={{ mt: 0.5 }}
                         >
-                          +{recentWorkout.items.length - 3} more exercise
-                          {recentWorkout.items.length - 3 !== 1 ? 's' : ''}
+                          +{(recentWorkout.items?.length ?? 0) - 3} more exercise
+                          {(recentWorkout.items?.length ?? 0) - 3 !== 1 ? 's' : ''}
                         </Typography>
                       )}
                     </Stack>
@@ -406,7 +390,7 @@ export default function DashboardPage() {
                                 top: 8,
                                 right: 8,
                                 left: 0,
-                                bottom: isMobile ? 56 : 4,
+                                bottom: 48,
                               }}
                             >
                               <CartesianGrid
@@ -420,11 +404,11 @@ export default function DashboardPage() {
                                     ? 'rgba(255, 255, 255, 0.7)'
                                     : 'rgba(0, 0, 0, 0.6)'
                                 }
-                                fontSize={isMobile ? 10 : 11}
+                                fontSize={11}
                                 interval={0}
-                                angle={isMobile ? -40 : 0}
-                                textAnchor={isMobile ? 'end' : 'middle'}
-                                tickMargin={isMobile ? 8 : 4}
+                                angle={-45}
+                                textAnchor="end"
+                                tickMargin={12}
                                 tick={{ fill: theme.palette.text.secondary }}
                               />
                               <YAxis
@@ -577,6 +561,16 @@ export default function DashboardPage() {
                                       >
                                         {day ? (
                                           <Box
+                                            component={
+                                              day.hasWorkout && day.workoutId
+                                                ? Link
+                                                : 'div'
+                                            }
+                                            href={
+                                              day.hasWorkout && day.workoutId
+                                                ? `/workouts/${day.workoutId}/edit`
+                                                : undefined
+                                            }
                                             sx={{
                                               width: '100%',
                                               minWidth: 0,
@@ -585,6 +579,18 @@ export default function DashboardPage() {
                                               flexDirection: 'column',
                                               gap: 0.5,
                                               overflow: 'hidden',
+                                              textDecoration: 'none',
+                                              color: 'inherit',
+                                              cursor:
+                                                day.hasWorkout && day.workoutId
+                                                  ? 'pointer'
+                                                  : 'default',
+                                              '&:hover': {
+                                                backgroundColor:
+                                                  day.hasWorkout && day.workoutId
+                                                    ? 'action.hover'
+                                                    : 'transparent',
+                                              },
                                             }}
                                           >
                                             <Box
@@ -612,25 +618,6 @@ export default function DashboardPage() {
                                             >
                                               {day.day}
                                             </Box>
-                                            {day.hasWorkout && (
-                                              <Typography
-                                                variant="caption"
-                                                sx={{
-                                                  flex: '1 1 0',
-                                                  minHeight: 0,
-                                                  color: 'text.secondary',
-                                                  fontSize: '0.65rem',
-                                                  lineHeight: 1.2,
-                                                  overflow: 'hidden',
-                                                  textOverflow: 'ellipsis',
-                                                  display: '-webkit-box',
-                                                  WebkitLineClamp: 1,
-                                                  WebkitBoxOrient: 'vertical',
-                                                }}
-                                              >
-                                                {day.workoutTitle || 'Workout'}
-                                              </Typography>
-                                            )}
                                           </Box>
                                         ) : (
                                           <Box />

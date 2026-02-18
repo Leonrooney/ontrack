@@ -23,12 +23,15 @@ import {
   Paper,
   IconButton,
   Chip,
+  CircularProgress,
 } from '@mui/material';
 import { useCreateWorkout, useWorkoutHistory } from '@/hooks/workouts';
+import { useRoutine, useRoutines } from '@/hooks/routines';
 import { useExercises, useCreateCustomExercise } from '@/hooks/exercises';
 import { useUserPreferences } from '@/hooks/preferences';
 import { ExerciseCard, SetRow } from '@/components/workouts/ExerciseCard';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useWorkoutPersistence } from '@/hooks/useWorkoutPersistence';
 import AddIcon from '@mui/icons-material/Add';
@@ -59,28 +62,10 @@ type SetRowLocal = Omit<SetRow, 'reps'> & {
   reps: number | string;
 };
 
-/**
- * New Workout Page - Strong/Hevy-style workout logging interface
- *
- * Future extensions:
- *
- * 1. Rest Timer per Exercise:
- *    - Add state: `const [restTimers, setRestTimers] = useState<Record<number, number>>({});`
- *    - When a set is completed (onChangeSet), start a timer for that exercise index
- *    - Pass `restTimerSeconds` and `onRestTimerComplete` props to ExerciseCard
- *    - Use setInterval in ExerciseCard to countdown and update UI
- *    - Store rest duration preference in user profile (unitPreference already exists)
- *
- * 2. "Use Last Workout as Template" Button:
- *    - Add button next to "Add Exercise" in header
- *    - On click: `const lastWorkout = historyData?.items?.[0];`
- *    - If lastWorkout exists, map its items to current items state:
- *      `setItems(lastWorkout.items.map(it => ({ exerciseId/customId, name, sets: it.sets })))`
- *    - This pre-populates the workout with the exact exercises and sets from the last session
- *    - User can then modify weights/reps as needed (Strong/Hevy behavior)
- */
-export default function NewWorkoutPage() {
+function NewWorkoutPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const routineId = searchParams.get('routine');
   const createWorkout = useCreateWorkout();
   const [successOpen, setSuccessOpen] = useState(false);
   const [title, setTitle] = useState<string>('');
@@ -101,15 +86,20 @@ export default function NewWorkoutPage() {
   const [workoutStartTime, setWorkoutStartTime] = useState<Date>(new Date());
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [routinePickerOpen, setRoutinePickerOpen] = useState(false);
 
   const { data: exData } = useExercises(exerciseQuery);
-  const { data: historyData } = useWorkoutHistory(20); // Fetch last 20 workouts for last performance lookup
+  const { data: historyData } = useWorkoutHistory(20);
+  const { data: routine } = useRoutine(routineId);
+  const { data: routinesList } = useRoutines();
   const { data: preferences } = useUserPreferences(); // Fetch user preferences for rest timer
   const createCustomExercise = useCreateCustomExercise();
   const addingSetRef = useRef<Record<number, boolean>>({});
   const workoutFinishedRef = useRef(false); // Prevents auto-save from re-writing after Finish
   const { getSavedWorkout, saveWorkout, clearSavedWorkout } =
     useWorkoutPersistence();
+
+  const routineAppliedRef = useRef(false);
 
   // Restore saved workout state on mount (only once)
   useEffect(() => {
@@ -118,18 +108,37 @@ export default function NewWorkoutPage() {
       setTitle(saved.title);
       setNotes(saved.notes);
       setItems(saved.items);
-      // Restore workout start time
       setWorkoutStartTime(new Date(saved.workoutStartTime));
-      // Restore elapsed time (continue from where we left off)
       const savedTime = new Date(saved.workoutStartTime);
       const now = new Date();
       const diffSeconds = Math.floor(
         (now.getTime() - savedTime.getTime()) / 1000
       );
       setElapsedSeconds(saved.elapsedSeconds + diffSeconds);
+      return;
+    }
+    // If no saved workout but routine ID in URL, apply routine when loaded
+    if (routineId && routine && !routineAppliedRef.current) {
+      routineAppliedRef.current = true;
+      setTitle(routine.name);
+      setRoutinePickerOpen(false);
+      setItems(
+        routine.items.map((item) => ({
+          exerciseId: item.exerciseId ?? undefined,
+          customId: item.customId ?? undefined,
+          name: item.name,
+          sets: Array.from({ length: item.setCount }, (_, i) => ({
+            setNumber: i + 1,
+            reps: 8,
+            weightKg: undefined,
+            rpe: undefined,
+            notes: undefined,
+          })),
+        }))
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount
+  }, [routineId, routine]);
 
   // Save workout state whenever it changes (debounced)
   useEffect(() => {
@@ -375,6 +384,25 @@ export default function NewWorkoutPage() {
     setItems((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  const applyRoutine = (r: { name: string; items: { exerciseId?: string | null; customId?: string | null; name: string; setCount: number }[] }) => {
+    setTitle(r.name);
+    setItems(
+      r.items.map((item) => ({
+        exerciseId: item.exerciseId ?? undefined,
+        customId: item.customId ?? undefined,
+        name: item.name,
+        sets: Array.from({ length: item.setCount }, (_, i) => ({
+          setNumber: i + 1,
+          reps: 8,
+          weightKg: undefined,
+          rpe: undefined,
+          notes: undefined,
+        })),
+      }))
+    );
+    setRoutinePickerOpen(false);
+  };
+
   const removeSet = (itemIndex: number, setIndex: number) => {
     setItems((prev) => {
       const copy = [...prev];
@@ -548,20 +576,29 @@ export default function NewWorkoutPage() {
         </Stack>
 
         {/* Action Buttons */}
-        <Stack direction="row" spacing={2} sx={{ mt: 3, mb: 2 }}>
+        <Stack direction="row" spacing={2} sx={{ mt: 3, mb: 2 }} flexWrap="wrap">
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => setPickerOpen(true)}
-            sx={{ flex: 1, textTransform: 'none', fontWeight: 600 }}
+            sx={{ flex: 1, minWidth: 140, textTransform: 'none', fontWeight: 600 }}
           >
             Add Exercises
           </Button>
+          {routinesList && routinesList.length > 0 && (
+            <Button
+              variant="outlined"
+              onClick={() => setRoutinePickerOpen(true)}
+              sx={{ flex: 1, minWidth: 140, textTransform: 'none', fontWeight: 600 }}
+            >
+              Use Routine
+            </Button>
+          )}
           <Button
             variant="outlined"
             color="error"
             onClick={handleCancel}
-            sx={{ flex: 1, textTransform: 'none', fontWeight: 600 }}
+            sx={{ flex: 1, minWidth: 140, textTransform: 'none', fontWeight: 600 }}
           >
             Cancel Workout
           </Button>
@@ -591,7 +628,9 @@ export default function NewWorkoutPage() {
               No exercises added yet
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Click "Add Exercises" to start building your workout
+              {routinesList && routinesList.length > 0
+                ? 'Use a routine to pre-fill exercises, or add them manually.'
+                : 'Click "Add Exercises" to start building your workout'}
             </Typography>
           </Paper>
         ) : (
@@ -625,6 +664,44 @@ export default function NewWorkoutPage() {
             ))}
           </Stack>
         )}
+
+        {/* Routine Picker Dialog */}
+        <Dialog
+          open={routinePickerOpen}
+          onClose={() => setRoutinePickerOpen(false)}
+          maxWidth="sm"
+          fullWidth
+          PaperProps={{ sx: { m: 2 } }}
+        >
+          <DialogTitle>Choose a routine</DialogTitle>
+          <DialogContent>
+            <DialogContentText sx={{ mb: 2 }}>
+              Pre-fill your workout with exercises from a saved routine. You&apos;ll just need to enter reps and weight.
+            </DialogContentText>
+            <Stack spacing={1}>
+              {routinesList?.map((r) => (
+                <Paper
+                  key={r.id}
+                  elevation={0}
+                  sx={{
+                    p: 2,
+                    cursor: 'pointer',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    '&:hover': { borderColor: 'primary.main', bgcolor: 'action.hover' },
+                  }}
+                  onClick={() => applyRoutine(r)}
+                >
+                  <Typography fontWeight={600}>{r.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {r.items.length} exercise{r.items.length !== 1 ? 's' : ''} ·{' '}
+                    {r.items.reduce((sum, i) => sum + i.setCount, 0)} sets total
+                  </Typography>
+                </Paper>
+              ))}
+            </Stack>
+          </DialogContent>
+        </Dialog>
 
         {/* Finish bar: in-flow so it sits below all exercises and scrolls with content */}
         <Box sx={{ mt: 4, mb: 2 }}>
@@ -1053,5 +1130,19 @@ export default function NewWorkoutPage() {
         </Snackbar>
       </Box>
     </MainLayout>
+  );
+}
+
+export default function NewWorkoutPage() {
+  return (
+    <Suspense fallback={
+      <MainLayout>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+          <CircularProgress />
+        </Box>
+      </MainLayout>
+    }>
+      <NewWorkoutPageContent />
+    </Suspense>
   );
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionSafe } from '@/lib/auth';
+import { requireAuth } from '@/lib/auth';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { toPlain, toNumber } from '@/lib/serialize';
@@ -25,25 +25,12 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
 
   try {
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     const body = await request.json();
     const validated = updateGoalSchema.parse(body);
 
@@ -56,7 +43,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Goal not found' }, { status: 404 });
     }
 
-    if (existing.userId !== user.id) {
+    if (existing.userId !== auth.userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -119,25 +106,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSessionSafe();
-  const email = session?.user?.email;
-
-  if (!email) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = await requireAuth();
+  if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
 
   try {
-    const user = await prisma.users.findUnique({
-      where: { email },
-      select: { id: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     // Check ownership
     const existing = await prisma.goals.findUnique({
       where: { id },
@@ -147,7 +121,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Goal not found' }, { status: 404 });
     }
 
-    if (existing.userId !== user.id) {
+    if (existing.userId !== auth.userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
