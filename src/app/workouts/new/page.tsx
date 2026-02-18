@@ -1125,7 +1125,7 @@ function NewWorkoutPageContent() {
             severity="success"
             sx={{ width: '100%' }}
           >
-            Workout saved successfully!
+            Workout saved successfully.
           </Alert>
         </Snackbar>
       </Box>

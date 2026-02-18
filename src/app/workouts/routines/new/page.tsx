@@ -167,7 +167,7 @@ export default function NewRoutinePage() {
           setCount: it.setCount,
         })),
       });
-      setSnackbar({ open: true, message: 'Routine saved!', severity: 'success' });
+      setSnackbar({ open: true, message: 'Routine saved.', severity: 'success' });
       router.push('/workouts');
     } catch {
       setSnackbar({ open: true, message: 'Failed to save routine', severity: 'error' });

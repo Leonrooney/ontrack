@@ -9,23 +9,23 @@ import { execSync } from 'child_process';
 import { spawn } from 'child_process';
 
 async function main() {
-  console.log('🚀 Starting OnTrack production server...\n');
+  console.log('Starting OnTrack production server...\n');
 
   // Run database migrations
   try {
-    console.log('📦 Running database migrations...');
+    console.log('Running database migrations...');
     execSync('npx prisma migrate deploy', {
       stdio: 'inherit',
       env: process.env,
     });
-    console.log('✅ Migrations completed successfully\n');
+    console.log('Migrations completed successfully.\n');
   } catch (error) {
-    console.warn('⚠️  Migration warning:', error instanceof Error ? error.message : 'Unknown error');
-    console.warn('Continuing startup... (migrations may already be applied)\n');
+    console.warn('Migration warning:', error instanceof Error ? error.message : 'Unknown error');
+    console.warn('Continuing startup (migrations may already be applied).\n');
   }
 
   // Start Next.js server
-  console.log('🌐 Starting Next.js server...\n');
+  console.log('Starting Next.js server...\n');
   const server = spawn('npm', ['start'], {
     stdio: 'inherit',
     env: process.env,
@@ -33,24 +33,24 @@ async function main() {
   });
 
   server.on('error', (error) => {
-    console.error('❌ Failed to start server:', error);
+    console.error('Failed to start server:', error);
     process.exit(1);
   });
 
   process.on('SIGTERM', () => {
-    console.log('\n🛑 Received SIGTERM, shutting down gracefully...');
+    console.log('\nReceived SIGTERM, shutting down.');
     server.kill('SIGTERM');
     process.exit(0);
   });
 
   process.on('SIGINT', () => {
-    console.log('\n🛑 Received SIGINT, shutting down gracefully...');
+    console.log('\nReceived SIGINT, shutting down.');
     server.kill('SIGINT');
     process.exit(0);
   });
 }
 
 main().catch((error) => {
-  console.error('❌ Fatal error:', error);
+  console.error('Fatal error:', error);
   process.exit(1);
 });

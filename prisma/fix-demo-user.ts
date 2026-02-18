@@ -27,14 +27,14 @@ async function main() {
         updatedAt: now,
       },
     });
-    console.log('✅ Demo user created successfully');
+    console.log('Demo user created successfully');
   } else {
     console.log('Demo user found. Updating password to Passw0rd!...');
     await prisma.users.update({
       where: { email: DEMO_EMAIL },
       data: { passwordHash, updatedAt: now },
     });
-    console.log('✅ Demo user password updated successfully');
+    console.log('Demo user password updated successfully');
   }
 
   console.log(`\nDemo credentials:\n  Email: ${DEMO_EMAIL}\n  Password: ${DEMO_PASSWORD}`);

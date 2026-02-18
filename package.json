@@ -6,7 +6,7 @@
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "start:prod": "prisma migrate deploy || (echo '⚠️  Migration failed - check DATABASE_URL. Using connection pooler (port 6543) is required for Supabase.' && echo 'Continuing startup...') && next start",
+    "start:prod": "prisma migrate deploy || (echo 'Migration failed (check DATABASE_URL / DIRECT_URL). Continuing startup...') && next start",
     "start:prod:ts": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/start.ts",
     "lint": "next lint",
     "format": "prettier --write .",

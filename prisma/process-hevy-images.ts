@@ -323,15 +323,15 @@ async function main() {
   // Save updated exercises
   fs.writeFileSync(exercisesFile, JSON.stringify(ourExercises, null, 2));
 
-  console.log(`\n✅ Copied ${copied} images to public/exercises/hevy/`);
-  console.log(`✅ Updated ${updated} existing exercises with media URLs`);
-  console.log(`✅ Added ${newExercises.length} new exercises`);
-  console.log(`\n📝 Summary:`);
+  console.log(`\nCopied ${copied} images to public/exercises/hevy/`);
+  console.log(`Updated ${updated} existing exercises with media URLs`);
+  console.log(`Added ${newExercises.length} new exercises`);
+  console.log(`\nSummary:`);
   console.log(`   - Total exercises now: ${ourExercises.length}`);
   console.log(
     `   - Exercises with media: ${ourExercises.filter((e) => e.mediaUrl).length}`
   );
-  console.log(`\n💡 Next steps:`);
+  console.log(`\nNext steps:`);
   console.log(`   1. Review the new exercises in exercises.bulk.json`);
   console.log(`   2. Add instructions for new exercises if needed`);
   console.log(`   3. Run: npm run seed:exercises:bulk`);
@@ -339,10 +339,10 @@ async function main() {
 
 main()
   .then(() => {
-    console.log('\n✅ Processing complete!');
+    console.log('\nProcessing complete.');
     process.exit(0);
   })
   .catch((e) => {
-    console.error('❌ Error:', e);
+    console.error('Error:', e);
     process.exit(1);
   });

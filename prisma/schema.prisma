@@ -2,8 +2,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// DATABASE_URL: use pooler (port 6543) for app queries.
-// DIRECT_URL: use direct connection (port 5432) for migrations – required by Supabase/PgBouncer.
+// DATABASE_URL: pooler (port 6543) for app. For migrations, set DIRECT_URL (port 5432) or it falls back to DATABASE_URL.
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
