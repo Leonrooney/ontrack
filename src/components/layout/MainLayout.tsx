@@ -1,9 +1,11 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Box, IconButton } from '@mui/material';
+import { Box, IconButton, Button } from '@mui/material';
+import Link from 'next/link';
 import { Brightness4, Brightness7 } from '@mui/icons-material';
 import { useTheme as useThemeContext } from '@/contexts/ThemeContext';
+import { useSession } from 'next-auth/react';
 import { BottomNavigation } from './BottomNavigation';
 import { PageTransition } from '@/components/ui/PageTransition';
 
@@ -14,9 +16,12 @@ interface MainLayoutProps {
 export function MainLayout({ children }: MainLayoutProps) {
   const pathname = usePathname();
   const { resolvedMode, toggleTheme } = useThemeContext();
+  const { status } = useSession();
   const isAuthPage =
     pathname === '/login' ||
     pathname === '/signup' ||
+    pathname === '/forgot-password' ||
+    pathname === '/reset-password' ||
     pathname?.startsWith('/welcome/');
   const showBottomNav = !isAuthPage;
 
@@ -45,7 +50,7 @@ export function MainLayout({ children }: MainLayoutProps) {
         },
       }}
     >
-      {/* Top bar: theme toggle only (always visible, including login) */}
+      {/* Top bar: Log in (when unauthenticated) + theme toggle */}
       <Box
         sx={{
           position: 'sticky',
@@ -54,7 +59,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           right: 0,
           zIndex: 1100,
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: 'space-between',
           alignItems: 'center',
           py: 1,
           px: 2,
@@ -69,14 +74,28 @@ export function MainLayout({ children }: MainLayoutProps) {
               : `1px solid ${theme.palette.divider}`,
         }}
       >
-        <IconButton
-          color="inherit"
-          onClick={toggleTheme}
-          aria-label={resolvedMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          sx={{ color: 'text.primary' }}
-        >
-          {resolvedMode === 'dark' ? <Brightness7 /> : <Brightness4 />}
-        </IconButton>
+        <Box sx={{ flex: 1 }} />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {status === 'unauthenticated' && !isAuthPage && (
+            <Button
+              component={Link}
+              href="/login"
+              variant="outlined"
+              size="small"
+              sx={{ textTransform: 'none' }}
+            >
+              Log in
+            </Button>
+          )}
+          <IconButton
+            color="inherit"
+            onClick={toggleTheme}
+            aria-label={resolvedMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            sx={{ color: 'text.primary' }}
+          >
+            {resolvedMode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
+        </Box>
       </Box>
 
       <Box

@@ -24,7 +24,7 @@ import {
 import { AnimatedCard } from '@/components/ui/AnimatedCard';
 import { AnimatedButton } from '@/components/ui/AnimatedButton';
 import { useEffect, useRef, useState } from 'react';
-import { FitnessCenter, ChevronLeft, ChevronRight } from '@mui/icons-material';
+import { FitnessCenter, ChevronLeft, ChevronRight, FormatQuote } from '@mui/icons-material';
 import {
   useRecentWorkout,
   useWeeklyWorkoutStats,
@@ -67,6 +67,26 @@ export default function DashboardPage() {
     useMonthlyWorkoutStats(monthOffset);
   const { data: muscleGroupData, isLoading: isLoadingMuscleGroups } =
     useMuscleGroupStats(muscleGroupRange);
+
+  // Quote widget (proxied via /api/quote from Quotable API)
+  const [quote, setQuote] = useState<{ content: string; author: string } | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(true);
+  const [quoteError, setQuoteError] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    setQuoteLoading(true);
+    setQuoteError(false);
+    fetch('/api/quote')
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error('Quote fetch failed'))))
+      .then((data: { content: string; author: string }) => {
+        if (!cancelled && data?.content && data?.author) {
+          setQuote({ content: data.content, author: data.author });
+        }
+      })
+      .catch(() => { if (!cancelled) setQuoteError(true); })
+      .finally(() => { if (!cancelled) setQuoteLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
 
   const handleMonthChange = (direction: 'prev' | 'next') => {
     setMonthOffset((prev) => (direction === 'prev' ? prev - 1 : prev + 1));
@@ -138,6 +158,41 @@ export default function DashboardPage() {
         >
           Dashboard
         </Typography>
+
+        {/* Quote widget */}
+        <AnimatedCard
+          hoverScale={1.005}
+          sx={{
+            mb: { xs: 2, sm: 3 },
+            overflow: 'hidden',
+          }}
+        >
+          <CardContent sx={{ p: { xs: 2, sm: 2.5 } }}>
+            <Typography variant="overline" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+              <FormatQuote sx={{ fontSize: 18 }} />
+              Quote
+            </Typography>
+            {quoteLoading ? (
+              <Box sx={{ py: 1 }}>
+                <Skeleton variant="text" width="100%" />
+                <Skeleton variant="text" width="40%" sx={{ mt: 0.5 }} />
+              </Box>
+            ) : quoteError || !quote ? (
+              <Typography variant="body2" color="text.secondary">
+                No quote today — check back later.
+              </Typography>
+            ) : (
+              <>
+                <Typography variant="body1" sx={{ fontStyle: 'italic', mb: 1 }}>
+                  &ldquo;{quote.content}&rdquo;
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  — {quote.author}
+                </Typography>
+              </>
+            )}
+          </CardContent>
+        </AnimatedCard>
 
         {/* Recent Workout & Workout Frequency Widgets */}
         <Grid

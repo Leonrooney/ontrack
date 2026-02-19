@@ -201,17 +201,19 @@ model routine_items {
 }
 
 model users {
-  id               String             @id
-  email            String             @unique
-  emailVerified    DateTime?
-  name             String?
-  password         String?
-  passwordHash     String?
-  image            String?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime
-  themePreference  String?            @default("system")
-  unitPreference   String?            @default("metric")
+  id                    String             @id
+  email                 String             @unique
+  emailVerified         DateTime?
+  name                  String?
+  password              String?
+  passwordHash          String?
+  passwordResetToken    String?            @unique
+  passwordResetExpires  DateTime?
+  image                 String?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime
+  themePreference       String?            @default("system")
+  unitPreference        String?            @default("metric")
   accounts         accounts[]
   achievements     achievements[]
   activity_entries activity_entries[]

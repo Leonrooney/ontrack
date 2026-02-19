@@ -14,20 +14,23 @@ import {
   Snackbar,
   Alert,
   CircularProgress,
-  Divider,
 } from '@mui/material';
+import { PasswordField } from '@/components/ui/PasswordField';
 import { useProfile, useUpdateProfile } from '@/hooks/profile';
 import { useUserPreferences, useUpdatePreferences } from '@/hooks/preferences';
 import { useTheme } from '@mui/material/styles';
 import { useWorkoutHistory } from '@/hooks/workouts';
 import { useWeightLogs, useLogWeight } from '@/hooks/weight';
 import { exportWorkoutsToCSV } from '@/lib/workout-csv';
+import { validatePassword } from '@/lib/validators';
 import { useState, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
+import { signOut } from 'next-auth/react';
 import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { format } from 'date-fns';
 
 export function ProfilePageClient() {
@@ -67,6 +70,15 @@ export function ProfilePageClient() {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Change password
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changePasswordLoading, setChangePasswordLoading] = useState(false);
+  const [changePasswordError, setChangePasswordError] = useState('');
+  const [changePasswordSuccess, setChangePasswordSuccess] = useState(false);
+
   // Initialize form values when profile data loads
   useEffect(() => {
     if (profile) {
@@ -94,6 +106,43 @@ export function ProfilePageClient() {
     e.preventDefault();
     updatePreferencesMutation.mutate({ defaultRestSeconds });
     updateMutation.mutate({ unitPreference });
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setChangePasswordError('');
+    const err = validatePassword(newPassword);
+    if (err) {
+      setChangePasswordError(`New password: ${err}`);
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setChangePasswordError('New passwords do not match');
+      return;
+    }
+    setChangePasswordLoading(true);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setChangePasswordError(data.error || 'Failed to change password');
+        return;
+      }
+      setChangePasswordSuccess(true);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setChangePasswordOpen(false);
+    } finally {
+      setChangePasswordLoading(false);
+    }
   };
 
   const handleLogWeight = (e: React.FormEvent) => {
@@ -513,6 +562,91 @@ export function ProfilePageClient() {
           </form>
         </Paper>
 
+        {/* Account: Log out + Change password (last widget) */}
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mt: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              <Button
+                variant="outlined"
+                startIcon={<LogoutIcon />}
+                onClick={() => signOut({ callbackUrl: '/login' })}
+              >
+                Log out
+              </Button>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => {
+                  setChangePasswordOpen(true);
+                  setChangePasswordError('');
+                  setCurrentPassword('');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                }}
+                sx={{ display: changePasswordOpen ? 'none' : 'inline-flex' }}
+              >
+                Change password
+              </Button>
+            </Box>
+            {changePasswordOpen && (
+              <form onSubmit={handleChangePassword}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+                  {changePasswordError && (
+                    <Alert severity="error" onClose={() => setChangePasswordError('')}>
+                      {changePasswordError}
+                    </Alert>
+                  )}
+                  <PasswordField
+                    fullWidth
+                    label="Current password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                  />
+                  <PasswordField
+                    fullWidth
+                    label="New password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    autoComplete="new-password"
+                    helperText="At least 8 characters, with uppercase, lowercase, and a number"
+                  />
+                  <PasswordField
+                    fullWidth
+                    label="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    autoComplete="new-password"
+                  />
+                  <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      disabled={changePasswordLoading}
+                    >
+                      {changePasswordLoading ? 'Updating...' : 'Update password'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      onClick={() => {
+                        setChangePasswordOpen(false);
+                        setChangePasswordError('');
+                      }}
+                      disabled={changePasswordLoading}
+                    >
+                      Cancel
+                    </Button>
+                  </Box>
+                </Box>
+              </form>
+            )}
+          </Box>
+        </Paper>
+
         {/* Snackbar for profile success/error messages */}
         <Snackbar
           open={updateMutation.snackbar.open}
@@ -570,6 +704,16 @@ export function ProfilePageClient() {
             sx={{ width: '100%' }}
           >
             {weightSnackbar.message}
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={changePasswordSuccess}
+          autoHideDuration={5000}
+          onClose={() => setChangePasswordSuccess(false)}
+        >
+          <Alert severity="success" onClose={() => setChangePasswordSuccess(false)} sx={{ width: '100%' }}>
+            Password updated successfully.
           </Alert>
         </Snackbar>
       </Box>

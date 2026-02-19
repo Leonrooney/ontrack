@@ -15,19 +15,18 @@ export default withAuth(
   }
 );
 
-// Protect all routes except login and public assets
+// Protect all routes except login, signup, auth flows, and public assets
 export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
      * - api/auth (NextAuth routes)
      * - api/health (health check)
-     * - login (login page - should be accessible)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder files
+     * - login, signup (auth pages)
+     * - forgot-password, reset-password (password reset flow - must be public)
+     * - welcome (onboarding)
+     * - _next/static, _next/image, favicon, images
      */
-    '/((?!api/auth|api/health|login|signup|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api/auth|api/health|login|signup|forgot-password|reset-password|welcome|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

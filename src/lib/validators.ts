@@ -6,15 +6,23 @@ export const PASSWORD_MIN = 8;
 /** Regex: at least one lowercase, one uppercase, one digit */
 export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
 
+/** Zod schema for password (registration, change, reset). Single source of truth. */
+export const passwordSchema = z
+  .string()
+  .min(PASSWORD_MIN, `At least ${PASSWORD_MIN} characters`)
+  .max(128, 'Password must be at most 128 characters')
+  .regex(
+    PASSWORD_REGEX,
+    'Password must include uppercase, lowercase, and a number'
+  );
+
 /**
  * Validate password strength. Returns error message or null if valid.
+ * Use for client-side or when you need a function; use passwordSchema in API.
  */
 export function validatePassword(password: string): string | null {
-  if (password.length < PASSWORD_MIN)
-    return `At least ${PASSWORD_MIN} characters`;
-  if (!PASSWORD_REGEX.test(password))
-    return 'Include uppercase, lowercase, and a number';
-  return null;
+  const result = passwordSchema.safeParse(password);
+  return result.success ? null : result.error.errors[0]?.message ?? null;
 }
 
 /**
@@ -139,8 +147,11 @@ export const updateRoutineSchema = z.object({
 });
 
 /**
- * Type inference from schemas
+ * Type inference from schemas (use in hooks and API for consistency)
  */
 export type ActivityInput = z.infer<typeof activitySchema>;
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
 export type PreferencesUpdateInput = z.infer<typeof preferencesUpdateSchema>;
+export type WorkoutSetInput = z.infer<typeof workoutSetSchema>;
+export type WorkoutItemInput = z.infer<typeof workoutItemSchema>;
+export type RoutineItemInput = z.infer<typeof routineItemSchema>;
